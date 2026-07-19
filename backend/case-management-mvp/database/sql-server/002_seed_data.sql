@@ -24,12 +24,37 @@ INSERT INTO users (
     is_active
 )
 VALUES
-(
-    N'Admin',
-    N'User',
-    N'admin',
-    N'CHANGE_THIS_HASH_IN_BACKEND',
-    1,
-    1
-);
+(N'Admin', N'User', N'admin', N'CHANGE_THIS_HASH_IN_BACKEND', 1, 1),
+(N'Staff', N'User', N'staff', N'CHANGE_THIS_HASH_IN_BACKEND', 2, 1);
+GO
+
+INSERT INTO clients (
+    first_name,
+    last_name,
+    national_code,
+    mobile,
+    phone,
+    address,
+    description,
+    created_by
+)
+VALUES
+(N'علی', N'احمدی', N'1234567890', N'09121234567', N'02112345678', N'تهران', N'موکل تست اول', 1),
+(N'مریم', N'کریمی', N'2234567890', N'09129876543', N'02187654321', N'تهران', N'موکل تست دوم', 1);
+GO
+
+INSERT INTO cases (
+    internal_number,
+    title,
+    client_id,
+    category_id,
+    status,
+    description,
+    created_by,
+    archived_by,
+    archived_at
+)
+VALUES
+(N'CASE-1405-0001', N'مطالبه وجه', 1, 1, N'ACTIVE', N'پرونده تست فعال', 1, NULL, NULL),
+(N'CASE-1405-0002', N'اختلاف ملکی', 2, 4, N'ARCHIVED', N'پرونده تست بایگانی شده', 1, 1, SYSDATETIME());
 GO
