@@ -1,1 +1,441 @@
-
+{
+  "project": {
+    "name": "Case Management MVP",
+    "version": "1.0.0",
+    "description": "MVP API contract for a legal case management system"
+  },
+  "api": {
+    "baseUrl": "http://localhost:3000/api/v1",
+    "contentType": "application/json",
+    "authentication": {
+      "type": "Bearer JWT",
+      "header": "Authorization",
+      "format": "Bearer <token>",
+      "publicEndpoints": [
+        "POST /auth/login"
+      ]
+    }
+  },
+  "roles": [
+    {
+      "code": "ADMIN",
+      "title": "Admin",
+      "permissions": [
+        "LOGIN",
+        "VIEW_CLIENTS",
+        "CREATE_CLIENT",
+        "UPDATE_CLIENT",
+        "VIEW_CATEGORIES",
+        "VIEW_CASES",
+        "CREATE_CASE",
+        "UPDATE_CASE",
+        "ARCHIVE_CASE"
+      ]
+    },
+    {
+      "code": "STAFF",
+      "title": "Staff",
+      "permissions": [
+        "LOGIN",
+        "VIEW_CLIENTS",
+        "CREATE_CLIENT",
+        "UPDATE_CLIENT",
+        "VIEW_CATEGORIES",
+        "VIEW_CASES",
+        "CREATE_CASE",
+        "UPDATE_CASE"
+      ],
+      "restrictedPermissions": [
+        "ARCHIVE_CASE"
+      ]
+    }
+  ],
+  "standardListResponse": {
+    "items": [],
+    "page": 1,
+    "pageSize": 10,
+    "totalCount": 0,
+    "totalPages": 0
+  },
+  "standardErrorResponse": {
+    "message": "Error message",
+    "errors": [
+      {
+        "field": "fieldName",
+        "message": "Field error message"
+      }
+    ]
+  },
+  "httpStatusCodes": {
+    "200": "Success",
+    "201": "Created",
+    "400": "Bad Request / Validation Error",
+    "401": "Unauthorized",
+    "403": "Forbidden",
+    "404": "Not Found",
+    "409": "Conflict",
+    "500": "Internal Server Error"
+  },
+  "caseStatuses": [
+    "ACTIVE",
+    "ARCHIVED"
+  ],
+  "endpoints": [
+    {
+      "name": "Login",
+      "method": "POST",
+      "path": "/auth/login",
+      "authRequired": false,
+      "description": "Login user and receive JWT token",
+      "requestBody": {
+        "username": "admin",
+        "password": "123456"
+      },
+      "successResponse": {
+        "token": "jwt-token-here",
+        "user": {
+          "id": 1,
+          "firstName": "Admin",
+          "lastName": "User",
+          "username": "admin",
+          "role": "ADMIN"
+        }
+      },
+      "errors": [
+        {
+          "status": 400,
+          "message": "Username and password are required"
+        },
+        {
+          "status": 401,
+          "message": "Invalid username or password"
+        }
+      ]
+    },
+    {
+      "name": "Get Clients",
+      "method": "GET",
+      "path": "/clients",
+      "authRequired": true,
+      "description": "Get paginated clients list",
+      "queryParams": {
+        "page": 1,
+        "pageSize": 10,
+        "search": "optional search text"
+      },
+      "successResponse": {
+        "items": [
+          {
+            "id": 1,
+            "firstName": "Ali",
+            "lastName": "Ahmadi",
+            "nationalCode": "1234567890",
+            "mobile": "09121234567",
+            "phone": "02112345678",
+            "address": "Tehran",
+            "description": "Client description",
+            "createdAt": "2026-07-19T10:00:00Z",
+            "updatedAt": "2026-07-19T10:00:00Z"
+          }
+        ],
+        "page": 1,
+        "pageSize": 10,
+        "totalCount": 1,
+        "totalPages": 1
+      }
+    },
+    {
+      "name": "Create Client",
+      "method": "POST",
+      "path": "/clients",
+      "authRequired": true,
+      "description": "Create a new client",
+      "requestBody": {
+        "firstName": "Ali",
+        "lastName": "Ahmadi",
+        "nationalCode": "1234567890",
+        "mobile": "09121234567",
+        "phone": "02112345678",
+        "address": "Tehran",
+        "description": "Client description"
+      },
+      "successResponse": {
+        "id": 1,
+        "firstName": "Ali",
+        "lastName": "Ahmadi",
+        "nationalCode": "1234567890",
+        "mobile": "09121234567",
+        "phone": "02112345678",
+        "address": "Tehran",
+        "description": "Client description",
+        "createdAt": "2026-07-19T10:00:00Z",
+        "updatedAt": "2026-07-19T10:00:00Z"
+      },
+      "errors": [
+        {
+          "status": 400,
+          "message": "Validation error"
+        },
+        {
+          "status": 409,
+          "message": "National code already exists"
+        }
+      ]
+    },
+    {
+      "name": "Update Client",
+      "method": "PATCH",
+      "path": "/clients/{id}",
+      "authRequired": true,
+      "description": "Update client information",
+      "pathParams": {
+        "id": 1
+      },
+      "requestBody": {
+        "firstName": "Ali",
+        "lastName": "Ahmadi",
+        "nationalCode": "1234567890",
+        "mobile": "09121234567",
+        "phone": "02112345678",
+        "address": "Tehran",
+        "description": "Updated description"
+      },
+      "successResponse": {
+        "id": 1,
+        "firstName": "Ali",
+        "lastName": "Ahmadi",
+        "nationalCode": "1234567890",
+        "mobile": "09121234567",
+        "phone": "02112345678",
+        "address": "Tehran",
+        "description": "Updated description",
+        "createdAt": "2026-07-19T10:00:00Z",
+        "updatedAt": "2026-07-19T11:00:00Z"
+      },
+      "errors": [
+        {
+          "status": 404,
+          "message": "Client not found"
+        },
+        {
+          "status": 409,
+          "message": "National code already exists"
+        }
+      ]
+    },
+    {
+      "name": "Get Categories",
+      "method": "GET",
+      "path": "/categories",
+      "authRequired": true,
+      "description": "Get active categories sorted by sort order",
+      "successResponse": [
+        {
+          "id": 1,
+          "title": "حقوقی",
+          "sortOrder": 1,
+          "isActive": true
+        },
+        {
+          "id": 2,
+          "title": "کیفری",
+          "sortOrder": 2,
+          "isActive": true
+        }
+      ]
+    },
+    {
+      "name": "Get Cases",
+      "method": "GET",
+      "path": "/cases",
+      "authRequired": true,
+      "description": "Get paginated cases list",
+      "queryParams": {
+        "page": 1,
+        "pageSize": 10,
+        "search": "optional search text",
+        "status": "ACTIVE",
+        "clientId": 1,
+        "categoryId": 1
+      },
+      "successResponse": {
+        "items": [
+          {
+            "id": 1,
+            "internalNumber": "CASE-1405-0001",
+            "title": "Sample case title",
+            "status": "ACTIVE",
+            "client": {
+              "id": 1,
+              "firstName": "Ali",
+              "lastName": "Ahmadi"
+            },
+            "category": {
+              "id": 1,
+              "title": "حقوقی"
+            },
+            "createdAt": "2026-07-19T10:00:00Z",
+            "updatedAt": "2026-07-19T10:00:00Z"
+          }
+        ],
+        "page": 1,
+        "pageSize": 10,
+        "totalCount": 1,
+        "totalPages": 1
+      }
+    },
+    {
+      "name": "Create Case",
+      "method": "POST",
+      "path": "/cases",
+      "authRequired": true,
+      "description": "Create a new case",
+      "requestBody": {
+        "internalNumber": "CASE-1405-0001",
+        "title": "Sample case title",
+        "clientId": 1,
+        "categoryId": 1,
+        "description": "Case description"
+      },
+      "successResponse": {
+        "id": 1,
+        "internalNumber": "CASE-1405-0001",
+        "title": "Sample case title",
+        "status": "ACTIVE",
+        "clientId": 1,
+        "categoryId": 1,
+        "description": "Case description",
+        "createdAt": "2026-07-19T10:00:00Z",
+        "updatedAt": "2026-07-19T10:00:00Z"
+      },
+      "errors": [
+        {
+          "status": 400,
+          "message": "Validation error"
+        },
+        {
+          "status": 404,
+          "message": "Client or category not found"
+        },
+        {
+          "status": 409,
+          "message": "Internal number already exists"
+        }
+      ]
+    },
+    {
+      "name": "Get Case Details",
+      "method": "GET",
+      "path": "/cases/{id}",
+      "authRequired": true,
+      "description": "Get case details by id",
+      "pathParams": {
+        "id": 1
+      },
+      "successResponse": {
+        "id": 1,
+        "internalNumber": "CASE-1405-0001",
+        "title": "Sample case title",
+        "status": "ACTIVE",
+        "client": {
+          "id": 1,
+          "firstName": "Ali",
+          "lastName": "Ahmadi",
+          "nationalCode": "1234567890",
+          "mobile": "09121234567"
+        },
+        "category": {
+          "id": 1,
+          "title": "حقوقی"
+        },
+        "description": "Case description",
+        "createdAt": "2026-07-19T10:00:00Z",
+        "updatedAt": "2026-07-19T10:00:00Z"
+      },
+      "errors": [
+        {
+          "status": 404,
+          "message": "Case not found"
+        }
+      ]
+    },
+    {
+      "name": "Update Case",
+      "method": "PATCH",
+      "path": "/cases/{id}",
+      "authRequired": true,
+      "description": "Update case information",
+      "pathParams": {
+        "id": 1
+      },
+      "requestBody": {
+        "internalNumber": "CASE-1405-0001",
+        "title": "Updated case title",
+        "clientId": 1,
+        "categoryId": 1,
+        "description": "Updated case description"
+      },
+      "successResponse": {
+        "id": 1,
+        "internalNumber": "CASE-1405-0001",
+        "title": "Updated case title",
+        "status": "ACTIVE",
+        "clientId": 1,
+        "categoryId": 1,
+        "description": "Updated case description",
+        "createdAt": "2026-07-19T10:00:00Z",
+        "updatedAt": "2026-07-19T11:00:00Z"
+      },
+      "errors": [
+        {
+          "status": 404,
+          "message": "Case not found"
+        },
+        {
+          "status": 409,
+          "message": "Internal number already exists"
+        }
+      ]
+    },
+    {
+      "name": "Archive Case",
+      "method": "POST",
+      "path": "/cases/{id}/archive",
+      "authRequired": true,
+      "requiredRole": "ADMIN",
+      "description": "Archive a case. STAFF users are not allowed to archive cases.",
+      "pathParams": {
+        "id": 1
+      },
+      "successResponse": {
+        "id": 1,
+        "status": "ARCHIVED",
+        "archivedAt": "2026-07-19T12:00:00Z",
+        "message": "Case archived successfully"
+      },
+      "errors": [
+        {
+          "status": 403,
+          "message": "You do not have permission to archive cases"
+        },
+        {
+          "status": 404,
+          "message": "Case not found"
+        },
+        {
+          "status": 409,
+          "message": "Case is already archived"
+        }
+      ]
+    }
+  ],
+  "outOfScopeForMvp": [
+    "File upload",
+    "Notifications",
+    "Calendar",
+    "Payments",
+    "Advanced reporting",
+    "Full audit log",
+    "Multi-branch support"
+  ]
+}
