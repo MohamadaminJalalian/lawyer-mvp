@@ -1,1 +1,1158 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>قرارداد JSON بک‌اند برای تیم فرانت‌اند - MVP مدیریت پرونده‌ها</title>
 
+    <style>
+        @page {
+            size: A4;
+            margin: 18mm;
+        }
+
+        body {
+            font-family: Tahoma, Arial, sans-serif;
+            direction: rtl;
+            text-align: right;
+            background: #f4f6f8;
+            color: #1f2937;
+            line-height: 1.9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .page {
+            max-width: 980px;
+            margin: 30px auto;
+            background: #ffffff;
+            padding: 36px 44px;
+            border-radius: 14px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+
+        .cover {
+            border-top: 8px solid #0f766e;
+            padding-top: 34px;
+            margin-bottom: 36px;
+        }
+
+        h1 {
+            color: #0f766e;
+            font-size: 28px;
+            margin-bottom: 12px;
+            border-bottom: 2px solid #ccfbf1;
+            padding-bottom: 14px;
+        }
+
+        h2 {
+            color: #115e59;
+            font-size: 22px;
+            margin-top: 42px;
+            border-right: 5px solid #0f766e;
+            padding-right: 12px;
+            background: #f0fdfa;
+            padding-top: 8px;
+            padding-bottom: 8px;
+        }
+
+        h3 {
+            color: #134e4a;
+            font-size: 18px;
+            margin-top: 28px;
+        }
+
+        h4 {
+            color: #374151;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+
+        p {
+            margin: 10px 0;
+        }
+
+        .meta {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            padding: 18px;
+            border-radius: 10px;
+            margin-top: 18px;
+        }
+
+        .meta div {
+            margin-bottom: 6px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: bold;
+            margin: 2px;
+        }
+
+        .badge-get {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .badge-post {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .badge-patch {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-admin {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .badge-staff {
+            background: #ede9fe;
+            color: #6d28d9;
+        }
+
+        .note {
+            background: #fffbeb;
+            border-right: 5px solid #f59e0b;
+            padding: 14px 16px;
+            border-radius: 8px;
+            margin: 18px 0;
+        }
+
+        .success {
+            background: #ecfdf5;
+            border-right: 5px solid #10b981;
+            padding: 14px 16px;
+            border-radius: 8px;
+            margin: 18px 0;
+        }
+
+        .danger {
+            background: #fef2f2;
+            border-right: 5px solid #ef4444;
+            padding: 14px 16px;
+            border-radius: 8px;
+            margin: 18px 0;
+        }
+
+        .info {
+            background: #eff6ff;
+            border-right: 5px solid #3b82f6;
+            padding: 14px 16px;
+            border-radius: 8px;
+            margin: 18px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 18px 0 28px;
+            font-size: 14px;
+        }
+
+        th {
+            background: #0f766e;
+            color: #ffffff;
+            padding: 10px;
+            border: 1px solid #0f766e;
+        }
+
+        td {
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            vertical-align: top;
+        }
+
+        tr:nth-child(even) td {
+            background: #f9fafb;
+        }
+
+        pre {
+            direction: ltr;
+            text-align: left;
+            background: #111827;
+            color: #e5e7eb;
+            padding: 18px;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-size: 13px;
+            line-height: 1.7;
+            margin: 14px 0 26px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        code {
+            direction: ltr;
+            unicode-bidi: embed;
+            font-family: Consolas, Monaco, monospace;
+        }
+
+        .endpoint {
+            direction: ltr;
+            text-align: left;
+            background: #f3f4f6;
+            border: 1px solid #d1d5db;
+            padding: 12px 14px;
+            border-radius: 8px;
+            font-family: Consolas, Monaco, monospace;
+            margin: 10px 0 18px;
+        }
+
+        .toc {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            padding: 18px 22px;
+            border-radius: 10px;
+            margin: 24px 0;
+        }
+
+        .toc ul {
+            margin: 0;
+            padding-right: 22px;
+        }
+
+        .toc li {
+            margin: 7px 0;
+        }
+
+        .footer {
+            margin-top: 50px;
+            padding-top: 18px;
+            border-top: 1px solid #e5e7eb;
+            font-size: 12px;
+            color: #6b7280;
+            text-align: center;
+        }
+
+        .ltr {
+            direction: ltr;
+            text-align: left;
+        }
+
+        .print-note {
+            background: #eef2ff;
+            border: 1px solid #c7d2fe;
+            color: #3730a3;
+            padding: 12px 14px;
+            border-radius: 8px;
+            margin: 18px 0;
+        }
+
+        @media print {
+            body {
+                background: #ffffff;
+            }
+
+            .page {
+                margin: 0;
+                max-width: none;
+                box-shadow: none;
+                border-radius: 0;
+                padding: 0;
+            }
+
+            h2 {
+                page-break-before: auto;
+            }
+
+            pre, table {
+                page-break-inside: avoid;
+            }
+
+            .print-note {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="page">
+
+    <section class="cover">
+        <h1>قرارداد JSON بک‌اند برای تیم فرانت‌اند</h1>
+
+        <div class="meta">
+            <div><strong>نام پروژه:</strong> MVP سامانه مدیریت موکلان، دسته‌بندی‌ها و پرونده‌ها</div>
+            <div><strong>نوع مستند:</strong> API Contract / JSON Contract</div>
+            <div><strong>مخاطب:</strong> تیم فرانت‌اند</div>
+            <div><strong>نسخه:</strong> 1.0</div>
+            <div><strong>تاریخ:</strong> 1405/04/28</div>
+            <div><strong>تکنولوژی بک‌اند:</strong> ASP.NET Core Web API + Entity Framework Core</div>
+        </div>
+
+        <div class="print-note">
+            برای تبدیل این فایل به PDF، فایل HTML را در مرورگر باز کنید، سپس کلیدهای
+            <strong>Ctrl + P</strong>
+            را بزنید و گزینه
+            <strong>Save as PDF</strong>
+            را انتخاب کنید.
+        </div>
+
+        <div class="note">
+            این مستند فقط مربوط به قرارداد JSON بین بک‌اند و فرانت‌اند در محدوده MVP است.
+            مواردی مثل آپلود فایل، تقویم جلسات، پرداخت‌ها، گزارش‌ها و اعلان‌ها فعلاً خارج از محدوده MVP هستند.
+        </div>
+    </section>
+
+    <section>
+        <h2>فهرست مطالب</h2>
+        <div class="toc">
+            <ul>
+                <li>۱. قوانین عمومی ارتباط با API</li>
+                <li>۲. ساختار استاندارد پاسخ‌ها</li>
+                <li>۳. ساختار استاندارد خطاها</li>
+                <li>۴. نقش‌ها و دسترسی‌ها</li>
+                <li>۵. APIهای موکلان</li>
+                <li>۶. API دسته‌بندی‌ها</li>
+                <li>۷. APIهای پرونده‌ها</li>
+                <li>۸. وضعیت‌های پرونده</li>
+                <li>۹. موارد خارج از محدوده MVP</li>
+                <li>۱۰. چک‌لیست فرانت‌اند</li>
+            </ul>
+        </div>
+    </section>
+
+    <section>
+        <h2>۱. قوانین عمومی ارتباط با API</h2>
+
+        <p>
+            تمام درخواست‌ها و پاسخ‌ها باید با فرمت JSON باشند.
+            بنابراین در درخواست‌هایی که Body دارند، Header زیر ارسال شود:
+        </p>
+
+        <pre><code>{
+  "Content-Type": "application/json"
+}</code></pre>
+
+        <p>
+            تمام APIهای داخلی نیاز به احراز هویت دارند. فرانت‌اند باید توکن JWT را در Header زیر ارسال کند:
+        </p>
+
+        <pre><code>{
+  "Authorization": "Bearer ACCESS_TOKEN"
+}</code></pre>
+
+        <div class="danger">
+            اگر توکن ارسال نشود یا معتبر نباشد، بک‌اند باید پاسخ 401 برگرداند.
+        </div>
+
+        <h3>Base URL</h3>
+
+        <p>
+            آدرس اصلی سرور بسته به محیط اجرا توسط تیم بک‌اند اعلام می‌شود.
+            نمونه:
+        </p>
+
+        <div class="endpoint">https://api.example.com</div>
+
+        <p>
+            در این مستند Endpointها بدون Base URL نوشته شده‌اند.
+            مثال:
+        </p>
+
+        <div class="endpoint">GET /clients</div>
+    </section>
+
+    <section>
+        <h2>۲. ساختار استاندارد پاسخ‌های لیستی</h2>
+
+        <p>
+            هر API که لیست برمی‌گرداند، مثل لیست موکلان یا لیست پرونده‌ها، باید ساختار صفحه‌بندی زیر را داشته باشد:
+        </p>
+
+        <pre><code>{
+  "items": [],
+  "page": 1,
+  "pageSize": 20,
+  "totalCount": 0,
+  "totalPages": 0
+}</code></pre>
+
+        <table>
+            <thead>
+            <tr>
+                <th>فیلد</th>
+                <th>توضیح</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><code>items</code></td>
+                <td>آرایه‌ای از رکوردهای برگشتی</td>
+            </tr>
+            <tr>
+                <td><code>page</code></td>
+                <td>شماره صفحه فعلی</td>
+            </tr>
+            <tr>
+                <td><code>pageSize</code></td>
+                <td>تعداد رکورد در هر صفحه</td>
+            </tr>
+            <tr>
+                <td><code>totalCount</code></td>
+                <td>تعداد کل رکوردها</td>
+            </tr>
+            <tr>
+                <td><code>totalPages</code></td>
+                <td>تعداد کل صفحات</td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section>
+        <h2>۳. ساختار استاندارد خطاها</h2>
+
+        <p>
+            همه خطاها باید تا حد امکان با فرمت زیر برگردند:
+        </p>
+
+        <pre><code>{
+  "message": "پیام کلی خطا",
+  "errors": {
+    "fieldName": [
+      "متن خطای مربوط به فیلد"
+    ]
+  }
+}</code></pre>
+
+        <p>
+            اگر خطا مربوط به یک فیلد خاص نباشد، ممکن است فقط فیلد
+            <code>message</code>
+            برگردد.
+        </p>
+
+        <h3>کدهای خطای استاندارد</h3>
+
+        <table>
+            <thead>
+            <tr>
+                <th>کد</th>
+                <th>وضعیت</th>
+                <th>کاربرد</th>
+                <th>نمونه پیام</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>400</td>
+                <td>Bad Request</td>
+                <td>اطلاعات ارسالی نامعتبر است</td>
+                <td>اطلاعات واردشده معتبر نیست.</td>
+            </tr>
+            <tr>
+                <td>401</td>
+                <td>Unauthorized</td>
+                <td>JWT ارسال نشده یا معتبر نیست</td>
+                <td>نشست شما معتبر نیست.</td>
+            </tr>
+            <tr>
+                <td>403</td>
+                <td>Forbidden</td>
+                <td>کاربر مجوز انجام عملیات را ندارد</td>
+                <td>شما اجازه انجام این عملیات را ندارید.</td>
+            </tr>
+            <tr>
+                <td>404</td>
+                <td>Not Found</td>
+                <td>رکورد موردنظر پیدا نشد</td>
+                <td>رکورد موردنظر پیدا نشد.</td>
+            </tr>
+            <tr>
+                <td>409</td>
+                <td>Conflict</td>
+                <td>داده تکراری است</td>
+                <td>اطلاعات واردشده قبلاً ثبت شده است.</td>
+            </tr>
+            <tr>
+                <td>500</td>
+                <td>Internal Server Error</td>
+                <td>خطای داخلی سرور</td>
+                <td>خطای داخلی سرور رخ داده است.</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <h3>نمونه خطای اعتبارسنجی 400</h3>
+
+        <pre><code>{
+  "message": "اطلاعات واردشده معتبر نیست.",
+  "errors": {
+    "internalNumber": [
+      "شماره داخلی پرونده الزامی است."
+    ],
+    "title": [
+      "عنوان پرونده باید حداقل ۳ کاراکتر باشد."
+    ]
+  }
+}</code></pre>
+
+        <h3>نمونه خطای تکراری بودن داده 409</h3>
+
+        <pre><code>{
+  "message": "اطلاعات واردشده قبلاً ثبت شده است.",
+  "errors": {
+    "internalNumber": [
+      "شماره داخلی پرونده قبلاً ثبت شده است."
+    ]
+  }
+}</code></pre>
+
+        <h3>نمونه خطای عدم دسترسی 403</h3>
+
+        <pre><code>{
+  "message": "شما اجازه انجام این عملیات را ندارید."
+}</code></pre>
+    </section>
+
+    <section>
+        <h2>۴. نقش‌ها و دسترسی‌ها</h2>
+
+        <table>
+            <thead>
+            <tr>
+                <th>نقش</th>
+                <th>دسترسی‌ها</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><span class="badge badge-admin">ADMIN</span></td>
+                <td>مشاهده، ثبت، ویرایش و بایگانی پرونده</td>
+            </tr>
+            <tr>
+                <td><span class="badge badge-staff">STAFF</span></td>
+                <td>مشاهده، ثبت و ویرایش؛ بدون اجازه بایگانی پرونده</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div class="danger">
+            عملیات بایگانی پرونده فقط برای نقش ADMIN مجاز است.
+            اگر STAFF درخواست بایگانی ارسال کند، پاسخ باید 403 باشد.
+        </div>
+    </section>
+
+    <section>
+        <h2>۵. APIهای موکلان</h2>
+
+        <h3>۵.۱. دریافت لیست موکلان</h3>
+
+        <p>
+            این API برای دریافت لیست موکلان همراه با Search و Pagination استفاده می‌شود.
+        </p>
+
+        <p>
+            <span class="badge badge-get">GET</span>
+        </p>
+
+        <div class="endpoint">GET /clients?page=1&pageSize=20&search=علی</div>
+
+        <h4>Query Parameters</h4>
+
+        <table>
+            <thead>
+            <tr>
+                <th>پارامتر</th>
+                <th>نوع</th>
+                <th>اجباری</th>
+                <th>توضیح</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><code>page</code></td>
+                <td>number</td>
+                <td>خیر</td>
+                <td>شماره صفحه، پیش‌فرض 1</td>
+            </tr>
+            <tr>
+                <td><code>pageSize</code></td>
+                <td>number</td>
+                <td>خیر</td>
+                <td>تعداد رکورد در صفحه، پیش‌فرض 20</td>
+            </tr>
+            <tr>
+                <td><code>search</code></td>
+                <td>string</td>
+                <td>خیر</td>
+                <td>جست‌وجو بر اساس نام کامل، کد ملی و موبایل</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <h4>Response 200</h4>
+
+        <pre><code>{
+  "items": [
+    {
+      "id": "client-uuid",
+      "fullName": "علی رضایی",
+      "nationalCode": "0012345678",
+      "mobile": "09121234567",
+      "phone": null,
+      "isActive": true,
+      "createdAt": "2026-07-14T08:30:00Z"
+    }
+  ],
+  "page": 1,
+  "pageSize": 20,
+  "totalCount": 1,
+  "totalPages": 1
+}</code></pre>
+
+        <h3>۵.۲. ثبت موکل جدید</h3>
+
+        <p>
+            <span class="badge badge-post">POST</span>
+        </p>
+
+        <div class="endpoint">POST /clients</div>
+
+        <h4>Request Body</h4>
+
+        <pre><code>{
+  "fullName": "علی رضایی",
+  "nationalCode": "0012345678",
+  "mobile": "09121234567",
+  "phone": "02112345678",
+  "address": "تهران، خیابان نمونه",
+  "description": "موکل جدید"
+}</code></pre>
+
+        <h4>قوانین اعتبارسنجی موکل</h4>
+
+        <table>
+            <thead>
+            <tr>
+                <th>فیلد</th>
+                <th>قانون</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><code>fullName</code></td>
+                <td>اجباری، حداقل ۳ و حداکثر ۱۵۰ کاراکتر</td>
+            </tr>
+            <tr>
+                <td><code>nationalCode</code></td>
+                <td>اجباری، دقیقاً ۱۰ رقم و یکتا</td>
+            </tr>
+            <tr>
+                <td><code>mobile</code></td>
+                <td>اختیاری، ولی در صورت ارسال باید شماره موبایل معتبر باشد</td>
+            </tr>
+            <tr>
+                <td><code>address</code></td>
+                <td>اختیاری، حداکثر ۱۰۰۰ کاراکتر</td>
+            </tr>
+            <tr>
+                <td><code>description</code></td>
+                <td>اختیاری، حداکثر ۱۰۰۰ کاراکتر</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <h4>Response 201</h4>
+
+        <pre><code>{
+  "id": "client-uuid",
+  "fullName": "علی رضایی",
+  "nationalCode": "0012345678",
+  "mobile": "09121234567",
+  "phone": "02112345678",
+  "address": "تهران، خیابان نمونه",
+  "description": "موکل جدید",
+  "isActive": true,
+  "createdAt": "2026-07-14T08:30:00Z"
+}</code></pre>
+
+        <h4>Conflict 409 - کد ملی تکراری</h4>
+
+        <pre><code>{
+  "message": "اطلاعات واردشده قبلاً ثبت شده است.",
+  "errors": {
+    "nationalCode": [
+      "کد ملی واردشده قبلاً برای موکل دیگری ثبت شده است."
+    ]
+  }
+}</code></pre>
+
+        <h3>۵.۳. ویرایش موکل</h3>
+
+        <p>
+            <span class="badge badge-patch">PATCH</span>
+        </p>
+
+        <div class="endpoint">PATCH /clients/{id}</div>
+
+        <div class="info">
+            در PATCH لازم نیست همه فیلدها ارسال شوند.
+            فقط فیلدهایی که قرار است تغییر کنند ارسال می‌شوند.
+        </div>
+
+        <h4>Request Body</h4>
+
+        <pre><code>{
+  "fullName": "علی رضایی پور",
+  "mobile": "09121234567",
+  "address": "تهران، آدرس جدید"
+}</code></pre>
+
+        <h4>Response 200</h4>
+
+        <pre><code>{
+  "id": "client-uuid",
+  "fullName": "علی رضایی پور",
+  "nationalCode": "0012345678",
+  "mobile": "09121234567",
+  "phone": "02112345678",
+  "address": "تهران، آدرس جدید",
+  "description": "موکل جدید",
+  "isActive": true,
+  "updatedAt": "2026-07-14T09:00:00Z"
+}</code></pre>
+    </section>
+
+    <section>
+        <h2>۶. API دسته‌بندی‌ها</h2>
+
+        <h3>۶.۱. دریافت دسته‌بندی‌های فعال</h3>
+
+        <p>
+            این API برای دریافت دسته‌بندی‌های فعال استفاده می‌شود.
+            خروجی باید بر اساس <code>sortOrder</code> مرتب شود.
+        </p>
+
+        <p>
+            <span class="badge badge-get">GET</span>
+        </p>
+
+        <div class="endpoint">GET /categories</div>
+
+        <h4>Response 200</h4>
+
+        <pre><code>[
+  {
+    "id": "category-uuid-1",
+    "name": "حقوقی",
+    "sortOrder": 1
+  },
+  {
+    "id": "category-uuid-2",
+    "name": "کیفری",
+    "sortOrder": 2
+  },
+  {
+    "id": "category-uuid-3",
+    "name": "خانواده",
+    "sortOrder": 3
+  }
+]</code></pre>
+
+        <div class="success">
+            فرانت‌اند باید از این API برای پر کردن Dropdown دسته‌بندی‌ها در فرم ثبت و ویرایش پرونده استفاده کند.
+        </div>
+    </section>
+
+    <section>
+        <h2>۷. APIهای پرونده‌ها</h2>
+
+        <h3>۷.۱. دریافت لیست پرونده‌ها</h3>
+
+        <p>
+            <span class="badge badge-get">GET</span>
+        </p>
+
+        <div class="endpoint">GET /cases?page=1&pageSize=20&search=1405-001&categoryId=category-uuid&status=ACTIVE&clientId=client-uuid</div>
+
+        <h4>Query Parameters</h4>
+
+        <table>
+            <thead>
+            <tr>
+                <th>پارامتر</th>
+                <th>نوع</th>
+                <th>اجباری</th>
+                <th>توضیح</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><code>page</code></td>
+                <td>number</td>
+                <td>خیر</td>
+                <td>شماره صفحه، پیش‌فرض 1</td>
+            </tr>
+            <tr>
+                <td><code>pageSize</code></td>
+                <td>number</td>
+                <td>خیر</td>
+                <td>تعداد رکورد در صفحه، پیش‌فرض 20، حداکثر 100</td>
+            </tr>
+            <tr>
+                <td><code>search</code></td>
+                <td>string</td>
+                <td>خیر</td>
+                <td>جست‌وجوی عمومی پرونده</td>
+            </tr>
+            <tr>
+                <td><code>categoryId</code></td>
+                <td>Guid</td>
+                <td>خیر</td>
+                <td>فیلتر بر اساس دسته‌بندی</td>
+            </tr>
+            <tr>
+                <td><code>status</code></td>
+                <td>ACTIVE / ARCHIVED</td>
+                <td>خیر</td>
+                <td>فیلتر بر اساس وضعیت پرونده</td>
+            </tr>
+            <tr>
+                <td><code>clientId</code></td>
+                <td>Guid</td>
+                <td>خیر</td>
+                <td>فیلتر بر اساس موکل</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <h4>فیلدهای قابل جست‌وجو</h4>
+
+        <table>
+            <thead>
+            <tr>
+                <th>فیلد</th>
+                <th>توضیح</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><code>internalNumber</code></td>
+                <td>شماره داخلی پرونده</td>
+            </tr>
+            <tr>
+                <td><code>title</code></td>
+                <td>عنوان پرونده</td>
+            </tr>
+            <tr>
+                <td><code>client.fullName</code></td>
+                <td>نام کامل موکل</td>
+            </tr>
+            <tr>
+                <td><code>client.nationalCode</code></td>
+                <td>کد ملی موکل</td>
+            </tr>
+            <tr>
+                <td><code>courtCaseNumber</code></td>
+                <td>شماره پرونده دادگاه</td>
+            </tr>
+            <tr>
+                <td><code>courtName</code></td>
+                <td>نام دادگاه</td>
+            </tr>
+            <tr>
+                <td><code>opponentName</code></td>
+                <td>نام طرف مقابل</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <h4>Response 200</h4>
+
+        <pre><code>{
+  "items": [
+    {
+      "id": "case-uuid",
+      "internalNumber": "1405-001",
+      "title": "پرونده مطالبه وجه",
+      "client": {
+        "id": "client-uuid",
+        "fullName": "علی رضایی",
+        "nationalCode": "0012345678"
+      },
+      "category": {
+        "id": "category-uuid",
+        "name": "حقوقی"
+      },
+      "courtCaseNumber": "0301405123456789",
+      "courtName": "شعبه ۱۲ دادگاه حقوقی تهران",
+      "opponentName": "شرکت نمونه",
+      "status": "ACTIVE",
+      "createdAt": "2026-07-14T08:30:00Z",
+      "updatedAt": "2026-07-14T08:30:00Z"
+    }
+  ],
+  "page": 1,
+  "pageSize": 20,
+  "totalCount": 1,
+  "totalPages": 1
+}</code></pre>
+
+        <h3>۷.۲. ثبت پرونده جدید</h3>
+
+        <p>
+            <span class="badge badge-post">POST</span>
+        </p>
+
+        <div class="endpoint">POST /cases</div>
+
+        <h4>Request Body</h4>
+
+        <pre><code>{
+  "internalNumber": "1405-001",
+  "title": "پرونده مطالبه وجه",
+  "clientId": "client-uuid",
+  "categoryId": "category-uuid",
+  "courtCaseNumber": "0301405123456789",
+  "courtName": "شعبه ۱۲ دادگاه حقوقی تهران",
+  "opponentName": "شرکت نمونه",
+  "description": "پیگیری مطالبه وجه قراردادی"
+}</code></pre>
+
+        <h4>قوانین اعتبارسنجی پرونده</h4>
+
+        <table>
+            <thead>
+            <tr>
+                <th>فیلد</th>
+                <th>قانون</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><code>internalNumber</code></td>
+                <td>اجباری، حداکثر ۵۰ کاراکتر، یکتا، ورود دستی توسط کاربر</td>
+            </tr>
+            <tr>
+                <td><code>title</code></td>
+                <td>اجباری، حداقل ۳ و حداکثر ۲۰۰ کاراکتر</td>
+            </tr>
+            <tr>
+                <td><code>clientId</code></td>
+                <td>اجباری، باید به موکل موجود و فعال اشاره کند</td>
+            </tr>
+            <tr>
+                <td><code>categoryId</code></td>
+                <td>اجباری، باید به دسته‌بندی موجود و فعال اشاره کند</td>
+            </tr>
+            <tr>
+                <td><code>courtCaseNumber</code></td>
+                <td>اختیاری، حداکثر ۱۰۰ کاراکتر</td>
+            </tr>
+            <tr>
+                <td><code>courtName</code></td>
+                <td>اختیاری، حداکثر ۲۰۰ کاراکتر</td>
+            </tr>
+            <tr>
+                <td><code>opponentName</code></td>
+                <td>اختیاری، حداکثر ۱۵۰ کاراکتر</td>
+            </tr>
+            <tr>
+                <td><code>description</code></td>
+                <td>اختیاری، حداکثر ۲۰۰۰ کاراکتر</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div class="note">
+            مقدار <code>internalNumber</code> قبل از ذخیره باید Trim شود.
+            در MVP فعلی مقدار شماره داخلی فقط می‌تواند شامل حروف، اعداد، خط تیره و اسلش باشد.
+        </div>
+
+        <div class="danger">
+            شماره داخلی پرونده توسط بک‌اند تولید نمی‌شود.
+            فرانت‌اند باید آن را از کاربر دریافت کند.
+        </div>
+
+        <h4>Response 201</h4>
+
+        <pre><code>{
+  "id": "case-uuid",
+  "internalNumber": "1405-001",
+  "title": "پرونده مطالبه وجه",
+  "status": "ACTIVE",
+  "createdAt": "2026-07-14T09:00:00Z"
+}</code></pre>
+
+        <h4>Conflict 409 - شماره داخلی تکراری</h4>
+
+        <pre><code>{
+  "message": "شماره داخلی واردشده قبلاً برای پرونده دیگری ثبت شده است.",
+  "errors": {
+    "internalNumber": [
+      "این شماره داخلی تکراری است."
+    ]
+  }
+}</code></pre>
+
+        <h3>۷.۳. دریافت جزئیات پرونده</h3>
+
+        <p>
+            <span class="badge badge-get">GET</span>
+        </p>
+
+        <div class="endpoint">GET /cases/{id}</div>
+
+        <h4>Response 200</h4>
+
+        <pre><code>{
+  "id": "case-uuid",
+  "internalNumber": "1405-001",
+  "title": "پرونده مطالبه وجه",
+  "client": {
+    "id": "client-uuid",
+    "fullName": "علی رضایی",
+    "nationalCode": "0012345678",
+    "mobile": "09121234567"
+  },
+  "category": {
+    "id": "category-uuid",
+    "name": "حقوقی"
+  },
+  "courtCaseNumber": "0301405123456789",
+  "courtName": "شعبه ۱۲ دادگاه حقوقی تهران",
+  "opponentName": "شرکت نمونه",
+  "description": "پیگیری مطالبه وجه قراردادی",
+  "status": "ACTIVE",
+  "archivedAt": null,
+  "createdAt": "2026-07-14T09:00:00Z",
+  "updatedAt": "2026-07-14T09:00:00Z"
+}</code></pre>
+
+        <h3>۷.۴. ویرایش پرونده</h3>
+
+        <p>
+            <span class="badge badge-patch">PATCH</span>
+        </p>
+
+        <div class="endpoint">PATCH /cases/{id}</div>
+
+        <h4>Request Body</h4>
+
+        <pre><code>{
+  "internalNumber": "1405-001-اصلاح",
+  "title": "پرونده مطالبه وجه - نسخه اصلاح شده",
+  "categoryId": "category-uuid",
+  "courtName": "شعبه ۱۵ دادگاه حقوقی تهران",
+  "description": "توضیحات پرونده به‌روزرسانی شد"
+}</code></pre>
+
+        <div class="note">
+            اگر در زمان ویرایش، شماره داخلی تغییر کند، بک‌اند باید بررسی کند که این شماره برای پرونده دیگری ثبت نشده باشد.
+            خود پرونده فعلی باید از بررسی تکراری بودن مستثنی شود.
+        </div>
+
+        <h4>Response 200</h4>
+
+        <pre><code>{
+  "id": "case-uuid",
+  "internalNumber": "1405-001-اصلاح",
+  "title": "پرونده مطالبه وجه - نسخه اصلاح شده",
+  "category": {
+    "id": "category-uuid",
+    "name": "حقوقی"
+  },
+  "courtName": "شعبه ۱۵ دادگاه حقوقی تهران",
+  "description": "توضیحات پرونده به‌روزرسانی شد",
+  "status": "ACTIVE",
+  "updatedAt": "2026-07-14T10:00:00Z"
+}</code></pre>
+
+        <h3>۷.۵. بایگانی پرونده</h3>
+
+        <p>
+            <span class="badge badge-post">POST</span>
+            <span class="badge badge-admin">ADMIN ONLY</span>
+        </p>
+
+        <div class="endpoint">POST /cases/{id}/archive</div>
+
+        <div class="danger">
+            این Endpoint فقط برای کاربر دارای نقش ADMIN مجاز است.
+        </div>
+
+        <h4>قوانین بایگانی</h4>
+
+        <table>
+            <thead>
+            <tr>
+                <th>قانون</th>
+                <th>توضیح</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>حذف فیزیکی ممنوع</td>
+                <td>پرونده نباید از دیتابیس حذف شود</td>
+            </tr>
+            <tr>
+                <td>تغییر وضعیت</td>
+                <td>وضعیت پرونده از ACTIVE به ARCHIVED تغییر می‌کند</td>
+            </tr>
+            <tr>
+                <td>ثبت زمان</td>
+                <td>فیلد archivedAt باید با زمان UTC ثبت شود</td>
+            </tr>
+            <tr>
+                <td>ثبت کاربر</td>
+                <td>شناسه کاربر بایگانی‌کننده باید در archivedByUserId ذخیره شود</td>
+            </tr>
+            <tr>
+                <td>عدم دسترسی STAFF</td>
+                <td>اگر STAFF درخواست بدهد، پاسخ 403 برگردد</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <h4>Response 200</h4>
+
+        <pre><code>{
+  "id": "case-uuid",
+  "internalNumber": "1405-001",
+  "status": "ARCHIVED",
+  "archivedAt": "2026-07-14T10:00:00Z"
+}</code></pre>
+
+        <h4>Forbidden 403</h4>
+
+        <pre><code>{
+  "message": "شما اجازه انجام این عملیات را ندارید."
+}</code></pre>
+    </section>
+
+    <section>
+        <h2>۸. وضعیت‌های پرونده</h2>
+
+        <p>
+            وضعیت پرونده فقط یکی از دو مقدار زیر است:
+        </p>
+
+        <pre><code>[
+  "ACTIVE",
+  "ARCHIVED"
+]</code></pre>
+
+        <table>
+            <thead>
+            <tr>
+                <th>وضعیت</th>
+                <th>معنی</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><code>ACTIVE</code></td>
+                <td>پرونده فعال است و در جریان کاری معمول قرار دارد</td>
+            </tr>
+            <tr>
+                <td><code>ARCHIVED</code></td>
+                <td>
