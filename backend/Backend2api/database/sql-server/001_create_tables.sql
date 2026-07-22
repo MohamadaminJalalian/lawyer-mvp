@@ -3,7 +3,7 @@
 -- Purpose : Core schema for Case Management MVP (GUID-based)
 -- Authors : Tarokh Torabi & Mohammad Amin Jalalian
 -- Note    : This script is intended for development environment.
---           DO NOT use DROP TABLE section in production.
+--           In production, remove the DROP TABLE section.
 ------------------------------------------------------------
 
 IF NOT EXISTS (
@@ -35,14 +35,17 @@ GO
 
 ------------------------------------------------------------
 -- ROLES
+-- Note: ADMIN / STAFF roles for authorization
 ------------------------------------------------------------
 
 CREATE TABLE dbo.roles (
     id UNIQUEIDENTIFIER NOT NULL
         CONSTRAINT pk_roles PRIMARY KEY
         CONSTRAINT df_roles_id DEFAULT NEWSEQUENTIALID(),
+
     code NVARCHAR(50) NOT NULL UNIQUE,
     title NVARCHAR(100) NOT NULL,
+
     created_at DATETIME2(3) NOT NULL
         CONSTRAINT df_roles_created_at DEFAULT SYSUTCDATETIME()
 );
@@ -50,6 +53,7 @@ GO
 
 ------------------------------------------------------------
 -- USERS
+-- Minimal user model: username/password/role + is_active
 ------------------------------------------------------------
 
 CREATE TABLE dbo.users (
@@ -83,8 +87,7 @@ GO
 
 ------------------------------------------------------------
 -- CLIENTS
--- Contract: fullName, nationalCode(10, required, unique), mobile/phone,
---           address <= 1000, description <= 1000
+-- As per PDF (Client entity)
 ------------------------------------------------------------
 
 CREATE TABLE dbo.clients (
@@ -101,6 +104,9 @@ CREATE TABLE dbo.clients (
     address NVARCHAR(1000) NULL,
     description NVARCHAR(1000) NULL,
 
+    is_active BIT NOT NULL
+        CONSTRAINT df_clients_is_active DEFAULT (1),
+
     created_by UNIQUEIDENTIFIER NOT NULL,
 
     created_at DATETIME2(3) NOT NULL
@@ -116,7 +122,8 @@ ADD CONSTRAINT fk_clients_created_by
     ON DELETE NO ACTION ON UPDATE NO ACTION;
 GO
 
--- Constraints according to JSON contract
+-- Constraints according to PDF / JSON contract
+
 ALTER TABLE dbo.clients
 ADD CONSTRAINT ck_clients_full_name_length
     CHECK (LEN(LTRIM(RTRIM(full_name))) BETWEEN 3 AND 150);
@@ -142,7 +149,7 @@ GO
 
 ------------------------------------------------------------
 -- CATEGORIES
--- Contract: name, sortOrder, isActive
+-- As per PDF (Category entity)
 ------------------------------------------------------------
 
 CREATE TABLE dbo.categories (
@@ -151,8 +158,10 @@ CREATE TABLE dbo.categories (
         CONSTRAINT df_categories_id DEFAULT NEWSEQUENTIALID(),
 
     name NVARCHAR(100) NOT NULL UNIQUE,
+
     sort_order INT NOT NULL
         CONSTRAINT df_categories_sort_order DEFAULT (0),
+
     is_active BIT NOT NULL
         CONSTRAINT df_categories_is_active DEFAULT (1),
 
@@ -163,12 +172,7 @@ GO
 
 ------------------------------------------------------------
 -- CASES
--- Contract: internalNumber(<=50, unique), title(<=200),
---           clientId, categoryId,
---           courtCaseNumber(<=100), courtName(<=200), opponentName(<=150),
---           description(<=2000),
---           status in (ACTIVE, ARCHIVED),
---           createdBy, archivedBy, archivedAt, createdAt, updatedAt
+-- As per PDF (Case entity)
 ------------------------------------------------------------
 
 CREATE TABLE dbo.cases (
@@ -191,9 +195,10 @@ CREATE TABLE dbo.cases (
     status NVARCHAR(20) NOT NULL
         CONSTRAINT df_cases_status DEFAULT N'ACTIVE',
 
-    created_by UNIQUEIDENTIFIER NOT NULL,
-    archived_by UNIQUEIDENTIFIER NULL,
     archived_at DATETIME2(3) NULL,
+    archived_by UNIQUEIDENTIFIER NULL,
+
+    created_by UNIQUEIDENTIFIER NOT NULL,
 
     created_at DATETIME2(3) NOT NULL
         CONSTRAINT df_cases_created_at DEFAULT SYSUTCDATETIME(),
