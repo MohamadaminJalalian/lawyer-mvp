@@ -33,8 +33,8 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// TODO: replace with AppDbContext in Infrastructure when ready
-builder.Services.AddDbContext<DbContext>(options =>
+// DbContext – use AppDbContext from Infrastructure
+builder.Services.AddDbContext<AppDbContext>(options =>
 {
     options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
 });
