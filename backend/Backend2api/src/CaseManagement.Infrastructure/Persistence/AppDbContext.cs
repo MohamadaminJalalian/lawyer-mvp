@@ -2,7 +2,6 @@
 // Authors: Tarokh Torabi & Mohammad Amin Jalalian
 
 using CaseManagement.Domain.Entities;
-using CaseManagement.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 
 namespace CaseManagement.Infrastructure.Persistence;
@@ -24,16 +23,10 @@ public class AppDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
+        // Apply entity configurations from this assembly
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
-
-        // CourtInfo value object owned by Case
-        modelBuilder.Entity<Case>()
-            .OwnsOne(c => c.CourtInfo, court =>
-            {
-                court.Property(ci => ci.CourtCaseNumber)
-                    .HasColumnName("CourtCaseNumber")
-                    .HasMaxLength(64);
-
+    }
+}
                 court.Property(ci => ci.CourtName)
                     .HasColumnName("CourtName")
                     .HasMaxLength(256);
