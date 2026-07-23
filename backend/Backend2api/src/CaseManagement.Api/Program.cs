@@ -70,6 +70,7 @@ builder.Services.AddAuthorization();
 
 // PagedResponse factory
 builder.Services.AddSingleton(typeof(IPagedResponseFactory), typeof(PagedResponseFactory));
+builder.Services.AddScoped<IClientService, ClientService>();
 
 var app = builder.Build();
 
