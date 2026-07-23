@@ -1,74 +1,127 @@
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { Eye, Pencil, Trash2 } from "lucide-react";
-import { mockClients } from "@/data/mockClients";
+
+import { useClients } from "@/context/ClientContext";
+import SearchBox from "@/components/ui/SearchBox";
+import ClientsTable from "@/components/clients/ClientsTable";
+import ClientsTableSkeleton from "@/components/clients/ClientsTableSkeleton";
+import Breadcrumb from "@/components/layout/Breadcrumb";
+
+const PAGE_SIZE = 10;
 
 export default function ClientsPage() {
-    return (
-        <div className="p-6 bg-[#f7f5f0] min-h-screen">
-            <div className="flex items-center justify-between mb-6">
-                <h1 className="text-xl font-bold">موکلان</h1>
-                <Link
-                    href="/clients/new"
-                    className="bg-amber-800 text-white text-sm px-4 py-2 rounded-full"
-                >
-                    + ثبت موکل جدید
-                </Link>
-            </div>
+  const { clients, deleteClient } = useClients();
 
-            <div className="flex gap-3 mb-4">
-                <button className="bg-white border border-gray-200 text-sm px-4 py-2 rounded-full">
-                    فیلتر
-                </button>
-                <input
-                    type="text"
-                    placeholder="جست‌وجو بر اساس نام، کد ملی یا موبایل"
-                    className="bg-white border border-gray-200 text-sm rounded-full px-4 py-2 w-64 text-right"
-                />
-            </div>
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [searchInput, setSearchInput] = useState("");
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
 
-            <div className="bg-white rounded-lg overflow-hidden border border-gray-200">
-                <table className="w-full text-sm">
-                    <thead>
-                        <tr className="bg-[#f0ede6] text-gray-600">
-                            <th className="p-3 text-right font-medium">نام و نام خانوادگی</th>
-                            <th className="p-3 text-right font-medium">کد ملی</th>
-                            <th className="p-3 text-right font-medium">شماره موبایل</th>
-                            <th className="p-3 text-right font-medium">تعداد پرونده‌ها</th>
-                            <th className="p-3 text-right font-medium">تاریخ ثبت</th>
-                            <th className="p-3 text-center font-medium">عملیات</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {mockClients.map((client) => (
-                            <tr key={client.id} className="border-t border-gray-100">
-                                <td className="p-3">{client.fullName}</td>
-                                <td className="p-3">{client.nationalCode}</td>
-                                <td className="p-3">{client.mobile}</td>
-                                <td className="p-3">{client.caseCount}</td>
-                                <td className="p-3">{client.createdAt}</td>
-                                <td className="p-3 flex gap-3 justify-center text-gray-400">
-                                    <Link href={`/clients/${client.id}`} title="مشاهده">
-                                        <Eye size={16} />
-                                    </Link>
-                                    <Link href={`/clients/${client.id}/edit`} title="ویرایش">
-                                        <Pencil size={16} />
-                                    </Link>
-                                    <button title="حذف">
-                                        <Trash2 size={16} />
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
+  useEffect(() => {
+    const timer = setTimeout(() => setInitialLoading(false), 500);
+    return () => clearTimeout(timer);
+  }, []);
 
-            <div className="flex gap-2 mt-4 justify-center text-sm">
-                <button className="border border-gray-200 bg-white px-3 py-1 rounded-full">قبلی</button>
-                <button className="border border-gray-200 bg-white px-3 py-1 rounded-full">1</button>
-                <button className="border border-gray-200 bg-white px-3 py-1 rounded-full">2</button>
-                <button className="border border-gray-200 bg-white px-3 py-1 rounded-full">بعدی</button>
-            </div>
-        </div>
-    );
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setSearch(searchInput.trim());
+      setPage(1);
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [searchInput]);
+
+  const filteredClients = useMemo(() => {
+    const text = search.toLowerCase();
+    if (!text) return clients;
+
+    return clients.filter((client) => {
+      const fullName = `${client.firstName} ${client.lastName}`.toLowerCase();
+      return (
+        fullName.includes(text) ||
+        client.nationalCode.includes(text) ||
+        client.mobile.includes(text)
+      );
+    });
+  }, [clients, search]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredClients.length / PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  const paginatedClients = filteredClients.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE
+  );
+
+  function handleClearFilter() {
+    setSearchInput("");
+    setSearch("");
+    setPage(1);
+  }
+
+  return (
+    <div className="max-w-6xl mx-auto">
+      <div className="mb-6">
+        <Breadcrumb trail={["داشبورد", "موکل‌ها"]} title="لیست موکل‌ها" />
+      </div>
+
+      <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 mb-4">
+        <SearchBox
+          value={searchInput}
+          onChange={setSearchInput}
+          placeholder="نام، کد ملی یا شماره موبایل موکل را وارد کنید"
+        />
+
+        {search && (
+          <button
+            onClick={handleClearFilter}
+            className="px-3 py-2 text-sm text-[#A32D2D] hover:underline whitespace-nowrap"
+          >
+            پاک کردن جست‌وجو
+          </button>
+        )}
+
+        <Link
+          href="/clients/new"
+          className="sm:mr-auto px-4 py-2 bg-[#A9762F] text-white rounded-lg text-sm font-medium hover:bg-[#946A2A] transition-colors whitespace-nowrap"
+        >
+          + ثبت موکل جدید
+        </Link>
+      </div>
+
+      {initialLoading ? (
+        <ClientsTableSkeleton />
+      ) : filteredClients.length === 0 ? (
+        <p className="mt-6 text-[#8C8A80] text-sm">
+          {search ? "موکلی با اطلاعات واردشده پیدا نشد." : "هنوز موکلی ثبت نشده است."}
+        </p>
+      ) : (
+        <>
+          <ClientsTable clients={paginatedClients} onDelete={deleteClient} />
+
+          <div className="flex items-center justify-between mt-5">
+            <button
+              disabled={currentPage === 1}
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              className="px-4 py-2 bg-white border border-[#E4E1D8] rounded-lg text-sm disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              قبلی
+            </button>
+
+            <span className="text-sm text-[#6B6A63]">
+              صفحه {currentPage} از {totalPages}
+            </span>
+
+            <button
+              disabled={currentPage === totalPages}
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              className="px-4 py-2 bg-white border border-[#E4E1D8] rounded-lg text-sm disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              بعدی
+            </button>
+          </div>
+        </>
+      )}
+    </div>
+  );
 }

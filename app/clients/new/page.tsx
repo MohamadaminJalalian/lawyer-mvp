@@ -1,12 +1,11 @@
-import Link from "next/link";
+import ClientForm from "@/components/clients/ClientForm";
+import Breadcrumb from "@/components/layout/Breadcrumb";
 
-function NewClientPage() {
-    return (
-        <>
-            <h1>ثبت موکل جدید</h1>
-            <Link href="/clients">بازگشت به موکلان</Link>
-        </>
-    );
+export default function NewClientPage() {
+  return (
+    <div className="max-w-2xl mx-auto">
+      <Breadcrumb trail={["داشبورد", "موکل‌ها", "ثبت موکل جدید"]} title="ثبت موکل جدید" />
+      <ClientForm />
+    </div>
+  );
 }
-
-export default NewClientPage;
