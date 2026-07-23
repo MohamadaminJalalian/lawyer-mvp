@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using CaseManagement.Infrastructure.Persistence;
+using CaseManagement.Application.Clients;
+using CaseManagement.Application.Clients.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
