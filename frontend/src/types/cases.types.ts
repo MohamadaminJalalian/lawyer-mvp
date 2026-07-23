@@ -1,0 +1,117 @@
+// ==========================================================
+// Type های ماژول «پرونده‌ها» — بر اساس سند قرارداد نهایی FE4
+// ==========================================================
+
+// ---------- مقادیر ثابت (Enum-like Types) ----------
+
+// وضعیت پرونده — طبق تصمیم نهایی تیم فقط همین ۳ مقدار مجازه
+export type CaseStatus = "ACTIVE" | "CLOSED" | "ARCHIVED";
+
+// اولویت پرونده
+export type CasePriority = "LOW" | "NORMAL" | "HIGH" | "URGENT";
+
+// ---------- اشیاء کوچیک‌تر که داخل پرونده استفاده می‌شن ----------
+
+// خلاصه اطلاعات موکل (همونی که تو Select فرم یا ستون جدول نشون داده می‌شه)
+export interface ClientSummary {
+  id: string;
+  fullName: string;
+  nationalCode: string; // طبق تصمیم نهایی: کامل، نه ماسک‌شده
+  isActive: boolean;
+}
+
+// خلاصه اطلاعات دسته‌بندی
+export interface CategorySummary {
+  id: string;
+  name: string;
+}
+
+// ---------- شکل کامل یک پرونده (چیزی که از GET برمی‌گرده) ----------
+
+export interface CaseListItem {
+  id: string;
+  internalNumber: string;
+  title: string;
+  isUrgent: boolean; // فیلد موقت — بعداً از جزئیات عملیات پرونده محاسبه می‌شه
+  client: ClientSummary;
+  category: CategorySummary;
+  status: CaseStatus;
+  priority: CasePriority;
+
+  // اطلاعات قضایی — همه اختیاری
+  courtCaseNumber?: string | null;
+  courtName?: string | null;
+  branch?: string | null;
+  opponentName?: string | null;
+
+  // زمان‌بندی — تاریخ‌ها همیشه رشته ISO از سرور می‌آن (مثل "2026-04-04")
+  formedAt: string;
+  nextSessionAt?: string | null;
+
+  description?: string | null;
+
+  createdAt: string;
+  updatedAt: string;
+}
+
+// ---------- شکل داده‌ای که موقع «ثبت پرونده جدید» می‌فرستیم ----------
+
+export interface CreateCaseRequest {
+  internalNumber: string; // دستی و اجباری
+  title: string;
+  clientId: string;
+  categoryId: string;
+  status?: CaseStatus; // پیش‌فرض: ACTIVE
+  priority?: CasePriority; // پیش‌فرض: NORMAL
+
+  courtCaseNumber?: string;
+  courtName?: string;
+  branch?: string;
+  opponentName?: string;
+
+  formedAt: string; // اجباری، پیش‌فرض تاریخ امروز
+  nextSessionAt?: string; // نباید قبل از formedAt باشه
+
+  description?: string;
+}
+
+// ---------- شکل داده‌ای که موقع «ویرایش پرونده» می‌فرستیم ----------
+// نکته: همه فیلدها اختیاری‌ان چون فقط چیزی که تغییر کرده رو می‌فرستیم (Partial Update)
+// و توجه کن که clientId اینجا نیست، چون موکل بعد از ثبت قابل تغییر نیست
+
+export interface UpdateCaseRequest {
+  internalNumber?: string;
+  title?: string;
+  categoryId?: string;
+  status?: CaseStatus;
+  priority?: CasePriority;
+
+  courtCaseNumber?: string;
+  courtName?: string;
+  branch?: string;
+  opponentName?: string;
+
+  formedAt?: string;
+  nextSessionAt?: string;
+
+  description?: string;
+}
+
+// ---------- ساختار پاسخ صفحه‌بندی‌شده (برای لیست پرونده‌ها) ----------
+
+export interface PaginatedResponse<T> {
+  items: T[];
+  page: number;
+  pageSize: number;
+  total: number;
+  totalPages: number;
+}
+
+// ---------- ساختار خطای برگشتی از API ----------
+
+export interface ApiError {
+  code: string;
+  message: string;
+  errors?: Record<string, string[]>;
+  traceId?: string;
+}
