@@ -8,22 +8,23 @@ using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// DbContext
+// 1) DbContext
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
     var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
     options.UseSqlServer(connectionString);
 });
 
-// Infrastructure services (اگر چنین متدی داری)
+// 2) Infrastructure services (اگر چنین متدی داری)
 builder.Services.AddInfrastructure();
 
-// Application services (IClientService و سایر سرویس‌ها)
+// 3) Application services (IClientService و بقیه)
 builder.Services.AddApplication();
 
+// 4) Controllers
 builder.Services.AddControllers();
 
-// Swagger
+// 5) Swagger + JWT
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -55,7 +56,7 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-// JWT config
+// 6) JWT Authentication
 var jwtSection = builder.Configuration.GetSection("Jwt");
 var jwtIssuer = jwtSection["Issuer"];
 var jwtAudience = jwtSection["Audience"];
@@ -84,7 +85,7 @@ builder.Services
         };
     });
 
-// Authorization policies
+// 7) Authorization policies
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("AdminOnly", policy =>
@@ -96,6 +97,7 @@ builder.Services.AddAuthorization(options =>
 
 var app = builder.Build();
 
+// Pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -104,62 +106,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthentication();
-app.UseAuthorization();
-
-app.MapControllers().RequireAuthorization();
-
-app.Run();
-
-// DbContext – use AppDbContext from Infrastructure
-builder.Services.AddDbContext<AppDbContext>(options =>
-{
-    options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
-});
-
-// JWT
-var jwtSection = configuration.GetSection("Jwt");
-var jwtSecret = jwtSection["Secret"];
-if (string.IsNullOrWhiteSpace(jwtSecret))
-{
-    throw new InvalidOperationException("Jwt:Secret is not configured.");
-}
-
-var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret));
-
-builder.Services
-    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = signingKey,
-            ValidateIssuer = false,
-            ValidateAudience = false,
-            ValidateLifetime = true,
-            ClockSkew = TimeSpan.Zero
-        };
-    });
-
-builder.Services.AddAuthorization();
-
-// PagedResponse factory
-builder.Services.AddSingleton(typeof(IPagedResponseFactory), typeof(PagedResponseFactory));
-builder.Services.AddScoped<IClientService, ClientService>();
-
-var app = builder.Build();
-
-// Pipeline
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
-app.UseMiddleware<ExceptionHandlingMiddleware>();
-
-app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
