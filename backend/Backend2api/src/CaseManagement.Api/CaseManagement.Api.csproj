@@ -7,17 +7,25 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+    <!-- EF Core + SQL Server -->
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+
+    <!-- JWT Authentication -->
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" />
+
+    <!-- Swagger -->
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <!-- لایه‌های پروژه -->
     <ProjectReference Include="..\CaseManagement.Domain\CaseManagement.Domain.csproj" />
     <ProjectReference Include="..\CaseManagement.Infrastructure\CaseManagement.Infrastructure.csproj" />
+    <ProjectReference Include="..\CaseManagement.Application\CaseManagement.Application.csproj" />
   </ItemGroup>
 
 </Project>
