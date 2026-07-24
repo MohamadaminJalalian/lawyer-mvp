@@ -7,27 +7,20 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- اگر در Application از FluentValidation یا چیز دیگری استفاده کرده‌ای،
-         اینجا PackageReferenceها را اضافه می‌کنیم.
-         فعلاً خالی می‌گذارم تا با سورس واقعی‌ات مچ شود. -->
+    <!-- اگر در Application از FluentValidation یا ابزار دیگری استفاده می‌کنی،
+         بعداً اینجا PackageReference اضافه می‌کنیم. فعلاً خالی می‌گذاریم. -->
     <!-- Example:
     <PackageReference Include="FluentValidation" Version="11.8.0" />
     -->
   </ItemGroup>
 
   <ItemGroup>
-    <!-- Domain برای Entities و شاید ValueObjects -->
+    <!-- Domain برای Entities و مدل‌های اصلی -->
     <ProjectReference Include="..\CaseManagement.Domain\CaseManagement.Domain.csproj" />
-
-    <!-- اگر CaseManagement.Shared داری و Application از آن استفاده می‌کند، این را اضافه کن -->
+    <!-- اگر پروژه Shared یا Common داری و در Application استفاده شده، این را فعال کن -->
     <!--
     <ProjectReference Include="..\CaseManagement.Shared\CaseManagement.Shared.csproj" />
     -->
-
-    <!-- معمولاً Application به Infrastructure رفرنس نمی‌دهد.
-         اگر در پروژه‌ات ClientService داخل Application است اما DbContext را مستقیم استفاده می‌کند،
-         این وابستگی باید به Infrastructure منتقل شود.
-         فعلاً این‌جا Infrastructure را رفرنس نمی‌کنم تا معماری تمیز بماند. -->
   </ItemGroup>
 
 </Project>
