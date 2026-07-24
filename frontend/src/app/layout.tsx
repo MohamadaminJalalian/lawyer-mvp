@@ -1,13 +1,17 @@
 import type { Metadata } from "next";
+import { Vazirmatn } from "next/font/google";
 import "./globals.css";
+import { AuthProvider } from "@/features/auth/providers/AuthProvider";
 
-import Sidebar from "@/components/layout/Sidebar";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
+const vazirmatn = Vazirmatn({
+  variable: "--font-vazirmatn",
+  subsets: ["arabic"],
+  weight: ["300", "400", "500", "600", "700"],
+});
 
 export const metadata: Metadata = {
-  title: "سامانه مدیریت پرونده‌های وکالت",
-  description: "سامانه مدیریت پرونده‌های وکالت",
+  title: "سامانه مدیریت پرونده دفتر وکالت",
+  description: "سامانه مدیریت پرونده، موکلین و بایگانی دفتر وکالت",
 };
 
 export default function RootLayout({
@@ -16,19 +20,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fa" dir="rtl">
-      <body className="bg-slate-50">
-        <Sidebar />
-
-        <div className="mr-64 min-h-screen">
-          <Header />
-
-          <main className="min-h-[calc(100vh-80px)] p-8">
-            {children}
-          </main>
-
-          <Footer />
-        </div>
+    <html lang="fa" dir="rtl" className={`${vazirmatn.variable} h-full`}>
+      <body className="min-h-full flex flex-col antialiased">
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );
