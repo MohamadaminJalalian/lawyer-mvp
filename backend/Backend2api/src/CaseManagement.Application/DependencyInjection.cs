@@ -11,7 +11,7 @@ namespace CaseManagement.Application
             // ClientService registration
             services.AddScoped<IClientService, ClientService>();
 
-            // اگر سرویس‌های دیگری در Application داری، اینجا اضافه کن
+            // TODO: سایر سرویس‌های Application را اینجا اضافه کن
             // services.AddScoped<ICaseService, CaseService>();
             // services.AddScoped<ICategoryService, CategoryService>();
 
