@@ -4,6 +4,7 @@ import "./globals.css";
 import Sidebar from "@/components/layout/Sidebar";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import { ClientProvider } from "@/context/ClientContext";
 
 export const metadata: Metadata = {
   title: "سامانه مدیریت پرونده‌های وکالت",
@@ -18,17 +19,19 @@ export default function RootLayout({
   return (
     <html lang="fa" dir="rtl">
       <body className="bg-slate-50">
-        <Sidebar />
+        <ClientProvider>
+          <Sidebar />
 
-        <div className="mr-64 min-h-screen">
-          <Header />
+          <div className="mr-64 min-h-screen">
+            <Header />
 
-          <main className="min-h-[calc(100vh-80px)] p-8">
-            {children}
-          </main>
+            <main className="min-h-[calc(100vh-80px)] p-8">
+              {children}
+            </main>
 
-          <Footer />
-        </div>
+            <Footer />
+          </div>
+        </ClientProvider>
       </body>
     </html>
   );
