@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- اگر در Application از FluentValidation یا ابزار دیگری استفاده می‌کنی،
+         بعداً اینجا PackageReference اضافه می‌کنیم. فعلاً خالی می‌گذاریم. -->
+    <!-- Example:
+    <PackageReference Include="FluentValidation" Version="11.8.0" />
+    -->
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Domain برای Entities و مدل‌های اصلی -->
+    <ProjectReference Include="..\CaseManagement.Domain\CaseManagement.Domain.csproj" />
+    <!-- اگر پروژه Shared یا Common داری و در Application استفاده شده، این را فعال کن -->
+    <!--
+    <ProjectReference Include="..\CaseManagement.Shared\CaseManagement.Shared.csproj" />
+    -->
+  </ItemGroup>
+
+</Project>
