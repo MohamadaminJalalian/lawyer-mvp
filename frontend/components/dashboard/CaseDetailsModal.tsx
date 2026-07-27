@@ -10,15 +10,15 @@ export default function CaseDetailsModal({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
 
-      <div className="w-full max-w-3xl rounded-xl border border-[#e5e0d6] bg-[#fdfcf9] shadow-2xl">
+      <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-xl border border-[#e5e0d6] bg-[#fdfcf9] shadow-2xl">
 
         {/* Header */}
 
-        <div className="flex items-center justify-between border-b border-[#ece7dd] px-8 py-6">
+        <div className="flex items-center justify-between border-b border-[#ece7dd] px-4 py-4 sm:px-8 sm:py-6">
 
-          <h2 className="text-3xl font-bold text-neutral-900">
+          <h2 className="text-xl font-bold text-neutral-900 sm:text-2xl md:text-3xl">
             جزئیات پرونده
           </h2>
 
@@ -39,9 +39,9 @@ export default function CaseDetailsModal({
 
         {/* Body */}
 
-        <div className="space-y-8 p-8">
+        <div className="space-y-8 p-4 sm:p-8">
 
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
 
             {/* شماره پرونده */}
 

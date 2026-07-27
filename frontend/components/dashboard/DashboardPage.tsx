@@ -10,7 +10,7 @@ export default function DashboardPage() {
 
       {/* محتوای اصلی */}
 
-      <main className="px-8 py-10">
+      <main className="px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
 
 
         <div
@@ -21,7 +21,7 @@ export default function DashboardPage() {
 
           {/* Header */}
 
-          <h1 className="text-4xl font-bold text-neutral-900">
+          <h1 className="text-2xl font-bold text-neutral-900 sm:text-3xl lg:text-4xl">
             داشبورد
           </h1>
 
@@ -43,26 +43,15 @@ export default function DashboardPage() {
 
           {/* پرونده‌های مهم + اطلاعیه‌های مهم */}
 
-          <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-3">
+  <div className="h-full xl:col-span-2">
+    <ImportantCases />
+  </div>
 
-
-            <div className="xl:col-span-2">
-
-              <ImportantCases />
-
-            </div>
-
-
-
-            <div className="xl:col-span-1">
-
-              <ImportantNotices />
-
-            </div>
-
-
-          </div>
-
+  <div className="h-full xl:col-span-1">
+    <ImportantNotices />
+  </div>
+</div>
 
 
 

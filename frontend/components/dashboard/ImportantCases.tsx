@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import {
   Search,
   Eye,
@@ -9,11 +10,16 @@ import {
 } from "lucide-react";
 import CaseDetailsModal from "./CaseDetailsModal";
 import DateRangePicker from "./DateRangePicker";
-
+import type { DateObject } from "react-multi-date-picker";
 export default function ImportantCases() {
   const [openModal, setOpenModal] = useState(false);
+  const [rowTooltip, setRowTooltip] = useState<{ top: number; left: number } | null>(
+    null
+  );
 
   const [search, setSearch] = useState("");
+
+  const [selectedRange, setSelectedRange] = useState<DateObject[]>([]);
 
   const [filterModalOpen, setFilterModalOpen] = useState(false);
 
@@ -21,9 +27,10 @@ export default function ImportantCases() {
 
   const [selectedCategory, setSelectedCategory] = useState("");
 
-  const [fromDate, setFromDate] = useState("");
-
-  const [toDate, setToDate] = useState("");
+  const toEnglishDigits = (value: string) =>
+    value.replace(/[۰-۹]/g, (d) =>
+      "۰۱۲۳۴۵۶۷۸۹".indexOf(d).toString()
+    );
 
   const cases = [
     {
@@ -78,16 +85,38 @@ export default function ImportantCases() {
       selectedCategory === "" ||
       item.category === selectedCategory;
 
+      const matchesDate =
+  selectedRange.length < 2
+    ? true
+    : (() => {
+        const itemDate = item.date.replace(/\//g, "");
+
+       const from = toEnglishDigits(
+  selectedRange[0].format("YYYYMMDD")
+);
+
+const to = toEnglishDigits(
+  selectedRange[1].format("YYYYMMDD")
+);
+
+        console.log("itemDate:", itemDate);
+        console.log("from:", from);
+        console.log("to:", to);
+
+        return itemDate >= from && itemDate <= to;
+      })();
+
     return (
-      matchesSearch &&
-      matchesStatus &&
-      matchesCategory
-    );
+  matchesSearch &&
+  matchesStatus &&
+  matchesCategory &&
+  matchesDate
+);
   });
 
   return (
     <>
-      <section className="mt-8 rounded-xl border border-[#e5e0d6] bg-white p-5">
+      <section className="mt-8 flex h-full flex-col rounded-xl border border-[#e5e0d6] bg-white p-4 sm:p-5">
 
         <h2 className="mb-4 text-lg font-bold text-neutral-900">
           پرونده‌های مهم
@@ -95,7 +124,7 @@ export default function ImportantCases() {
 
         <div className="mb-6 flex items-center gap-3">
 
-          <div className="relative w-full max-w-md">
+          <div className="relative min-w-0 flex-1">
 
             <Search
               size={20}
@@ -124,7 +153,7 @@ export default function ImportantCases() {
 
           </div>
 
-<div className="group relative inline-flex">
+<div className="group relative inline-flex shrink-0">
 
   <button
     onClick={() => setFilterModalOpen(true)}
@@ -178,13 +207,13 @@ export default function ImportantCases() {
 
         {filterModalOpen && (
 
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
 
-            <div className="w-full max-w-2xl rounded-xl border border-[#e5e0d6] bg-[#fdfcf9] shadow-xl">
+            <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-xl border border-[#e5e0d6] bg-[#fdfcf9] shadow-xl">
 
-              <div className="flex items-center justify-between border-b border-[#ece7dd] px-8 py-6">
+              <div className="flex items-center justify-between border-b border-[#ece7dd] px-4 py-4 sm:px-8 sm:py-6">
 
-                <h3 className="text-2xl font-bold text-neutral-900">
+                <h3 className="text-xl font-bold text-neutral-900 sm:text-2xl">
                   فیلترها
                 </h3>
 
@@ -197,7 +226,7 @@ export default function ImportantCases() {
 
               </div>
 
-              <div className="space-y-8 p-8">
+              <div className="space-y-8 p-4 sm:p-8">
 
 <div>
 
@@ -205,7 +234,10 @@ export default function ImportantCases() {
     بازه تاریخ تشکیل پرونده
   </p>
 
-  <DateRangePicker />
+  <DateRangePicker
+  value={selectedRange}
+  onChange={setSelectedRange}
+/>
 
 </div>
                                 {/* وضعیت */}
@@ -218,7 +250,7 @@ export default function ImportantCases() {
 
                   <div className="flex flex-wrap gap-3">
 
-                    {["فعال", "مختومه", "بایگانی شده"].map((status) => (
+                    {["فعال", "مختومه", "بایگانی "].map((status) => (
 
                       <button
                         key={status}
@@ -286,17 +318,19 @@ export default function ImportantCases() {
 
                 {/* Buttons */}
 
-                <div className="flex items-center justify-between border-t border-[#ece7dd] pt-6">
+                <div className="flex flex-col gap-3 border-t border-[#ece7dd] pt-6 sm:flex-row sm:items-center sm:justify-between">
 
                   <button
                     onClick={() => {
                       setSelectedStatus("");
                       setSelectedCategory("");
-                      setFromDate("");
-                      setToDate("");
+                      
+                      
                       setSearch("");
+                      setSelectedRange([]);
                     }}
                     className="
+                      w-full
                       rounded-xl
                       border
                       border-[#ddd5c8]
@@ -306,6 +340,7 @@ export default function ImportantCases() {
                       text-[#a9762f]
                       transition
                       hover:bg-[#f8f3e8]
+                      sm:w-auto
                     "
                   >
                     حذف فیلترها
@@ -314,6 +349,7 @@ export default function ImportantCases() {
                   <button
                     onClick={() => setFilterModalOpen(false)}
                     className="
+                      w-full
                       rounded-xl
                       bg-[#a9762f]
                       px-7
@@ -321,6 +357,7 @@ export default function ImportantCases() {
                       text-white
                       transition
                       hover:bg-[#946727]
+                      sm:w-auto
                     "
                   >
                     اعمال فیلتر
@@ -338,11 +375,11 @@ export default function ImportantCases() {
 
         {/* Table */}
 
-        <div className="overflow-visible rounded-xl border border-[#e5e0d6]">
+        <div className="max-h-[272px] overflow-auto rounded-xl border border-[#e5e0d6]">
 
-          <table className="w-full text-right">
+          <table className="w-full min-w-[760px] text-right">
 
-            <thead className="bg-[#f5f1e8]">
+            <thead className="sticky top-0 z-10 bg-[#f5f1e8]">
 
               <tr>
 
@@ -464,10 +501,17 @@ export default function ImportantCases() {
 
                   <td className="px-5 py-4 text-center">
 
-                    <div className="group relative inline-flex">
-
+                    <div className="inline-flex">
                       <button
                         onClick={() => setOpenModal(true)}
+                        onMouseEnter={(e) => {
+                          const rect = e.currentTarget.getBoundingClientRect();
+                          setRowTooltip({
+                            top: rect.top + rect.height / 2,
+                            left: rect.left,
+                          });
+                        }}
+                        onMouseLeave={() => setRowTooltip(null)}
                         className="
                           rounded-lg
                           p-2
@@ -478,31 +522,6 @@ export default function ImportantCases() {
                       >
                         <Eye size={18} />
                       </button>
-
-                      <span
-                        className="
-                          pointer-events-none
-                          absolute
-                          right-full
-                          top-1/2
-                          mr-3
-                          -translate-y-1/2
-                          whitespace-nowrap
-                          rounded-lg
-                          bg-[#2b2b2b]
-                          px-3
-                          py-2
-                          text-xs
-                          text-white
-                          opacity-0
-                          transition-all
-                          duration-200
-                          group-hover:opacity-100
-                        "
-                      >
-                        مشاهده پرونده
-                      </span>
-
                     </div>
 
                   </td>
@@ -538,6 +557,17 @@ export default function ImportantCases() {
         open={openModal}
         onClose={() => setOpenModal(false)}
       />
+
+      {rowTooltip &&
+        createPortal(
+          <span
+            className="pointer-events-none fixed z-50 -translate-x-full -translate-y-1/2 whitespace-nowrap rounded-lg bg-[#2b2b2b] px-3 py-2 text-xs text-white"
+            style={{ top: rowTooltip.top, left: rowTooltip.left - 12 }}
+          >
+            مشاهده پرونده
+          </span>,
+          document.body
+        )}
 
     </>
 

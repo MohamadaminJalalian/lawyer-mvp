@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 
 import DatePicker from "react-multi-date-picker";
 import type { DateObject } from "react-multi-date-picker";
@@ -9,9 +8,14 @@ import persian from "react-date-object/calendars/persian";
 import persian_fa from "react-date-object/locales/persian_fa";
 
 import { CalendarDays } from "lucide-react";
-
-export default function DateRangePicker() {
-  const [value, setValue] = useState<DateObject[]>([]);
+interface DateRangePickerProps {
+  value: DateObject[];
+  onChange: (dates: DateObject[]) => void;
+}
+export default function DateRangePicker({
+  value,
+  onChange,
+}: DateRangePickerProps) {
 
   const renderValue = () => {
     if (value.length === 0) return "";
@@ -29,10 +33,10 @@ export default function DateRangePicker() {
     <DatePicker
       value={value}
       onChange={(dates) => {
-        if (Array.isArray(dates)) {
-          setValue(dates as DateObject[]);
-        }
-      }}
+  if (Array.isArray(dates)) {
+    onChange(dates as DateObject[]);
+  }
+}}
       range
       calendar={persian}
       locale={persian_fa}
