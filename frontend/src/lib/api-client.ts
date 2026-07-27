@@ -1,75 +1,60 @@
-import { handleApiError } from "./api-error-handler";
+type UnauthorizedHandler = () => void;
+let onUnauthorized: UnauthorizedHandler | null = null;
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+// AuthProvider هنگام mount شدن این تابع رو صدا می‌زنه تا هندلر خودش رو ثبت کنه
+export function registerUnauthorizedHandler(handler: UnauthorizedHandler) {
+  onUnauthorized = handler;
+}
+
+export class ApiError extends Error {
+  status: number;
+  constructor(status: number, message: string) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+  }
+}
+
+const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
 
 interface RequestOptions extends RequestInit {
-  skipAuthRedirect?: boolean;
+  // برای login: 401 یعنی رمز اشتباهه، نه پایان نشست. پس این پرچم رو true می‌ذاریم
+  skipAuthHandling?: boolean;
 }
 
-function getFullUrl(url: string): string {
-  if (url.startsWith("http")) return url;
-  return `${BASE_URL}${url}`;
-}
-
-async function request<T>(url: string, options: RequestOptions = {}): Promise<T> {
-  const { skipAuthRedirect = false, ...fetchOptions } = options;
+export async function apiClient<T>(path: string, options: RequestOptions = {}): Promise<T> {
+  const { skipAuthHandling, headers, ...rest } = options;
 
   let response: Response;
-
   try {
-    response = await fetch(getFullUrl(url), {
-      ...fetchOptions,
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-        ...fetchOptions.headers,
-      },
+    response = await fetch(`${BASE_URL}${path}`, {
+      ...rest,
+      headers: { "Content-Type": "application/json", ...headers },
+      credentials: "include", // Cookie امن HttpOnly خودکار ارسال می‌شود
     });
   } catch {
-    throw new Error("ارتباط با سرور برقرار نشد. اتصال اینترنت را بررسی کنید.");
+    throw new TypeError("ارتباط با سرور برقرار نشد. اتصال اینترنت را بررسی کنید.");
+  }
+
+  if (response.status === 401 && !skipAuthHandling) {
+    onUnauthorized?.(); // اینجا AuthProvider نشست رو پاک و کاربر رو ریدایرکت می‌کنه
+    throw new ApiError(401, "نشست شما منقضی شده است. لطفاً دوباره وارد شوید.");
   }
 
   if (!response.ok) {
-    // Handle 401: clear session and redirect to login
-    if (response.status === 401 && !skipAuthRedirect) {
-      // Import dynamically to avoid circular dependency
-      // In the client, this will trigger AuthProvider cleanup
-      if (typeof window !== "undefined") {
-        window.dispatchEvent(new CustomEvent("auth:401"));
-      }
-    }
-    await handleApiError(response);
+    const message = await extractErrorMessage(response);
+    throw new ApiError(response.status, message);
   }
 
-  if (response.status === 204) {
-    return undefined as T;
-  }
-
-  return response.json();
+  if (response.status === 204) return undefined as T;
+  return (await response.json()) as T;
 }
 
-export const apiClient = {
-  get<T>(url: string, options?: RequestOptions): Promise<T> {
-    return request<T>(url, { ...options, method: "GET" });
-  },
-
-  post<T>(url: string, body?: unknown, options?: RequestOptions): Promise<T> {
-    return request<T>(url, {
-      ...options,
-      method: "POST",
-      body: body ? JSON.stringify(body) : undefined,
-    });
-  },
-
-  put<T>(url: string, body?: unknown, options?: RequestOptions): Promise<T> {
-    return request<T>(url, {
-      ...options,
-      method: "PUT",
-      body: body ? JSON.stringify(body) : undefined,
-    });
-  },
-
-  delete<T>(url: string, options?: RequestOptions): Promise<T> {
-    return request<T>(url, { ...options, method: "DELETE" });
-  },
-};
+async function extractErrorMessage(response: Response): Promise<string> {
+  try {
+    const data = await response.json();
+    return typeof data?.message === "string" ? data.message : "خطایی رخ داد. لطفاً دوباره تلاش کنید.";
+  } catch {
+    return "خطایی رخ داد. لطفاً دوباره تلاش کنید.";
+  }
+}

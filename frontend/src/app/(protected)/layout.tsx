@@ -1,25 +1,45 @@
-import { Header } from "@/components/layout/Header";
-import { Sidebar } from "@/components/layout/Sidebar";
-import { MobileNav } from "@/components/layout/MobileNav";
-import { RouteGuard } from "@/features/auth/components/RouteGuard";
+"use client";
 
-export default function ProtectedLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return (
-    <RouteGuard>
-      <div className="flex flex-col min-h-screen">
-        <Header />
-        <div className="flex flex-1">
-          <Sidebar />
-          <main className="flex-1 p-4 lg:p-6 pb-20 lg:pb-6">
-            {children}
-          </main>
+import { Suspense, useEffect, type ReactNode } from "react";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { useAuth } from "@/features/auth/hooks/useAuth";
+import { buildLoginUrl } from "@/features/auth/utils/auth-redirect";
+
+function ProtectedGuard({ children }: { children: ReactNode }) {
+  const { status } = useAuth();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      const query = searchParams.toString();
+      const fullPath = query ? `${pathname}?${query}` : pathname;
+      router.replace(buildLoginUrl(fullPath));
+    }
+  }, [status, pathname, searchParams, router]);
+
+  if (status === "loading")
+    return (
+      <div className="flex min-h-dvh items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-3">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-border border-t-primary" />
+          <p className="text-sm text-muted-foreground">در حال بررسی نشست...</p>
         </div>
-        <MobileNav />
       </div>
-    </RouteGuard>
+    );
+  if (status === "unauthenticated") return null;
+  return <>{children}</>;
+}
+
+export default function ProtectedLayout({ children }: { children: ReactNode }) {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-dvh items-center justify-center bg-background">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-border border-t-primary" />
+      </div>
+    }>
+      <ProtectedGuard>{children}</ProtectedGuard>
+    </Suspense>
   );
 }

@@ -1,26 +1,15 @@
-import { redirect } from "next/navigation";
+const DEFAULT_REDIRECT = "/dashboard";
 
-export function getRedirectUrl(searchParams: URLSearchParams): string {
-  const redirectParam = searchParams.get("redirect");
-  if (redirectParam && redirectParam.startsWith("/") && !redirectParam.startsWith("//")) {
-    return redirectParam;
-  }
-  return "/";
+export function buildLoginUrl(currentPath: string): string {
+  if (!currentPath || currentPath === "/auth/login") return "/auth/login";
+  return `/auth/login?redirect=${encodeURIComponent(currentPath)}`;
 }
 
-export function redirectToLogin(currentPath: string): void {
-  const params = new URLSearchParams();
-  if (currentPath && currentPath !== "/auth/login") {
-    params.set("redirect", currentPath);
+export function resolveRedirectTarget(redirectParam: string | null): string {
+  if (!redirectParam) return DEFAULT_REDIRECT;
+  // فقط مسیرهای داخلی (که با یک "/" تنها شروع می‌شن) مجازن
+  if (!redirectParam.startsWith("/") || redirectParam.startsWith("//")) {
+    return DEFAULT_REDIRECT;
   }
-  const url = `/auth/login${params.toString() ? `?${params.toString()}` : ""}`;
-  redirect(url);
-}
-
-export function redirectToOriginalDestination(redirectPath: string | null): void {
-  if (redirectPath && redirectPath.startsWith("/") && !redirectPath.startsWith("//")) {
-    redirect(redirectPath);
-  } else {
-    redirect("/");
-  }
+  return redirectParam;
 }

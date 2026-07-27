@@ -1,30 +1,18 @@
-export class ApiError extends Error {
-  status: number;
+import { ApiError } from "./api-client";
 
-  constructor(status: number, message: string) {
-    super(message);
-    this.status = status;
-    this.name = "ApiError";
+export function getErrorMessage(error: unknown): string {
+  if (error instanceof ApiError) {
+    switch (error.status) {
+      case 400: return error.message || "اطلاعات ارسالی معتبر نیست.";
+      case 401: return "نام کاربری یا رمز عبور صحیح نیست.";
+      case 403: return "شما اجازه دسترسی به این بخش را ندارید.";
+      case 404: return "موردی یافت نشد.";
+      case 500: return "ورود به سامانه با خطا مواجه شد. لطفاً دوباره تلاش کنید.";
+      default: return error.message || "خطایی رخ داد.";
+    }
   }
-}
-
-const ERROR_MESSAGES: Record<number, string> = {
-  400: "اطلاعات ارسالی نادرست است.",
-  401: "نشست شما منقضی شده است. لطفاً دوباره وارد شوید.",
-  403: "شما اجازه دسترسی به این بخش را ندارید.",
-  404: "منبع مورد نظر یافت نشد.",
-  500: "خطای سرور. لطفاً دوباره تلاش کنید.",
-};
-
-export async function handleApiError(response: Response): Promise<never> {
-  let errorMessage: string;
-
-  try {
-    const body = await response.json();
-    errorMessage = body.error || body.message || ERROR_MESSAGES[response.status] || "خطای ناشناخته.";
-  } catch {
-    errorMessage = ERROR_MESSAGES[response.status] || "خطای ناشناخته.";
+  if (error instanceof TypeError) {
+    return "ارتباط با سرور برقرار نشد. اتصال اینترنت را بررسی کنید.";
   }
-
-  throw new ApiError(response.status, errorMessage);
+  return "خطای ناشناخته‌ای رخ داد.";
 }
