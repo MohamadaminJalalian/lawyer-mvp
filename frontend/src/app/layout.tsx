@@ -4,7 +4,10 @@ import "./globals.css";
 import Sidebar from "@/components/layout/Sidebar";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-
+import { Vazirmatn } from "next/font/google";
+const vazirmatn = Vazirmatn({
+  subsets: ["arabic"],
+});
 export const metadata: Metadata = {
   title: "سامانه مدیریت پرونده‌های وکالت",
   description: "سامانه مدیریت پرونده‌های وکالت",
@@ -17,7 +20,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fa" dir="rtl">
-      <body className="bg-slate-50">
+      <body className={`${vazirmatn.className} bg-slate-50`}>
         <Sidebar />
 
         <div className="mr-64 min-h-screen">

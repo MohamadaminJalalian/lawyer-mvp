@@ -7,7 +7,7 @@ import type {
   ClientSummary,
   CategorySummary,
   PaginatedResponse,
-} from "../types/cases.types";
+} from "./cases.types";
 
 export const mockClients: ClientSummary[] = [
   { id: "client-001", fullName: "مریم احمدی", nationalCode: "1234567890", isActive: true },
@@ -27,7 +27,7 @@ export const mockCases: CaseListItem[] = [
   {
     id: "case-001", internalNumber: "1405-001", title: "مطالبه مهریه",
      isUrgent: false,
-    client: mockClients[0], category: mockCategories[1],
+    client: mockClients[0], category: mockCategories[1],subject: "خیانت",
     status: "ACTIVE", priority: "HIGH",
     courtCaseNumber: "030123456789", courtName: "دادگاه خانواده تهران",
     branch: "شعبه 262", opponentName: "محمد رضایی",
@@ -38,7 +38,7 @@ export const mockCases: CaseListItem[] = [
   {
     id: "case-002", internalNumber: "1405-002", title: "دعوای نفقه",
      isUrgent: false,
-    client: mockClients[1], category: mockCategories[2],
+    client: mockClients[1], category: mockCategories[2],subject: "نان",
     status: "ACTIVE", priority: "NORMAL",
     courtCaseNumber: "030198765432", courtName: "دادگاه خانواده کرج",
     branch: "شعبه 15", opponentName: "زهرا کریمی",
@@ -49,7 +49,7 @@ export const mockCases: CaseListItem[] = [
   {
     id: "case-003", internalNumber: "1405-003", title: "کلاهبرداری اینترنتی",
     isUrgent: true,
-    client: mockClients[2], category: mockCategories[4],
+    client: mockClients[2], category: mockCategories[4],subject: "گوم",
     status: "CLOSED", priority: "URGENT",
     courtCaseNumber: null, courtName: "دادگاه کیفری دو تهران",
     branch: null, opponentName: "شرکت نمونه",
@@ -60,12 +60,12 @@ export const mockCases: CaseListItem[] = [
   {
     id: "case-004", internalNumber: "1404-088", title: "طلاق توافقی",
      isUrgent: false,
-    client: mockClients[0], category: mockCategories[0],
-    status: "ARCHIVED", priority: "LOW",
+    client: mockClients[0], category: mockCategories[0],subject: "زل",
+    status: "CLOSED", priority: "LOW",
     courtCaseNumber: "030100011122", courtName: "دادگاه خانواده تهران",
     branch: "شعبه 5", opponentName: null,
     formedAt: "2025-11-01", nextSessionAt: null,
-    description: "پرونده بایگانی شد",
+    description: "پرونده مختومه شد",
     createdAt: "2025-11-01T09:00:00Z", updatedAt: "2026-01-05T09:00:00Z",
   },
 ];

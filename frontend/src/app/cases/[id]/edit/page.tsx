@@ -6,7 +6,7 @@ import { useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { mockCases, mockCategories } from "../../../../mocks/cases.mock";
-import type { CasePriority } from "../../../../types/cases.types";
+import type { CasePriority } from "../../../../mocks/cases.types";
 
 const CURRENT_USER_ROLE: "ADMIN" | "SECRETARY" = "ADMIN";
 
@@ -159,19 +159,7 @@ export default function EditCasePage() {
     );
   }
 
-  if (archiveStatus === "done" || existingCase.status === "ARCHIVED") {
-    return (
-      <div className="max-w-2xl">
-        <div className="p-4 bg-[#F3EAE3] text-[#954C33] rounded-lg mb-4 text-sm">
-          این پرونده بایگانی شده و دیگر قابل ویرایش نیست.
-        </div>
-        <Link href="/cases" className="text-[#A9762F] hover:underline text-sm">
-          بازگشت به لیست پرونده‌ها
-        </Link>
-      </div>
-    );
-  }
-
+ 
   if (submitStatus === "success") {
     return (
       <div className="max-w-2xl">

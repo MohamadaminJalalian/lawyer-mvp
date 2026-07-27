@@ -3,10 +3,13 @@
 // مسیر این فایل: app/cases/_components/EditCaseModal.tsx
 
 import { useState } from "react";
-import { X } from "lucide-react";
+import { X, CalendarDays } from "lucide-react";
+import DatePicker from "react-multi-date-picker";
+import persian from "react-date-object/calendars/persian";
+import persian_fa from "react-date-object/locales/persian_fa";
 import Modal from "./Modal";
 import { mockCategories } from "../../../mocks/cases.mock";
-import type { CaseListItem, CasePriority } from "../../../types/cases.types";
+import type { CaseListItem, CasePriority } from "../../../mocks/cases.types";
 
 const CURRENT_USER_ROLE: "ADMIN" | "SECRETARY" = "ADMIN";
 
@@ -78,15 +81,12 @@ interface EditCaseModalProps {
   onClose: () => void;
   // وقتی ذخیره موفق شد، نسخه آپدیت‌شده پرونده رو به والد پس می‌دیم
   onSaved: (updated: CaseListItem) => void;
-  // وقتی بایگانی موفق شد، فقط شناسه پرونده رو پس می‌دیم
-  onArchived: (caseId: string) => void;
 }
 
 export default function EditCaseModal({
   caseItem,
   onClose,
   onSaved,
-  onArchived,
 }: EditCaseModalProps) {
   const [values, setValues] = useState<FormValues>(() => ({
     internalNumber: caseItem.internalNumber,
@@ -106,12 +106,6 @@ export default function EditCaseModal({
   const [submitStatus, setSubmitStatus] = useState<
     "idle" | "submitting" | "success"
   >("idle");
-
-  // مودال تأیید بایگانی، این‌بار به‌جای صفحه جدا، همین‌جا تودرتو باز می‌شه
-  const [showArchiveConfirm, setShowArchiveConfirm] = useState(false);
-  const [archiveStatus, setArchiveStatus] = useState<"idle" | "archiving">(
-    "idle"
-  );
 
   function handleChange<K extends keyof FormValues>(
     field: K,
@@ -153,50 +147,11 @@ export default function EditCaseModal({
     setSubmitStatus("success");
   }
 
-  async function handleArchiveConfirm() {
-    setArchiveStatus("archiving");
-    // روز سوم این خط با فراخوانی واقعی archiveCase() جایگزین می‌شه
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    onArchived(caseItem.id);
-    setArchiveStatus("idle");
-    setShowArchiveConfirm(false);
-    onClose();
-  }
-
-  // اگه پرونده از قبل بایگانی‌شده، اصلاً فرم رو نشون نده
-  if (caseItem.status === "ARCHIVED") {
-    return (
-      <Modal onClose={onClose} maxWidthClass="max-w-md">
-        <div className="p-6">
-          <div className="p-4 bg-[#F3EAE3] text-[#954C33] rounded-lg mb-4 text-sm">
-            این پرونده بایگانی شده و دیگر قابل ویرایش نیست.
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-4 py-2 bg-white border border-[#E4E1D8] rounded-lg text-sm"
-          >
-            بستن
-          </button>
-        </div>
-      </Modal>
-    );
-  }
-
   return (
     <Modal onClose={onClose} maxWidthClass="max-w-2xl">
       <div className="flex items-center justify-between p-5 border-b border-[#EDEBE2] sticky top-0 bg-white">
         <h2 className="font-bold text-[#262420]">ویرایش پرونده</h2>
         <div className="flex items-center gap-3">
-          {CURRENT_USER_ROLE === "ADMIN" && submitStatus !== "success" && (
-            <button
-              type="button"
-              onClick={() => setShowArchiveConfirm(true)}
-              className="px-3 py-1.5 bg-white border border-[#E4A3A3] text-[#A32D2D] rounded-lg text-xs hover:bg-[#FCEBEB] transition-colors"
-            >
-              بایگانی
-            </button>
-          )}
           <button
             type="button"
             onClick={onClose}
@@ -286,27 +241,8 @@ export default function EditCaseModal({
                   <p className={errorClass}>{errors.categoryId}</p>
                 )}
               </div>
-
-              <div>
-                <label className={labelClass}>اولویت</label>
-                <select
-                  value={values.priority}
-                  onChange={(event) =>
-                    handleChange(
-                      "priority",
-                      event.target.value as CasePriority
-                    )
-                  }
-                  className={fieldClass}
-                >
-                  <option value="LOW">کم</option>
-                  <option value="NORMAL">عادی</option>
-                  <option value="HIGH">بالا</option>
-                  <option value="URGENT">فوری</option>
-                </select>
-              </div>
-            </div>
-
+</div>
+            
             <div className={rowClass}>
               <div>
                 <label className={labelClass}>شماره پرونده دادگاه</label>
@@ -359,17 +295,26 @@ export default function EditCaseModal({
               </div>
             </div>
 
-            <div className={rowClass}>
+           <div className={rowClass}>
               <div>
                 <label className={labelClass}>تاریخ تشکیل پرونده</label>
-                <input
-                  type="date"
-                  value={values.formedAt}
-                  onChange={(event) =>
-                    handleChange("formedAt", event.target.value)
-                  }
-                  className={fieldClass}
-                />
+                <div className="relative">
+                  <CalendarDays
+                    size={18}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-[#A9762F] pointer-events-none z-10"
+                  />
+                  <DatePicker
+                    calendar={persian}
+                    locale={persian_fa}
+                    format="YYYY/MM/DD"
+                    value={values.formedAt}
+                    onChange={(date) =>
+                      handleChange("formedAt", date?.format("YYYY/MM/DD") ?? "")
+                    }
+                    calendarPosition="bottom-right"
+                    inputClass={`${fieldClass} pl-10`}
+                  />
+                </div>
                 {errors.formedAt && (
                   <p className={errorClass}>{errors.formedAt}</p>
                 )}
@@ -377,14 +322,26 @@ export default function EditCaseModal({
 
               <div>
                 <label className={labelClass}>تاریخ جلسه بعدی</label>
-                <input
-                  type="date"
-                  value={values.nextSessionAt}
-                  onChange={(event) =>
-                    handleChange("nextSessionAt", event.target.value)
-                  }
-                  className={fieldClass}
-                />
+                <div className="relative">
+                  <CalendarDays
+                    size={18}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-[#A9762F] pointer-events-none z-10"
+                  />
+                  <DatePicker
+                    calendar={persian}
+                    locale={persian_fa}
+                    format="YYYY/MM/DD"
+                    value={values.nextSessionAt}
+                    onChange={(date) =>
+                      handleChange(
+                        "nextSessionAt",
+                        date?.format("YYYY/MM/DD") ?? ""
+                      )
+                    }
+                    calendarPosition="bottom-right"
+                    inputClass={`${fieldClass} pl-10`}
+                  />
+                </div>
                 {errors.nextSessionAt && (
                   <p className={errorClass}>{errors.nextSessionAt}</p>
                 )}
@@ -424,46 +381,6 @@ export default function EditCaseModal({
           </form>
         )}
       </div>
-
-      {/* مودال تأیید بایگانی — تودرتو، روی همین مودال باز می‌شه */}
-      {showArchiveConfirm && (
-        <Modal
-          onClose={() => setShowArchiveConfirm(false)}
-          maxWidthClass="max-w-sm"
-        >
-          <div className="p-6">
-            <p className="mb-4 font-medium text-[#262420] text-sm">
-              آیا از بایگانی پرونده زیر مطمئن هستید؟
-            </p>
-            <div className="bg-[#F7F5F0] rounded-lg p-3 mb-4 space-y-1">
-              <p className="text-sm text-[#6B6A63]">
-                شماره داخلی:{" "}
-                <span className="font-mono">{caseItem.internalNumber}</span>
-              </p>
-              <p className="text-sm text-[#6B6A63]">عنوان: {caseItem.title}</p>
-            </div>
-            <div className="flex gap-3 justify-end">
-              <button
-                type="button"
-                onClick={() => setShowArchiveConfirm(false)}
-                className="px-4 py-2 bg-white border border-[#E4E1D8] rounded-lg text-sm"
-              >
-                انصراف
-              </button>
-              <button
-                type="button"
-                onClick={handleArchiveConfirm}
-                disabled={archiveStatus === "archiving"}
-                className="px-4 py-2 bg-[#A32D2D] text-white rounded-lg text-sm disabled:opacity-50"
-              >
-                {archiveStatus === "archiving"
-                  ? "در حال بایگانی..."
-                  : "بایگانی پرونده"}
-              </button>
-            </div>
-          </div>
-        </Modal>
-      )}
     </Modal>
   );
 }

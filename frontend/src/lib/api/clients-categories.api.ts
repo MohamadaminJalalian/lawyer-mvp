@@ -3,7 +3,7 @@
 // ==========================================================
 
 import { apiFetch } from "./api-client";
-import type { ClientSummary, CategorySummary } from "../../types/cases.types";
+import type { ClientSummary, CategorySummary } from "../../mocks/cases.types";
 
 export function searchClients(query: string): Promise<ClientSummary[]> {
   const queryString = query ? `?q=${encodeURIComponent(query)}` : "";

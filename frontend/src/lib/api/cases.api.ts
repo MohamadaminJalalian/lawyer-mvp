@@ -8,7 +8,7 @@ import type {
   CreateCaseRequest,
   UpdateCaseRequest,
   PaginatedResponse,
-} from "../../types/cases.types";
+} from "../../mocks/cases.types";
 
 export interface GetCasesParams {
   page?: number;

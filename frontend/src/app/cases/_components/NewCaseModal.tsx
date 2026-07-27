@@ -6,17 +6,24 @@ import DatePicker from "react-multi-date-picker";
 import persian from "react-date-object/calendars/persian";
 import persian_fa from "react-date-object/locales/persian_fa";
 import { useState } from "react";
-import { X, Upload, FileText } from "lucide-react";
+import {
+  X,
+  Upload,
+  FileText,
+  Star,
+  CalendarDays,
+} from "lucide-react";
 import Modal from "./Modal";
 import { mockClients, mockCategories } from "../../../mocks/cases.mock";
-import type { CasePriority } from "../../../types/cases.types";
+
 
 interface FormValues {
   internalNumber: string;
   title: string;
+  subject: string;
   clientId: string;
   categoryId: string;
-  priority: CasePriority;
+  isUrgent: boolean;
   courtCaseNumber: string;
   courtName: string;
   branch: string;
@@ -34,9 +41,10 @@ const today = new DateObject({
 const initialValues: FormValues = {
   internalNumber: "",
   title: "",
+  subject: "",
   clientId: "",
   categoryId: "",
-  priority: "NORMAL",
+  isUrgent: false,
   courtCaseNumber: "",
   courtName: "",
   branch: "",
@@ -122,6 +130,14 @@ const fieldClass =
 const labelClass = "block mb-1.5 font-medium text-sm text-[#262420]";
 const errorClass = "text-sm text-[#A32D2D] mt-1";
 const rowClass = "grid grid-cols-1 sm:grid-cols-2 gap-4";
+// لیبل فیلدهای اجباری، با یه ستاره قرمز کوچیک کنارشون
+function RequiredLabel({ text }: { text: string }) {
+  return (
+    <label className={labelClass}>
+      {text} <span className="text-[#A32D2D]">*</span>
+    </label>
+  );
+}
 
 // این کامپوننت یه Prop به اسم onClose می‌گیره — یعنی تابعی که والدش (صفحه لیست) بهش می‌ده
 // تا وقتی لازم شد (دکمه انصراف، یا بعد از ثبت موفق)، مودال رو ببنده
@@ -219,10 +235,11 @@ export default function NewCaseModal({ onClose }: NewCaseModalProps) {
               </button>
             </div>
           ) : (
+            
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className={rowClass}>
                 <div>
-                  <label className={labelClass}>شماره داخلی پرونده</label>
+                  <RequiredLabel text="شماره داخلی پرونده" />
                   <input
                     type="text"
                     value={values.internalNumber}
@@ -238,7 +255,7 @@ export default function NewCaseModal({ onClose }: NewCaseModalProps) {
                 </div>
 
                 <div>
-                  <label className={labelClass}>عنوان پرونده</label>
+                  <RequiredLabel text="عنوان پرونده" />
                   <input
                     type="text"
                     value={values.title}
@@ -255,7 +272,7 @@ export default function NewCaseModal({ onClose }: NewCaseModalProps) {
 
               <div className={rowClass}>
                 <div>
-                  <label className={labelClass}>موکل</label>
+                  <RequiredLabel text="موکل" />
                   <select
                     value={values.clientId}
                     onChange={(event) =>
@@ -276,7 +293,7 @@ export default function NewCaseModal({ onClose }: NewCaseModalProps) {
                 </div>
 
                 <div>
-                  <label className={labelClass}>دسته‌بندی</label>
+                  <RequiredLabel text="دسته‌بندی" />
                   <select
                     value={values.categoryId}
                     onChange={(event) =>
@@ -295,27 +312,18 @@ export default function NewCaseModal({ onClose }: NewCaseModalProps) {
                     <p className={errorClass}>{errors.categoryId}</p>
                   )}
                 </div>
+                          <div>
+                <label className={labelClass}>موضوع</label>
+                <input
+                  type="text"
+                  value={values.subject}
+                  onChange={(event) =>
+                    handleChange("subject", event.target.value)
+                  }
+                  className={fieldClass}
+                  placeholder="مثلاً مطالبه مهریه"
+                />
               </div>
-
-              <div className={rowClass}>
-                <div>
-                  <label className={labelClass}>اولویت</label>
-                  <select
-                    value={values.priority}
-                    onChange={(event) =>
-                      handleChange(
-                        "priority",
-                        event.target.value as CasePriority
-                      )
-                    }
-                    className={fieldClass}
-                  >
-                    <option value="LOW">کم</option>
-                    <option value="NORMAL">عادی</option>
-                    <option value="HIGH">بالا</option>
-                    <option value="URGENT">فوری</option>
-                  </select>
-                </div>
 
                 <div>
                   <label className={labelClass}>طرف مقابل</label>
@@ -331,101 +339,123 @@ export default function NewCaseModal({ onClose }: NewCaseModalProps) {
               </div>
 
               <div className={rowClass}>
-                <div>
-                  <label className={labelClass}>شماره پرونده دادگاه</label>
-                  <input
-                    type="text"
-                    value={values.courtCaseNumber}
-                    onChange={(event) =>
-                      handleChange("courtCaseNumber", event.target.value)
-                    }
-                    className={`${fieldClass} font-mono`}
-                  />
-                </div>
+  <div>
+    <label className={labelClass}>شماره پرونده دادگاه</label>
+    <input
+      type="text"
+      value={values.courtCaseNumber}
+      onChange={(event) =>
+        handleChange("courtCaseNumber", event.target.value)
+      }
+      className={`${fieldClass} font-mono`}
+    />
+  </div>
 
-                <div>
-                  <label className={labelClass}>نام دادگاه</label>
-                  <input
-                    type="text"
-                    value={values.courtName}
-                    onChange={(event) =>
-                      handleChange("courtName", event.target.value)
-                    }
-                    className={fieldClass}
-                  />
-                </div>
-              </div>
+  <div>
+    <label className={labelClass}>نام دادگاه</label>
+    <input
+      type="text"
+      value={values.courtName}
+      onChange={(event) =>
+        handleChange("courtName", event.target.value)
+      }
+      className={fieldClass}
+    />
+  </div>
+</div>
 
-              <div className={rowClass}>
-                <div>
-                  <label className={labelClass}>شعبه</label>
-                  <input
-                    type="text"
-                    value={values.branch}
-                    onChange={(event) =>
-                      handleChange("branch", event.target.value)
-                    }
-                    className={fieldClass}
-                  />
-                </div>
+{/* تاریخ‌ها */}
+<div className={rowClass}>
+  <div>
+    <RequiredLabel text="تاریخ تشکیل پرونده" />
 
-                <div>
-                  <label className={labelClass}>تاریخ تشکیل پرونده</label>
-                  <DatePicker
-                    calendar={persian}
-                    locale={persian_fa}
-                    format="YYYY/MM/DD"
-                    value={values.formedAt}
-                    onChange={(date) =>
-                      handleChange(
-                        "formedAt",
-                        date?.format("YYYY/MM/DD") ?? ""
-                      )
-                    }
-                    calendarPosition="bottom-right"
-                    inputClass={fieldClass}
-                  />
-                  {errors.formedAt && (
-                    <p className={errorClass}>{errors.formedAt}</p>
-                  )}
-                </div>
-              </div>
+   <div className="relative">
+  <CalendarDays
+    size={18}
+    className="absolute left-3 top-1/2 -translate-y-1/2 text-[#A9762F] pointer-events-none"
+  />
 
-              <div className={rowClass}>
-                <div>
-                  <label className={labelClass}>تاریخ جلسه بعدی</label>
-                  <DatePicker
-                    calendar={persian}
-                    locale={persian_fa}
-                    format="YYYY/MM/DD"
-                    value={values.nextSessionAt}
-                    onChange={(date) =>
-                      handleChange(
-                        "nextSessionAt",
-                        date?.format("YYYY/MM/DD") ?? ""
-                      )
-                    }
-                    calendarPosition="bottom-right"
-                    inputClass={fieldClass}
-                  />
-                  {errors.nextSessionAt && (
-                    <p className={errorClass}>{errors.nextSessionAt}</p>
-                  )}
-                </div>
-                <div />
-              </div>
+  <DatePicker
+    calendar={persian}
+    locale={persian_fa}
+    format="YYYY/MM/DD"
+    value={values.formedAt}
+    onChange={(date) =>
+      handleChange(
+        "formedAt",
+        date?.format("YYYY/MM/DD") ?? ""
+      )
+    }
+    calendarPosition="bottom-right"
+    inputClass={`${fieldClass} pl-10 hover:border-[#C89A5A] focus:ring-4 focus:ring-[#A9762F]/10`}
+  />
+</div>
+</div>
+    {errors.formedAt && (
+      <p className={errorClass}>{errors.formedAt}</p>
+    )}
+  </div>
 
-              <div>
-                <label className={labelClass}>توضیحات</label>
-                <textarea
-                  value={values.description}
-                  onChange={(event) =>
-                    handleChange("description", event.target.value)
-                  }
-                  rows={3}
-                  className={fieldClass}
-                />
-              </div>
+  <div className={rowClass}>
+ 
+
+  {/* پرونده فوری */}
+  <div className="flex items-end">
+    <label
+      htmlFor="isUrgent"
+      className={`w-full flex items-center justify-between rounded-xl border px-4 py-3 cursor-pointer transition-all duration-200 ${
+        values.isUrgent
+          ? "border-red-500 bg-red-50"
+          : "border-[#E4E1D8] bg-white hover:border-[#A9762F]"
+      }`}
+    >
+      <div className="flex items-center gap-3">
+        <Star
+          size={20}
+          className={
+            values.isUrgent
+              ? "text-red-600 fill-red-600"
+              : "text-[#B8B3A5]"
+          }
+        />
+
+        <div>
+          <p className="font-semibold text-[#262420]">
+            پرونده ضروری
+          </p>
+
+          <p className="text-xs text-[#8C8A80] mt-1">
+            این پرونده در لیست پرونده‌های ضروری نمایش داده می‌شود.
+          </p>
+        </div>
+      </div>
+
+      <input
+        id="isUrgent"
+        type="checkbox"
+        checked={values.isUrgent}
+        onChange={(e) =>
+          handleChange("isUrgent", e.target.checked)
+        }
+        className="h-5 w-5 accent-red-600"
+      />
+    </label>
+  </div>
+</div>
+
+{/* توضیحات */}
+<div>
+  <label className={labelClass}>توضیحات</label>
+
+  <textarea
+    value={values.description}
+    onChange={(event) =>
+      handleChange("description", event.target.value)
+    }
+    rows={4}
+    className={fieldClass}
+  />
+</div>
               <div>
                 <label className={labelClass}>ضمائم پرونده</label>
 

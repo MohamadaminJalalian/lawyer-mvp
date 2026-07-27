@@ -4,7 +4,7 @@
 
 import { useState } from "react";
 import { mockClients, mockCategories } from "../../../mocks/cases.mock";
-import type { CasePriority } from "../../../types/cases.types";
+import type { CasePriority } from "../../../mocks/cases.types";
 
 interface FormValues {
   internalNumber: string;
@@ -224,21 +224,7 @@ export default function NewCasePage() {
           </div>
         </div>
 
-        <div>
-          <label className={labelClass}>اولویت</label>
-          <select
-            value={values.priority}
-            onChange={(event) =>
-              handleChange("priority", event.target.value as CasePriority)
-            }
-            className={fieldClass}
-          >
-            <option value="LOW">کم</option>
-            <option value="NORMAL">عادی</option>
-            <option value="HIGH">بالا</option>
-            <option value="URGENT">فوری</option>
-          </select>
-        </div>
+      
 
         {/* اطلاعات قضایی، تو یه بخش جدا با خط جداکننده */}
         <div className="border-t border-[#EDEBE2] pt-5 space-y-5">

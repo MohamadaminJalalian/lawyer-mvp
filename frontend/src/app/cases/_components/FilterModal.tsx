@@ -4,7 +4,7 @@
 
 import Modal from "./Modal";
 import { mockCategories } from "../../../mocks/cases.mock";
-
+import type { CaseStatus } from "../../../mocks/cases.types";
 export type UrgencyOption = "URGENT" | "NOT_URGENT";
 
 interface FilterModalProps {
@@ -20,6 +20,9 @@ interface FilterModalProps {
 
   selectedCategoryIds: string[];
   onToggleCategory: (categoryId: string) => void;
+
+  selectedStatuses: CaseStatus[];
+  onToggleStatus: (status: CaseStatus) => void;
 
   onClearAll: () => void;
 }
@@ -39,12 +42,14 @@ export default function FilterModal({
   onToggleUrgency,
   selectedCategoryIds,
   onToggleCategory,
+  selectedStatuses,
+  onToggleStatus,
   onClearAll,
 }: FilterModalProps) {
   return (
     <Modal onClose={onClose} maxWidthClass="max-w-md">
       <div className="flex items-center justify-between p-5 border-b border-[#EDEBE2]">
-        <h2 className="font-bold text-[#262420]">فیلترها</h2>
+        <h2 className="font-bold text-[#262420]">فیلتر ها</h2>
         <button
           type="button"
           onClick={onClose}
@@ -86,7 +91,7 @@ export default function FilterModal({
 
         {/* فوریت پرونده */}
         <div className={sectionClass}>
-          <label className={labelClass}>فوریت پرونده</label>
+          <label className={labelClass}>پرونده ضروری</label>
           <div className="flex gap-2">
             {(
               [
@@ -111,7 +116,8 @@ export default function FilterModal({
         </div>
 
         {/* دسته‌بندی — چندانتخابی، به‌شکل Chip */}
-        <div className="py-4">
+        {/* دسته‌بندی — چندانتخابی، به‌شکل Chip */}
+        <div className={sectionClass}>
           <label className={labelClass}>دسته‌بندی</label>
           <div className="flex flex-wrap gap-2">
             {mockCategories.map((category) => {
@@ -128,6 +134,35 @@ export default function FilterModal({
                   }`}
                 >
                   {category.name}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* وضعیت پرونده — چندانتخابی، به‌شکل Chip */}
+        <div className="py-4">
+          <label className={labelClass}>وضعیت</label>
+          <div className="flex flex-wrap gap-2">
+            {(
+              [
+                { value: "ACTIVE", label: "فعال" },
+                { value: "CLOSED", label: "مختومه" },
+              ] as { value: CaseStatus; label: string }[]
+            ).map((option) => {
+              const isSelected = selectedStatuses.includes(option.value);
+              return (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() => onToggleStatus(option.value)}
+                  className={`px-3 py-1.5 rounded-full text-sm border transition-colors ${
+                    isSelected
+                      ? "bg-[#A9762F] text-white border-[#A9762F]"
+                      : "bg-white text-[#4B4A44] border-[#E4E1D8]"
+                  }`}
+                >
+                  {option.label}
                 </button>
               );
             })}

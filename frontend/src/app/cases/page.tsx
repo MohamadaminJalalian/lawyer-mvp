@@ -1,13 +1,22 @@
 "use client";
 
 // مسیر این فایل: app/cases/page.tsx
+import { getCaseDocuments } from "@/mocks/documents.mock";
+import Link from "next/link";
+import { Files } from "lucide-react"; // کنار Star, Eye, Pencil, CheckCircle2
 import { formatPersianDate } from "../../lib/utils/date";
 import { useEffect, useState } from "react";
+import {
+  FileText,
+  Users,
+  Landmark,
+  Calendar,
+  ClipboardList,
+} from "lucide-react";
 import {
   Eye,
   Pencil,
   CheckCircle2,
-  Archive,
   X,
   ChevronUp,
   ChevronDown,
@@ -24,18 +33,16 @@ import type {
   CaseListItem,
   CaseStatus,
 
-} from "../../types/cases.types";
+} from "../../mocks/cases.types";
 
 const statusLabels: Record<CaseStatus, string> = {
   ACTIVE: "فعال",
   CLOSED: "مختومه",
-  ARCHIVED: "بایگانی‌شده",
 };
 
 const statusStyles: Record<CaseStatus, string> = {
   ACTIVE: "bg-[#E7F1EB] text-[#2F6B4F]",
   CLOSED: "bg-[#F1EFE6] text-[#6B6A63]",
-  ARCHIVED: "bg-[#F3EAE3] text-[#954C33]",
 };
 
 
@@ -60,6 +67,40 @@ function SkeletonBar({ className = "" }: { className?: string }) {
 }
 
 // یه ردیف ساده برای نمایش «برچسب: مقدار» تو مودال جزئیات
+function InfoCard({
+  icon: Icon,
+  title,
+  children,
+}: {
+  icon: React.ElementType;
+  title: string;
+  children: React.ReactNode;
+}) {
+  
+  return (
+    <div className="rounded-xl border border-[#EDEBE2] bg-white overflow-hidden">
+      {/* هدر با پس‌زمینه‌ی متفاوت */}
+      <div className="flex items-center gap-2 px-4 py-3 bg-[#FAF8F3] border-b border-[#EDEBE2]">
+        <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-[#FCF6EA] text-[#8A5D1F]">
+          <Icon size={15} />
+        </span>
+        <h4 className="font-bold text-[#262420] text-sm">{title}</h4>
+      </div>
+
+      {/* بدنه سفید */}
+      <div className="px-4 py-3 space-y-2.5 bg-white">{children}</div>
+    </div>
+  );
+}
+
+function Field({ label, value }: { label: string; value: React.ReactNode }) {
+  return (
+    <div className="flex items-center justify-between py-1.5 border-b border-[#EDEBE2] last:border-0 text-sm">
+      <span className="text-[#8C8A80]">{label}</span>
+      <span className="text-[#262420] font-medium">{value}</span>
+    </div>
+  );
+}
 function DetailRow({
   label,
   value,
@@ -80,9 +121,8 @@ function DetailRow({
 }
 
 // نوع عملیاتی که ممکنه از ستون عملیات صدا زده بشه و نیاز به تأیید داره
-// نوع عملیاتی که ممکنه از ستون عملیات صدا زده بشه و نیاز به تأیید داره
 interface ConfirmAction {
-  type: "archive" | "close" | "toggle-urgent";
+  type: "close" | "toggle-urgent";
   caseItem: CaseListItem;
 }
 
@@ -91,24 +131,22 @@ export default function CasesListPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState<CaseStatus | "ALL">("ALL");
+  const [selectedStatuses, setSelectedStatuses] = useState<CaseStatus[]>([
+  ]);
   const [categoryFilter, setCategoryFilter] = useState<string>("ALL");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [selectedUrgencies, setSelectedUrgencies] = useState<UrgencyOption[]>([
-    "URGENT",
-    "NOT_URGENT",
+    
   ]);
-  const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>(
-    mockCategories.map((category) => category.id)
-  );
+  const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
   const [showFilterModal, setShowFilterModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
   // مودال جزئیات پرونده — اگه مقداری داشته باشه یعنی بازه
   const [detailsCase, setDetailsCase] = useState<CaseListItem | null>(null);
 
-  // مودال تأیید برای بایگانی یا مختومه‌کردن
+  // مودال تأیید برای مختومه‌کردن یا تغییر فوریت
   const [confirmAction, setConfirmAction] = useState<ConfirmAction | null>(
     null
   );
@@ -147,38 +185,50 @@ export default function CasesListPage() {
     const term = searchTerm.trim().toLowerCase();
 
     const matchesSearch =
-      !term ||
-      caseItem.internalNumber.toLowerCase().includes(term) ||
-      caseItem.title.toLowerCase().includes(term) ||
-      caseItem.client.fullName.toLowerCase().includes(term) ||
-      (caseItem.courtName ?? "").toLowerCase().includes(term);
+  !term ||
+  caseItem.internalNumber.toLowerCase().includes(term) ||
+  caseItem.title.toLowerCase().includes(term) ||
+  caseItem.client.fullName.toLowerCase().includes(term) ||
+  (caseItem.courtName ?? "").toLowerCase().includes(term) ||
+  (caseItem.subject ?? "").toLowerCase().includes(term);
 
     // مقایسه رشته‌ای چون فرمت تاریخ‌ها "YYYY-MM-DD"ه، همون ترتیب زمانی رو هم می‌ده
     const matchesDate =
       (!dateFrom || caseItem.formedAt >= dateFrom) &&
       (!dateTo || caseItem.formedAt <= dateTo);
 
-    const matchesUrgency = selectedUrgencies.includes(
-      caseItem.isUrgent ? "URGENT" : "NOT_URGENT"
-    );
+      const matchesStatus =
+  selectedStatuses.length === 0 ||
+  selectedStatuses.includes(caseItem.status);
+
+const matchesUrgency =
+  selectedUrgencies.length === 0 ||
+  selectedUrgencies.includes(
+    caseItem.isUrgent ? "URGENT" : "NOT_URGENT"
+  );
 
     const matchesCategory =
       selectedCategoryIds.length === 0 ||
       selectedCategoryIds.includes(caseItem.category.id);
 
-    return matchesSearch && matchesDate && matchesUrgency && matchesCategory;
+    return (
+      matchesSearch &&
+      matchesDate &&
+      matchesUrgency &&
+      matchesCategory &&
+      matchesStatus
+    );
   });
   // تعداد هر وضعیت، فقط بین همون پرونده‌هایی که الان بعد از فیلتر/جست‌وجو نشون داده می‌شن
   const statusCounts = {
     ACTIVE: filteredCases.filter((item) => item.status === "ACTIVE").length,
     CLOSED: filteredCases.filter((item) => item.status === "CLOSED").length,
-    ARCHIVED: filteredCases.filter((item) => item.status === "ARCHIVED")
-      .length,
   };
-  const activeFilterCount =
-  (searchTerm ? 1 : 0) +
-  (statusFilter !== "ALL" ? 1 : 0) +
-  (categoryFilter !== "ALL" ? 1 : 0);
+ const activeFilterCount =
+  (dateFrom || dateTo ? 1 : 0) +
+  (selectedUrgencies.length > 0 ? 1 : 0) +
+  (selectedCategoryIds.length > 0 ? 1 : 0) +
+  (selectedStatuses.length > 0 ? 1 : 0);
 
   // یه کپی از filteredCases می‌سازیم و مرتبش می‌کنیم، تا خود آرایه اصلی دست‌نخورده بمونه
   const sortedCases = [...filteredCases].sort((a, b) => {
@@ -248,13 +298,18 @@ export default function CasesListPage() {
     setCurrentPage(1);
   }
 
-  function handleStatusChange(value: CaseStatus | "ALL") {
-    setStatusFilter(value);
-    setCurrentPage(1);
-  }
+ 
 
   function handleCategoryChange(value: string) {
     setCategoryFilter(value);
+    setCurrentPage(1);
+  }
+  function toggleStatusFilter(status: CaseStatus) {
+    setSelectedStatuses((prev) =>
+      prev.includes(status)
+        ? prev.filter((item) => item !== status)
+        : [...prev, status]
+    );
     setCurrentPage(1);
   }
   function toggleCategoryFilter(categoryId: string) {
@@ -277,12 +332,11 @@ export default function CasesListPage() {
 
   function clearAllFilters() {
     setSearchTerm("");
-    setStatusFilter("ALL");
-    setCategoryFilter("ALL");
+    setSelectedStatuses([]);
     setDateFrom("");
     setDateTo("");
-    setSelectedUrgencies(["URGENT", "NOT_URGENT"]);
-    setSelectedCategoryIds(mockCategories.map((category) => category.id));
+    setSelectedUrgencies([]);
+    setSelectedCategoryIds([]);
     setCurrentPage(1);
   }
 
@@ -291,7 +345,7 @@ export default function CasesListPage() {
     if (!confirmAction) return;
 
     setConfirmStatus("processing");
-    // روز سوم این خط با فراخوانی واقعی archiveCase() یا updateCase() جایگزین می‌شه
+    // روز سوم این خط با فراخوانی واقعی updateCase() جایگزین می‌شه
     await new Promise((resolve) => setTimeout(resolve, 500));
 
     if (confirmAction.type === "toggle-urgent") {
@@ -310,28 +364,30 @@ export default function CasesListPage() {
           : `پرونده «${confirmAction.caseItem.internalNumber}» ضروری شد.`
       );
     } else {
-      const newStatus: CaseStatus =
-        confirmAction.type === "archive" ? "ARCHIVED" : "CLOSED";
-
-      // فقط همون یه پرونده رو تو آرایه پیدا کن و وضعیتش رو عوض کن، بقیه دست‌نخورده بمونن
+      // فقط همون یه پرونده رو تو آرایه پیدا کن و وضعیتش رو مختومه کن، بقیه دست‌نخورده بمونن
       setAllCases((prev) =>
         prev.map((item) =>
           item.id === confirmAction.caseItem.id
-            ? { ...item, status: newStatus }
+            ? { ...item, status: "CLOSED" }
             : item
         )
       );
 
       setToast(
-        confirmAction.type === "archive"
-          ? `پرونده «${confirmAction.caseItem.internalNumber}» بایگانی شد.`
-          : `پرونده «${confirmAction.caseItem.internalNumber}» مختومه شد.`
+        `پرونده «${confirmAction.caseItem.internalNumber}» مختومه شد.`
       );
     }
 
     setConfirmStatus("idle");
     setConfirmAction(null);
   }
+ 
+
+// ...
+
+const docCountByCase = Object.fromEntries(
+  casesToShow.map((c) => [c.id, getCaseDocuments(c.id).files.length])
+);
 
   return (
     <>
@@ -353,8 +409,8 @@ export default function CasesListPage() {
           type="text"
           value={searchTerm}
           onChange={(event) => handleSearchChange(event.target.value)}
-          placeholder="جست‌وجو بر اساس شماره داخلی، عنوان، موکل یا دادگاه"
-          className="w-full sm:w-82 p-2 bg-white border border-[#E4E1D8] rounded-lg text-right text-sm placeholder:text-[#8C8A80] focus:outline-none focus:border-[#A9762F]"
+          placeholder="جست‌وجو بر اساس شماره داخلی، عنوان، موکل یا دادگاه، موضوع"
+          className="w-full sm:w-93 p-2 bg-white border border-[#E4E1D8] rounded-lg text-right text-sm placeholder:text-[#8C8A80] focus:outline-none focus:border-[#A9762F]"
         />
         <button
           type="button"
@@ -362,7 +418,6 @@ export default function CasesListPage() {
           className="relative flex items-center gap-1.5 px-3 py-2 bg-white border border-[#E4E1D8] rounded-lg text-sm text-[#4B4A44] hover:border-[#A9762F] transition-colors"
         >
           <Filter size={16} />
-          فیلتر
           {activeFilterCount > 0 && (
             <span className="absolute -top-1.5 -right-1.5 w-4 h-4 flex items-center justify-center bg-[#A9762F] text-white text-[10px] rounded-full">
               {activeFilterCount}
@@ -380,15 +435,10 @@ export default function CasesListPage() {
 </button>
 
         {/* این دکمه فقط وقتی حداقل یه فیلتر یا جست‌وجو فعال باشه ظاهر می‌شه */}
-        {(searchTerm || statusFilter !== "ALL" || categoryFilter !== "ALL") && (
+        {(searchTerm || activeFilterCount > 0) && (
           <button
             type="button"
-            onClick={() => {
-              setSearchTerm("");
-              setStatusFilter("ALL");
-              setCategoryFilter("ALL");
-              setCurrentPage(1);
-            }}
+            onClick={clearAllFilters}
             className="px-3 py-2 text-sm text-[#A32D2D] hover:underline"
           >
             حذف فیلترها
@@ -406,9 +456,7 @@ export default function CasesListPage() {
           <span className="text-[#6B6A63]">
             • {statusCounts.CLOSED} مختومه
           </span>
-          <span className="text-[#954C33]">
-            • {statusCounts.ARCHIVED} بایگانی‌شده
-          </span>
+          
         </div>
       )}
 
@@ -458,6 +506,9 @@ export default function CasesListPage() {
                 </button>
               </th>
               <th className="px-2 py-3 font-medium text-[#6B6A63]">
+  موضوع
+</th>
+              <th className="px-2 py-3 font-medium text-[#6B6A63]">
                 <button
                   type="button"
                   onClick={() => handleSort("status")}
@@ -467,6 +518,9 @@ export default function CasesListPage() {
                   <SortIcon field="status" />
                 </button>
               </th>
+              <th className="px-2 py-3 font-medium text-[#6B6A63] text-right">
+  اسناد
+</th>
           
               <th className="px-2 py-3 w-[120px] font-medium text-[#6B6A63] text-center">
   عملیات
@@ -482,8 +536,12 @@ export default function CasesListPage() {
                     <td className="px-2 py-3"><SkeletonBar className="w-24" /></td>
                     <td className="px-2 py-3"><SkeletonBar className="w-20" /></td>
                     <td className="px-2 py-3"><SkeletonBar className="w-14 rounded-full" /></td>
-                
-                    <td className="px-2 py-3"><SkeletonBar className="w-16" /></td>
+
+<td className="px-2 py-3 flex justify-center">
+  <SkeletonBar className="w-8 h-8 rounded-lg" />
+</td>
+
+<td className="px-2 py-3"><SkeletonBar className="w-16" /></td>
                   </tr>
                 ))
               : casesToShow.map((caseItem) => (
@@ -506,7 +564,14 @@ export default function CasesListPage() {
                     <td className="px-2 py-3 text-[#4B4A44]">
                       {caseItem.category.name}
                     </td>
-                    <td className="px-2 py-3">
+                   
+
+<td className="px-2 py-3 text-[#4B4A44]">
+  {caseItem.subject || "—"}
+</td>
+
+
+<td className="px-2 py-3">
   <span
     className={`px-2.5 py-1 rounded-full text-xs ${
       statusStyles[caseItem.status]
@@ -516,8 +581,27 @@ export default function CasesListPage() {
   </span>
 </td>
 
+{/* ستون جدید: اسناد */}
+<td className="px-2 py-3 text-right">
+  <Link
+    href={`/cases/${caseItem.id}/documents`}
+    className="relative inline-flex items-center justify-center w-8 h-8 rounded-lg hover:bg-[#FAF8F3] text-[#8A5D1F] transition-colors"
+    title="مشاهده اسناد"
+  >
+    <Files size={17} />
+    {docCountByCase[caseItem.id] > 0 && (
+      <span className="absolute -top-1 -left-1 min-w-[16px] h-4 px-1 flex items-center justify-center rounded-full bg-[#8A5D1F] text-white text-[10px] leading-none">
+        {docCountByCase[caseItem.id]}
+      </span>
+    )}
+  </Link>
+</td>
+
+
+
+
 <td className="px-2 py-3 w-[120px]">
-  <div className="flex items-center justify-center gap-2 text-[#8C8A80]"></div>
+
                       <div className="flex items-center gap-3 text-[#8C8A80]">
                         <button
                           type="button"
@@ -574,18 +658,7 @@ export default function CasesListPage() {
                           </button>
                         )}
 
-                        {caseItem.status !== "ARCHIVED" && (
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setConfirmAction({ type: "archive", caseItem })
-                            }
-                            title="بایگانی"
-                            className="hover:text-[#A32D2D] transition-colors"
-                          >
-                            <Archive size={17} />
-                          </button>
-                        )}
+                  
                       </div>
                     </td>
                   </tr>
@@ -703,18 +776,7 @@ export default function CasesListPage() {
                     </button>
                   )}
 
-                  {caseItem.status !== "ARCHIVED" && (
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setConfirmAction({ type: "archive", caseItem })
-                      }
-                      title="بایگانی"
-                      className="hover:text-[#A32D2D] transition-colors"
-                    >
-                      <Archive size={18} />
-                    </button>
-                  )}
+                
                 </div>
               </div>
             ))}
@@ -756,63 +818,114 @@ export default function CasesListPage() {
 
       {/* مودال جزئیات پرونده */}
       {detailsCase && (
-        <Modal onClose={() => setDetailsCase(null)} maxWidthClass="max-w-lg">
-          <div className="flex items-center justify-between p-5 border-b border-[#EDEBE2]">
-            <h2 className="font-bold text-[#262420]">جزئیات پرونده</h2>
-            <button
-              type="button"
-              onClick={() => setDetailsCase(null)}
-              className="text-[#8C8A80] hover:text-[#262420]"
-              aria-label="بستن"
-            >
-              <X size={20} />
-            </button>
-          </div>
-          <div className="p-5 space-y-3 text-sm">
-            <DetailRow
-              label="شماره داخلی"
-              value={detailsCase.internalNumber}
-              mono
-            />
-            <DetailRow label="عنوان" value={detailsCase.title} />
-            <DetailRow label="موکل" value={detailsCase.client.fullName} />
-            <DetailRow label="دسته‌بندی" value={detailsCase.category.name} />
-            <DetailRow
-              label="وضعیت"
-              value={statusLabels[detailsCase.status]}
-            />
-           
-            <DetailRow
-              label="شماره پرونده دادگاه"
-              value={detailsCase.courtCaseNumber ?? "—"}
-              mono
-            />
-            <DetailRow
-              label="نام دادگاه"
-              value={detailsCase.courtName ?? "—"}
-            />
-            <DetailRow label="شعبه" value={detailsCase.branch ?? "—"} />
-            <DetailRow
-              label="طرف مقابل"
-              value={detailsCase.opponentName ?? "—"}
-            />
-            <DetailRow
-              label="تاریخ تشکیل"
-              value={formatPersianDate(detailsCase.formedAt)}
-            />
-            <DetailRow
-              label="تاریخ جلسه بعدی"
-              value={formatPersianDate(detailsCase.nextSessionAt)}
-            />
-            <DetailRow
-              label="توضیحات"
-              value={detailsCase.description ?? "—"}
-            />
-          </div>
-        </Modal>
-      )}
+  <Modal
+    onClose={() => setDetailsCase(null)}
+    maxWidthClass="max-w-3xl"
+  >
+    {/* Header */}
+   {/* Header */}
+<div className="border-b border-[#EDEBE2]">
+  <div className="flex items-center justify-between p-5">
+    <h2 className="text-xl font-bold text-[#262420] flex items-center gap-2">
+      <FileText size={20} className="text-[#8A5D1F]" />
+      جزئیات پرونده
+    </h2>
+    <button
+      type="button"
+      onClick={() => setDetailsCase(null)}
+      className="text-[#8C8A80] hover:text-[#262420] transition-colors"
+    >
+      <X size={22} />
+    </button>
+  </div>
 
-      {/* مودال تأیید برای بایگانی یا مختومه‌کردن */}
+  <div className="px-5 pb-5 flex items-center justify-between flex-wrap gap-3">
+    <div>
+      <div className="flex items-center gap-2">
+        <h3 className="text-lg font-bold text-[#262420]">
+          {detailsCase.title}
+        </h3>
+        <span className="px-2 py-0.5 rounded-md bg-[#FCF6EA] border border-[#E4D3B0] text-[#8A5D1F] font-mono text-xs">
+          {detailsCase.internalNumber}
+        </span>
+      </div>
+      <p className="text-sm text-[#8C8A80] mt-1">اطلاعات کامل پرونده</p>
+    </div>
+
+    <div className="flex items-center gap-2">
+      <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#EAF6EE] border border-[#BFE3CB] text-[#2F6B4F] text-sm">
+        <span className="w-1.5 h-1.5 rounded-full bg-[#2F6B4F]" />
+        {statusLabels[detailsCase.status]}
+      </span>
+
+      {detailsCase.isUrgent && (
+        <span className="flex items-center gap-1 px-3 py-1 rounded-full bg-red-50 border border-red-200 text-red-700 text-sm">
+          <Star size={14} fill="currentColor" />
+          پرونده فوری
+        </span>
+      )}
+    </div>
+  </div>
+</div>
+
+    {/* محتوا */}
+    {/* محتوا */}
+<div className="p-5 space-y-4 text-sm">
+
+  {/* اطلاعات پرونده */}
+  <InfoCard icon={FileText} title="اطلاعات پرونده">
+    <Field label="عنوان" value={detailsCase.title} />
+    <Field label="دسته‌بندی" value={detailsCase.category.name} />
+    <Field label="وضعیت" value={statusLabels[detailsCase.status]} />
+  </InfoCard>
+
+  {/* اشخاص + اطلاعات دادگاه، کنار هم */}
+  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <InfoCard icon={Users} title="اشخاص">
+      <Field label="موکل" value={detailsCase.client.fullName} />
+      <Field
+        label="طرف مقابل"
+        value={detailsCase.opponentName ?? "—"}
+      />
+    </InfoCard>
+
+    <InfoCard icon={Landmark} title="اطلاعات دادگاه">
+      <Field label="نام دادگاه" value={detailsCase.courtName ?? "—"} />
+      <Field label="شعبه" value={detailsCase.branch ?? "—"} />
+      <Field
+        label="شماره پرونده دادگاه"
+        value={detailsCase.courtCaseNumber ?? "—"}
+      />
+    </InfoCard>
+  </div>
+
+  {/* زمان‌بندی */}
+  <InfoCard icon={Calendar} title="زمان‌بندی">
+    <div className="grid grid-cols-2 gap-4">
+      <Field
+        label="تاریخ جلسه بعدی"
+        value={formatPersianDate(detailsCase.nextSessionAt)}
+      />
+      <Field
+        label="تاریخ تشکیل پرونده"
+        value={formatPersianDate(detailsCase.formedAt)}
+      />
+    </div>
+  </InfoCard>
+
+  {/* توضیحات */}
+  <InfoCard icon={ClipboardList} title="توضیحات">
+    <p className="text-[#262420] bg-white rounded-lg border border-[#EDEBE2] p-3 leading-6">
+      {detailsCase.description ?? "—"}
+    </p>
+  </InfoCard>
+
+</div>
+
+  </Modal>
+)}
+
+      {/* مودال تأیید برای مختومه‌کردن یا تغییر فوریت */}
       {confirmAction && (
         <Modal
           onClose={() => setConfirmAction(null)}
@@ -820,9 +933,7 @@ export default function CasesListPage() {
         >
           <div className="p-6">
             <p className="mb-4 font-medium text-[#262420] text-sm">
-              {confirmAction.type === "archive"
-                ? "آیا از بایگانی پرونده زیر مطمئن هستید؟"
-                : confirmAction.type === "close"
+              {confirmAction.type === "close"
                 ? "آیا از مختومه کردن پرونده زیر مطمئن هستید؟"
                 : confirmAction.caseItem.isUrgent
                 ? "آیا می‌خواهید این پرونده از حالت ضروری خارج شود؟"
@@ -853,17 +964,13 @@ export default function CasesListPage() {
                 onClick={handleConfirmAction}
                 disabled={confirmStatus === "processing"}
                 className={`px-4 py-2 text-white rounded-lg text-sm disabled:opacity-50 ${
-                  confirmAction.type === "archive"
-                    ? "bg-[#A32D2D]"
-                    : confirmAction.type === "close"
+                  confirmAction.type === "close"
                     ? "bg-[#2F6B4F]"
                     : "bg-[#A9762F]"
                 }`}
               >
                 {confirmStatus === "processing"
                   ? "در حال انجام..."
-                  : confirmAction.type === "archive"
-                  ? "بایگانی پرونده"
                   : confirmAction.type === "close"
                   ? "مختومه کردن"
                   : confirmAction.caseItem.isUrgent
@@ -895,8 +1002,10 @@ export default function CasesListPage() {
           selectedUrgencies={selectedUrgencies}
           onToggleUrgency={toggleUrgencyFilter}
           
-          selectedCategoryIds={selectedCategoryIds}
+         selectedCategoryIds={selectedCategoryIds}
           onToggleCategory={toggleCategoryFilter}
+          selectedStatuses={selectedStatuses}
+          onToggleStatus={toggleStatusFilter}
           onClearAll={clearAllFilters}
         />
       )}
@@ -911,14 +1020,6 @@ export default function CasesListPage() {
             setAllCases((prev) =>
               prev.map((item) => (item.id === updated.id ? updated : item))
             );
-          }}
-          onArchived={(caseId) => {
-            setAllCases((prev) =>
-              prev.map((item) =>
-                item.id === caseId ? { ...item, status: "ARCHIVED" } : item
-              )
-            );
-            setToast("پرونده بایگانی شد.");
           }}
         />
       )}

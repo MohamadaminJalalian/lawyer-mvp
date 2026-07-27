@@ -1,11 +1,33 @@
 // ==========================================================
 // Type های ماژول «پرونده‌ها» — بر اساس سند قرارداد نهایی FE4
 // ==========================================================
+export interface DocumentFile {
+  id: string;
+  name: string;
+  type: "pdf" | "image" | "word" | "excel" | "other";
+  url: string;
+  size: number; // بایت
+  uploadedAt: string;
+  folderId: string | null; // null یعنی توی ریشه
+}
+
+export interface DocumentFolder {
+  id: string;
+  name: string;
+  parentId: string | null; // null یعنی فولدر ریشه
+  createdAt: string;
+}
+
+export interface CaseDocuments {
+  caseId: string;
+  folders: DocumentFolder[];
+  files: DocumentFile[];
+}
 
 // ---------- مقادیر ثابت (Enum-like Types) ----------
 
-// وضعیت پرونده — طبق تصمیم نهایی تیم فقط همین ۳ مقدار مجازه
-export type CaseStatus = "ACTIVE" | "CLOSED" | "ARCHIVED";
+// وضعیت پرونده — طبق تصمیم نهایی تیم فقط همین ۲ مقدار مجازه
+export type CaseStatus = "ACTIVE" | "CLOSED";
 
 // اولویت پرونده
 export type CasePriority = "LOW" | "NORMAL" | "HIGH" | "URGENT";
@@ -35,9 +57,10 @@ export interface CaseListItem {
   isUrgent: boolean; // فیلد موقت — بعداً از جزئیات عملیات پرونده محاسبه می‌شه
   client: ClientSummary;
   category: CategorySummary;
+
   status: CaseStatus;
   priority: CasePriority;
-
+  subject?: string;
   // اطلاعات قضایی — همه اختیاری
   courtCaseNumber?: string | null;
   courtName?: string | null;
