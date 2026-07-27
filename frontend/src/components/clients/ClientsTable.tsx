@@ -1,25 +1,21 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
-import { Pencil, Trash2 } from "lucide-react";
+import { Eye, Pencil } from "lucide-react";
 
-import ConfirmModal from "@/components/ui/ConfirmModal";
 import { Client } from "@/types/client";
 import { formatJalali } from "@/lib/utils";
 
 type Props = {
     clients: Client[];
-    onDelete: (id: string) => void;
+    onView: (client: Client) => void;
+    onEdit: (client: Client) => void;
 };
 
-export default function ClientsTable({ clients, onDelete }: Props) {
-    const [pendingDelete, setPendingDelete] = useState<Client | null>(null);
-
+export default function ClientsTable({ clients, onView, onEdit }: Props) {
     return (
         <>
-            <div className="hidden sm:block bg-white border border-[#E4E1D8] rounded-xl overflow-hidden">
-                <table className="w-full border-collapse text-right text-sm">
+            <div className="hidden sm:block bg-white border border-[#E4E1D8] rounded-xl overflow-hidden overflow-x-auto">
+                <table className="w-full min-w-[720px] border-collapse text-right text-sm">
                     <thead>
                         <tr className="bg-[#F1EFE6]">
                             <th className="px-4 py-3 font-medium text-[#6B6A63]">نام و نام خانوادگی</th>
@@ -43,11 +39,11 @@ export default function ClientsTable({ clients, onDelete }: Props) {
                                 <td className="px-4 py-3 text-[#4B4A44]">{formatJalali(client.createdAt)}</td>
                                 <td className="px-4 py-3">
                                     <div className="flex items-center justify-center gap-3 text-[#8C8A80]">
-                                        <Link href={`/clients/${client.id}/edit`} title="ویرایش" className="hover:text-[#A9762F] transition-colors">
+                                        <button title="مشاهده جزئیات" onClick={() => onView(client)} className="hover:text-[#4B4A44] transition-colors">
+                                            <Eye size={17} />
+                                        </button>
+                                        <button title="ویرایش" onClick={() => onEdit(client)} className="hover:text-[#A9762F] transition-colors">
                                             <Pencil size={17} />
-                                        </Link>
-                                        <button title="حذف" onClick={() => setPendingDelete(client)} className="hover:text-[#A32D2D] transition-colors">
-                                            <Trash2 size={17} />
                                         </button>
                                     </div>
                                 </td>
@@ -84,29 +80,16 @@ export default function ClientsTable({ clients, onDelete }: Props) {
                         </div>
 
                         <div className="flex items-center justify-center gap-6 pt-3 border-t border-[#EDEBE2] text-[#8C8A80]">
-                            <Link href={`/clients/${client.id}/edit`} title="ویرایش" className="hover:text-[#A9762F] transition-colors">
+                            <button title="مشاهده جزئیات" onClick={() => onView(client)} className="hover:text-[#4B4A44] transition-colors">
+                                <Eye size={18} />
+                            </button>
+                            <button title="ویرایش" onClick={() => onEdit(client)} className="hover:text-[#A9762F] transition-colors">
                                 <Pencil size={18} />
-                            </Link>
-                            <button title="حذف" onClick={() => setPendingDelete(client)} className="hover:text-[#A32D2D] transition-colors">
-                                <Trash2 size={18} />
                             </button>
                         </div>
                     </div>
                 ))}
             </div>
-
-            <ConfirmModal
-                open={Boolean(pendingDelete)}
-                title="حذف موکل"
-                message={`آیا از حذف موکل «${pendingDelete?.firstName} ${pendingDelete?.lastName}» مطمئن هستید؟`}
-                confirmLabel="حذف"
-                variant="danger"
-                onCancel={() => setPendingDelete(null)}
-                onConfirm={() => {
-                    if (pendingDelete) onDelete(pendingDelete.id);
-                    setPendingDelete(null);
-                }}
-            />
         </>
     );
 }

@@ -92,3 +92,113 @@ export function validateClientForm(values: ClientFormValues): ClientFormErrors {
 export function hasErrors(errors: ClientFormErrors): boolean {
     return Object.values(errors).some(Boolean);
 }
+
+export interface ChangePasswordFormValues {
+    currentPassword: string;
+    newPassword: string;
+    confirmPassword: string;
+}
+
+export interface ChangePasswordFormErrors {
+    currentPassword?: string;
+    newPassword?: string;
+    confirmPassword?: string;
+}
+
+export function validateChangePasswordForm(
+    values: ChangePasswordFormValues
+): ChangePasswordFormErrors {
+    const errors: ChangePasswordFormErrors = {};
+
+    if (!values.currentPassword) {
+        errors.currentPassword = "رمز عبور فعلی الزامی است.";
+    }
+
+    if (!values.newPassword) {
+        errors.newPassword = "رمز عبور جدید الزامی است.";
+    } else if (values.newPassword.length < 8) {
+        errors.newPassword = "رمز عبور جدید باید حداقل ۸ کاراکتر باشد.";
+    } else if (values.newPassword === values.currentPassword) {
+        errors.newPassword = "رمز عبور جدید نباید با رمز فعلی یکسان باشد.";
+    }
+
+    if (!values.confirmPassword) {
+        errors.confirmPassword = "تکرار رمز عبور الزامی است.";
+    } else if (values.confirmPassword !== values.newPassword) {
+        errors.confirmPassword = "تکرار رمز عبور با رمز جدید مطابقت ندارد.";
+    }
+
+    return errors;
+}
+
+export interface SecretaryFormValues {
+    name: string;
+    mobile: string;
+    password: string;
+}
+
+export interface SecretaryFormErrors {
+    name?: string;
+    mobile?: string;
+    password?: string;
+}
+
+export function validateSecretaryForm(
+    values: SecretaryFormValues
+): SecretaryFormErrors {
+    const errors: SecretaryFormErrors = {};
+
+    const name = values.name.trim();
+    if (!name) {
+        errors.name = "نام منشی الزامی است.";
+    } else if (name.length < 2 || name.length > 80) {
+        errors.name = "نام باید بین ۲ تا ۸۰ کاراکتر باشد.";
+    }
+
+    const mobile = values.mobile.trim();
+    if (!mobile) {
+        errors.mobile = "شماره موبایل الزامی است.";
+    } else if (!isValidMobile(mobile)) {
+        errors.mobile = "شماره موبایل باید با ۰۹ شروع شود و ۱۱ رقم باشد.";
+    }
+
+    if (!values.password) {
+        errors.password = "رمز عبور الزامی است.";
+    } else if (values.password.length < 8) {
+        errors.password = "رمز عبور باید حداقل ۸ کاراکتر باشد.";
+    }
+
+    return errors;
+}
+
+export interface SecretaryProfileFormValues {
+    name: string;
+    mobile: string;
+}
+
+export interface SecretaryProfileFormErrors {
+    name?: string;
+    mobile?: string;
+}
+
+export function validateSecretaryProfileForm(
+    values: SecretaryProfileFormValues
+): SecretaryProfileFormErrors {
+    const errors: SecretaryProfileFormErrors = {};
+
+    const name = values.name.trim();
+    if (!name) {
+        errors.name = "نام الزامی است.";
+    } else if (name.length < 2 || name.length > 80) {
+        errors.name = "نام باید بین ۲ تا ۸۰ کاراکتر باشد.";
+    }
+
+    const mobile = values.mobile.trim();
+    if (!mobile) {
+        errors.mobile = "شماره موبایل الزامی است.";
+    } else if (!isValidMobile(mobile)) {
+        errors.mobile = "شماره موبایل باید با ۰۹ شروع شود و ۱۱ رقم باشد.";
+    }
+
+    return errors;
+}

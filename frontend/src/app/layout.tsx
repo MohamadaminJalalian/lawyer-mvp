@@ -1,37 +1,45 @@
-import type { Metadata } from "next";
+"use client";
+
+import { useState } from "react";
 import "./globals.css";
 
 import Sidebar from "@/components/layout/Sidebar";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { ClientProvider } from "@/context/ClientContext";
-
-export const metadata: Metadata = {
-  title: "سامانه مدیریت پرونده‌های وکالت",
-  description: "سامانه مدیریت پرونده‌های وکالت",
-};
+import { AuthProvider } from "@/context/AuthContext";
+import { SecretaryProvider } from "@/context/SecretaryContext";
+import { TrashProvider } from "@/context/TrashContext";
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   return (
     <html lang="fa" dir="rtl">
       <body className="bg-slate-50">
-        <ClientProvider>
-          <Sidebar />
+        <AuthProvider>
+          <SecretaryProvider>
+            <TrashProvider>
+              <ClientProvider>
+                <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-          <div className="mr-64 min-h-screen">
-            <Header />
+                <div className="min-h-screen lg:mr-64">
+                  <Header onMenuClick={() => setSidebarOpen(true)} />
 
-            <main className="min-h-[calc(100vh-80px)] p-8">
-              {children}
-            </main>
+                  <main className="min-h-[calc(100vh-64px)] p-4 sm:p-6 lg:p-8">
+                    {children}
+                  </main>
 
-            <Footer />
-          </div>
-        </ClientProvider>
+                  <Footer />
+                </div>
+              </ClientProvider>
+            </TrashProvider>
+          </SecretaryProvider>
+        </AuthProvider>
       </body>
     </html>
   );
