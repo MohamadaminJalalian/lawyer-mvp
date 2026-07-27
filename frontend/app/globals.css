@@ -1,26 +1,92 @@
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&family=IBM+Plex+Mono:wght@500&display=swap');
+
 @import "tailwindcss";
+@import "react-multi-date-picker/styles/layouts/mobile.css";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+
+  --background: #F7F5F0;
+
+  --foreground: #262420;
+
+
+  /* Components */
+
+  --card: #FFFFFF;
+
+  --border: #E7E3DA;
+
 }
+
+
 
 @theme inline {
+
   --color-background: var(--background);
+
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+
+  --color-card: var(--card);
+
+  --color-border: var(--border);
+
+
+  --font-sans: 'Vazirmatn', sans-serif;
+
+  --font-mono: 'IBM Plex Mono', monospace;
+
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+
 
 body {
+
   background: var(--background);
+
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+
+  font-family: 'Vazirmatn', sans-serif;
+
+}/* ===== Persian Date Picker ===== */
+
+.rmdp-wrapper {
+  border: 1px solid #ddd5c8 !important;
+  border-radius: 16px !important;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.08) !important;
+}
+
+.rmdp-calendar {
+  background: #ffffff !important;
+}
+
+.rmdp-header-values {
+  color: #a9762f !important;
+  font-weight: 700;
+}
+
+.rmdp-arrow {
+  border-color: #a9762f !important;
+}
+
+.rmdp-week-day {
+  color: #a9762f !important;
+  font-weight: 700;
+}
+
+.rmdp-day.rmdp-selected span {
+  background: #a9762f !important;
+  color: white !important;
+}
+
+.rmdp-day.rmdp-range {
+  background: #f1efe6 !important;
+}
+
+.rmdp-day.rmdp-today span {
+  border: 2px solid #a9762f !important;
+}
+
+.rmdp-day:hover span {
+  background: #f1efe6 !important;
+  color: #7a6b52 !important;
 }
