@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import DashboardLayout from "@/components/layout/DashboardLayout";
+import { ClientProvider } from "@/context/ClientContext";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -15,7 +16,9 @@ export default function RootLayout({
   return (
     <html lang="fa" dir="rtl">
       <body>
-        <DashboardLayout>{children}</DashboardLayout>
+        <ClientProvider>
+          <DashboardLayout>{children}</DashboardLayout>
+        </ClientProvider>
       </body>
     </html>
   );
