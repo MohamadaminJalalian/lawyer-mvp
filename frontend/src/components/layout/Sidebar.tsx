@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -10,7 +10,11 @@ import {
   CheckSquare,
   Settings,
   X,
+  Repeat,
 } from "lucide-react";
+
+import { useAuth } from "@/context/AuthContext";
+import { useSecretaries } from "@/context/SecretaryContext";
 
 const menuItems = [
   { title: "داشبورد", href: "/", icon: LayoutDashboard },
@@ -28,6 +32,16 @@ interface SidebarProps {
 
 export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
+  const { currentUser, toggleRole } = useAuth();
+  const { getSecretaryById } = useSecretaries();
+
+  const secretaryRecord =
+    currentUser.role === "SECRETARY" && currentUser.secretaryId
+      ? getSecretaryById(currentUser.secretaryId)
+      : undefined;
+
+  const displayName = secretaryRecord?.name ?? currentUser.name;
+  const displayTitle = currentUser.title;
 
   return (
     <>
@@ -83,19 +97,27 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           </nav>
 
           <div className="border-t border-slate-200 p-4">
-            <div className="flex items-center gap-3 rounded-xl bg-slate-50 p-3">
-              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-slate-900 text-sm font-semibold text-white">
-                م.ا
+            <button
+              type="button"
+              onClick={toggleRole}
+              title="جابه‌جایی بین حالت وکیل و منشی (موقت، تا پیاده‌سازی لاگین)"
+              className="w-full rounded-xl bg-slate-50 p-3 text-right transition hover:bg-slate-100"
+            >
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-slate-900 text-sm font-semibold text-white">
+                  {displayName?.slice(0, 2) ?? "کا"}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-medium text-slate-800">
+                    {displayName}
+                  </p>
+                  <p className="mt-0.5 truncate text-xs text-slate-500">
+                    {displayTitle}
+                  </p>
+                </div>
+                <Repeat size={16} className="shrink-0 text-slate-400" />
               </div>
-              <div className="min-w-0">
-                <p className="truncate text-sm font-medium text-slate-800">
-                  محمد احمدی
-                </p>
-                <p className="mt-0.5 truncate text-xs text-slate-500">
-                  وکیل پایه یک دادگستری
-                </p>
-              </div>
-            </div>
+            </button>
           </div>
         </div>
       </aside>

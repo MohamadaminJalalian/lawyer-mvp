@@ -38,9 +38,21 @@ const emptyForm: ClientFormValues = {
 type Props = {
   clientId?: string;
   initialValues?: Client;
+  /** Called after a successful create/update. Falls back to navigating to /clients. */
+  onSuccess?: () => void;
+  /** Called when the user cancels/leaves the form. Falls back to navigating to /clients. */
+  onCancel?: () => void;
+  /** When true, renders without the outer card (bg/border/rounded/padding) — used inside a Modal. */
+  bare?: boolean;
 };
 
-export default function ClientForm({ clientId, initialValues }: Props) {
+export default function ClientForm({
+  clientId,
+  initialValues,
+  onSuccess,
+  onCancel,
+  bare = false,
+}: Props) {
   const router = useRouter();
   const { addClient, updateClient, isNationalCodeTaken } = useClients();
 
@@ -123,11 +135,19 @@ export default function ClientForm({ clientId, initialValues }: Props) {
     }
 
     setSubmitting(false);
-    router.push("/clients");
+
+    if (onSuccess) onSuccess();
+    else router.push("/clients");
   }
 
   function handleCancelClick() {
     if (isDirty) setShowLeaveConfirm(true);
+    else if (onCancel) onCancel();
+    else router.push("/clients");
+  }
+
+  function handleConfirmLeave() {
+    if (onCancel) onCancel();
     else router.push("/clients");
   }
 
@@ -135,7 +155,11 @@ export default function ClientForm({ clientId, initialValues }: Props) {
     <>
       <form
         onSubmit={handleSubmit}
-        className="bg-white border border-[#E4E1D8] rounded-xl p-6 space-y-6"
+        className={
+          bare
+            ? "space-y-6"
+            : "bg-white border border-[#E4E1D8] rounded-xl p-6 space-y-6"
+        }
       >
         <BasicInfo form={form} errors={errors} onChange={handleChange} />
         <AdditionalInfo form={form} errors={errors} onChange={handleChange} />
@@ -166,7 +190,7 @@ export default function ClientForm({ clientId, initialValues }: Props) {
         confirmLabel="خروج بدون ذخیره"
         variant="danger"
         onCancel={() => setShowLeaveConfirm(false)}
-        onConfirm={() => router.push("/clients")}
+        onConfirm={handleConfirmLeave}
       />
     </>
   );
