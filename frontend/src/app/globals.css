@@ -14,3 +14,16 @@ body {
   margin: 0;
   background: #f8fafc;
 }
+:root {
+  --bg-page: #f7f4ee;
+  --surface: #ffffff;
+  --surface-muted: #f1ede2;
+  --border: #e7e1d3;
+  --brand: #a9754d;
+  --brand-hover: #8f5f3a;
+  --brand-foreground: #ffffff;
+  --text-primary: #2b2620;
+  --text-secondary: #8a8175;
+  --badge-success-bg: #dcfce7;
+  --badge-success-text: #16a34a;
+}
