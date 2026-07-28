@@ -19,7 +19,7 @@ export default function SessionsTable({
 }: SessionsTableProps) {
   if (sessions.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-[var(--border)] bg-[var(--surface)] py-16 text-center">
+      <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[var(--border)] bg-[var(--surface)] py-16 text-center">
         <p className="text-sm font-medium text-[var(--text-secondary)]">
           جلسه‌ای با این مشخصات پیدا نشد
         </p>
@@ -28,35 +28,38 @@ export default function SessionsTable({
   }
 
   return (
-    <div className="overflow-x-auto rounded-2xl border border-[var(--border)] bg-[var(--surface)] shadow-sm">
-      <table className="w-full table-fixed text-sm">
-        <thead>
-          <tr className="border-b border-[var(--border)] bg-[var(--surface-muted)] text-[var(--text-secondary)]">
-            <th className="w-[22%] px-4 py-3 text-right font-medium">
+    <div
+      className="overflow-x-auto rounded-2xl border border-[var(--border)] bg-[var(--surface)] shadow-sm"
+      dir="rtl"
+    >
+      <table className="min-w-full border-collapse">
+        <thead className="bg-[var(--surface-muted)]">
+          <tr className="border-b border-[var(--border)]">
+            <th className="px-6 py-3 text-right text-sm font-medium text-[var(--text-secondary)]">
               نام موکل
             </th>
 
-            <th className="w-[22%] px-4 py-3 text-center font-medium">
+            <th className="px-6 py-3 text-center text-sm font-medium text-[var(--text-secondary)]">
               شماره تماس
             </th>
 
-            <th className="w-[14%] px-4 py-3 text-center font-medium">
+            <th className="px-6 py-3 text-center text-sm font-medium text-[var(--text-secondary)]">
               تاریخ جلسه
             </th>
 
-            <th className="w-[10%] px-4 py-3 text-center font-medium">
+            <th className="px-6 py-3 text-center text-sm font-medium text-[var(--text-secondary)]">
               روز
             </th>
 
-            <th className="w-[10%] px-4 py-3 text-center font-medium">
+            <th className="px-6 py-3 text-center text-sm font-medium text-[var(--text-secondary)]">
               ساعت
             </th>
 
-            <th className="w-[12%] px-4 py-3 text-center font-medium">
+            <th className="px-6 py-3 text-center text-sm font-medium text-[var(--text-secondary)]">
               وضعیت
             </th>
 
-            <th className="w-[10%] px-4 py-3 text-center font-medium">
+            <th className="px-6 py-3 text-center text-sm font-medium text-[var(--text-secondary)]">
               عملیات
             </th>
           </tr>
@@ -66,21 +69,18 @@ export default function SessionsTable({
           {sessions.map((session) => (
             <tr
               key={session.id}
-              className="border-b border-[var(--border)] last:border-0 hover:bg-[var(--surface-muted)]/60"
+              className="border-b border-[var(--border)] transition hover:bg-[var(--surface-muted)]/60"
             >
-              <td className="px-4 py-4 font-medium text-[var(--text-primary)]">
-                {session.clientName}
+              {/* Client */}
+              <td className="px-6 py-4">
+                <span className="font-medium text-[var(--text-primary)]">
+                  {session.clientName}
+                </span>
               </td>
 
-              <td className="px-4 py-4">
+              {/* Phone */}
+              <td className="px-6 py-4">
                 <div className="flex items-center justify-center gap-2">
-                  <span
-                    dir="ltr"
-                    className="text-[var(--text-secondary)]"
-                  >
-                    {session.clientPhone}
-                  </span>
-
                   <a
                     href={`tel:${session.clientPhone}`}
                     className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[var(--surface-muted)] text-[var(--brand)] transition hover:bg-[var(--brand)] hover:text-[var(--brand-foreground)]"
@@ -100,28 +100,36 @@ export default function SessionsTable({
                       <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
                     </svg>
                   </a>
+
+                  <span dir="ltr" className="text-[var(--text-secondary)]">
+                    {session.clientPhone}
+                  </span>
                 </div>
               </td>
-
-              <td className="px-4 py-4 text-center text-[var(--text-secondary)]">
+                            {/* Date */}
+              <td className="px-6 py-4 text-center text-[var(--text-secondary)] whitespace-nowrap">
                 {toJalaliDate(session.sessionDate)}
               </td>
 
-              <td className="px-4 py-4 text-center text-[var(--text-secondary)]">
+              {/* Weekday */}
+              <td className="px-6 py-4 text-center text-[var(--text-secondary)] whitespace-nowrap">
                 {toWeekdayName(session.sessionDate)}
               </td>
 
-              <td className="px-4 py-4 text-center text-[var(--text-secondary)]">
+              {/* Time */}
+              <td className="px-6 py-4 text-center text-[var(--text-secondary)] whitespace-nowrap">
                 {formatTime12(session.sessionTime)}
               </td>
 
-              <td className="px-4 py-4 text-center">
+              {/* Status */}
+              <td className="px-6 py-4">
                 <div className="flex justify-center">
                   <SessionStatusBadge status={session.status} />
                 </div>
               </td>
 
-              <td className="px-4 py-4">
+              {/* Action */}
+              <td className="px-6 py-4">
                 <div className="flex justify-center">
                   <button
                     type="button"
@@ -148,7 +156,7 @@ export default function SessionsTable({
               </td>
             </tr>
           ))}
-        </tbody>
+                      </tbody>
       </table>
     </div>
   );

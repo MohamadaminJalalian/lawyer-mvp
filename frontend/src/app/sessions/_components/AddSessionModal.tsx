@@ -78,8 +78,7 @@ export default function AddSessionModal({ open, onClose, onSubmit }: AddSessionM
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
       <div
-        className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-2xl bg-[var(--surface)] p-6 shadow-xl"
-        dir="rtl"
+        className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-[var(--surface)] p-8 shadow-xl"
       >
         <div className="mb-5 flex items-center justify-between">
           <h2 className="text-lg font-bold text-[var(--text-primary)]">افزودن جلسه مشاوره</h2>
