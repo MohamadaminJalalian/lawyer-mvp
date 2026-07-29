@@ -8,6 +8,7 @@ import "./globals.css";
 
 const vazirmatn = Vazirmatn({
   subsets: ["arabic"],
+  variable: "--font-vazirmatn",
 });
 
 export const metadata: Metadata = {
@@ -21,8 +22,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="fa" dir="rtl">
-      <body className={`${vazirmatn.className} bg-slate-50`}>
+    <html lang="fa" dir="rtl" className={vazirmatn.variable}>
+      <body>
         <AuthProvider>
           <SecretaryProvider>
             <TrashProvider>

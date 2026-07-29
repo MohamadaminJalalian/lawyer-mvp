@@ -46,3 +46,5 @@ export function Modal({ open, onClose, title, children, actions }: ModalProps) {
     </dialog>
   );
 }
+
+export default Modal;
