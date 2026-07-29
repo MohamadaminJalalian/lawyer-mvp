@@ -22,13 +22,13 @@ export default function TimeSlotPicker({ time, onTimeChange }: TimeSlotPickerPro
     <div>
       <p className="mb-3 text-sm font-medium text-[var(--text-secondary)]">ساعت جلسه</p>
 
-      <div className="flex flex-wrap gap-2">
+      <div className="grid grid-cols-4 gap-1.5 sm:gap-2">
         {QUICK_SLOTS.map((slot) => (
           <button
             key={slot}
             type="button"
             onClick={() => onTimeChange(slot)}
-            className={`rounded-xl border px-4 py-2 text-sm font-medium transition ${
+            className={`rounded-xl border py-2.5 text-sm font-medium transition ${
               time === slot
                 ? "border-[var(--brand)] bg-[var(--brand)] text-[var(--brand-foreground)]"
                 : "border-[var(--border)] bg-[var(--surface)] text-[var(--text-primary)] hover:border-[var(--brand)]"
@@ -40,11 +40,11 @@ export default function TimeSlotPicker({ time, onTimeChange }: TimeSlotPickerPro
       </div>
 
       <div className="mt-3 flex items-center gap-2">
-        <span className="text-sm text-[var(--text-secondary)]">یا زمان دلخواه:</span>
+        <span className="whitespace-nowrap text-sm text-[var(--text-secondary)]">یا زمان دلخواه:</span>
         <select
           value={hour}
           onChange={(e) => handleCustomChange(e.target.value, minute || "00")}
-          className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 py-1.5 text-sm text-[var(--text-primary)]"
+          className="flex-1 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 py-1.5 text-sm text-[var(--text-primary)]"
         >
           <option value="" disabled>ساعت</option>
           {HOURS.map((h) => (
@@ -55,7 +55,7 @@ export default function TimeSlotPicker({ time, onTimeChange }: TimeSlotPickerPro
         <select
           value={minute}
           onChange={(e) => handleCustomChange(hour || "08", e.target.value)}
-          className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 py-1.5 text-sm text-[var(--text-primary)]"
+          className="flex-1 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 py-1.5 text-sm text-[var(--text-primary)]"
         >
           <option value="" disabled>دقیقه</option>
           {MINUTES.map((m) => (

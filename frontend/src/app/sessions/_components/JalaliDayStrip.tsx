@@ -105,7 +105,7 @@ export default function JalaliDayStrip({ selectedDate, onSelect }: JalaliDayStri
         )}
       </div>
 
-      <div className="flex gap-2 overflow-x-auto pb-2">
+      <div className="grid grid-cols-7 gap-1.5 sm:gap-2">
         {days.map((day) => {
           const isActive = day.iso === selectedDate;
           return (
@@ -113,16 +113,18 @@ export default function JalaliDayStrip({ selectedDate, onSelect }: JalaliDayStri
               key={day.iso}
               type="button"
               onClick={() => onSelect(day.iso)}
-              className={`flex min-w-[76px] flex-col items-center gap-1 rounded-2xl border px-3 py-3 text-center transition ${
+              className={`flex flex-col items-center gap-1 rounded-xl border px-1 py-2.5 text-center transition sm:rounded-2xl sm:px-2 sm:py-3 ${
                 isActive
                   ? "border-[var(--brand)] bg-[var(--brand)] text-[var(--brand-foreground)]"
                   : "border-[var(--border)] bg-[var(--surface)] text-[var(--text-primary)] hover:border-[var(--brand)]"
               }`}
             >
-              <span className="text-xs font-medium">{day.weekday}</span>
-              <span className="text-base font-bold">{day.dayNumber}</span>
+              <span className="text-[10px] font-medium sm:text-xs">{day.weekday}</span>
+              <span className="text-sm font-bold sm:text-base">{day.dayNumber}</span>
               <span
-                className={`text-[11px] ${isActive ? "text-white/80" : "text-[var(--text-secondary)]"}`}
+                className={`text-[9px] sm:text-[11px] ${
+                  isActive ? "text-white/80" : "text-[var(--text-secondary)]"
+                }`}
               >
                 {day.monthName}
               </span>

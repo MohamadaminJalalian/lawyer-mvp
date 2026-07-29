@@ -77,9 +77,7 @@ export default function AddSessionModal({ open, onClose, onSubmit }: AddSessionM
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-      <div
-        className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-[var(--surface)] p-8 shadow-xl"
-      >
+      <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-[var(--surface)] p-8 shadow-xl">
         <div className="mb-5 flex items-center justify-between">
           <h2 className="text-lg font-bold text-[var(--text-primary)]">افزودن جلسه مشاوره</h2>
           <button
@@ -92,33 +90,35 @@ export default function AddSessionModal({ open, onClose, onSubmit }: AddSessionM
         </div>
 
         <div className="space-y-5">
-          <div>
-            <label className="mb-1 block text-sm font-medium text-[var(--text-secondary)]">
-              نام موکل
-            </label>
-            <input
-              type="text"
-              value={clientName}
-              onChange={(e) => setClientName(e.target.value)}
-              placeholder="مثال: مریم احمدی"
-              className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2.5 text-sm text-[var(--text-primary)] outline-none transition focus:border-[var(--brand)]"
-            />
-            {errors.clientName && <p className="mt-1 text-xs text-red-500">{errors.clientName}</p>}
-          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="mb-1 block text-sm font-medium text-[var(--text-secondary)]">
+                نام موکل
+              </label>
+              <input
+                type="text"
+                value={clientName}
+                onChange={(e) => setClientName(e.target.value)}
+                placeholder="مثال: مریم احمدی"
+                className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2.5 text-sm text-[var(--text-primary)] outline-none transition focus:border-[var(--brand)]"
+              />
+              {errors.clientName && <p className="mt-1 text-xs text-red-500">{errors.clientName}</p>}
+            </div>
 
-          <div>
-            <label className="mb-1 block text-sm font-medium text-[var(--text-secondary)]">
-              شماره تماس موکل
-            </label>
-            <input
-              type="tel"
-              value={clientPhone}
-              onChange={(e) => setClientPhone(e.target.value)}
-              placeholder="09121234567"
-              dir="ltr"
-              className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2.5 text-sm text-[var(--text-primary)] outline-none transition focus:border-[var(--brand)]"
-            />
-            {errors.clientPhone && <p className="mt-1 text-xs text-red-500">{errors.clientPhone}</p>}
+            <div>
+              <label className="mb-1 block text-sm font-medium text-[var(--text-secondary)]">
+                شماره تماس موکل
+              </label>
+              <input
+                type="tel"
+                value={clientPhone}
+                onChange={(e) => setClientPhone(e.target.value)}
+                placeholder="09121234567"
+                dir="ltr"
+                className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2.5 text-sm text-[var(--text-primary)] outline-none transition focus:border-[var(--brand)]"
+              />
+              {errors.clientPhone && <p className="mt-1 text-xs text-red-500">{errors.clientPhone}</p>}
+            </div>
           </div>
 
           <JalaliDayStrip selectedDate={sessionDate} onSelect={setSessionDate} />

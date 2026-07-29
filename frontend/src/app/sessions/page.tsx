@@ -49,16 +49,15 @@ export default function SessionsPage() {
           </p>
         </div>
 
-        <div className="mb-4 flex items-center justify-between">
-          <SessionsSearchBar query={query} onQueryChange={setQuery} />
-          <button
-            onClick={() => setAddModalOpen(true)}
-            className="rounded-xl bg-[var(--brand)] px-4 py-2.5 text-sm font-medium text-[var(--brand-foreground)] shadow-sm transition hover:bg-[var(--brand-hover)]"
-          >
-            + افزودن جلسه جدید
-          </button>
-        </div>
-
+        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+  <button
+    onClick={() => setAddModalOpen(true)}
+    className="order-2 w-full rounded-xl bg-[var(--brand)] px-4 py-2.5 text-sm font-medium text-[var(--brand-foreground)] shadow-sm transition hover:bg-[var(--brand-hover)] sm:order-1 sm:w-auto"
+  >
+    + افزودن جلسه جدید
+  </button>
+  <SessionsSearchBar query={query} onQueryChange={setQuery} />
+</div>
         <SessionsTable sessions={filteredSessions} onViewSession={setViewingSession} />
 
         <AddSessionModal

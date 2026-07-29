@@ -33,7 +33,7 @@ export default function MonthCalendar({ selectedDate, onSelect, onClose }: Month
     <>
       <div className="fixed inset-0 z-10" onClick={onClose} />
       <div
-        className="absolute right-0 z-20 mt-2 w-72 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4 shadow-lg"
+        className="absolute right-0 z-20 mt-2 w-72 max-w-[calc(100vw-3rem)] rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4 shadow-lg"
         dir="rtl"
       >
         <div className="mb-3 flex items-center justify-between">

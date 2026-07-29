@@ -21,12 +21,14 @@ export default function RootLayout({
   return (
     <html lang="fa" dir="rtl">
       <body className={`${vazirmatn.className} bg-slate-50`}>
-        <Sidebar />
+        <div className="hidden md:block">
+          <Sidebar />
+        </div>
 
-        <div className="mr-64 min-h-screen">
+        <div className="min-h-screen md:mr-64">
           <Header />
 
-          <main className="min-h-[calc(100vh-80px)] p-8">
+          <main className="min-h-[calc(100vh-80px)] p-4 md:p-8">
             {children}
           </main>
 

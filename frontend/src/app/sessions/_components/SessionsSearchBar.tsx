@@ -7,7 +7,7 @@ interface SessionsSearchBarProps {
 
 export default function SessionsSearchBar({ query, onQueryChange }: SessionsSearchBarProps) {
   return (
-    <div className="flex max-w-xs items-center gap-2">
+    <div className="flex w-full items-center gap-2 sm:max-w-xs">
       <input
         type="text"
         value={query}
