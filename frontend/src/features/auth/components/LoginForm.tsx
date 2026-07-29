@@ -1,0 +1,215 @@
+"use client";
+
+import { useState, type FormEvent } from "react";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { loginRequest } from "../api/auth.api";
+import { useAuth } from "../hooks/useAuth";
+import { getErrorMessage } from "@/lib/api-error-handler";
+import { resolveRedirectTarget } from "../utils/auth-redirect";
+import { ApiError } from "@/lib/api-client";
+
+type FormStatus =
+  | "idle"
+  | "submitting"
+  | "unauthorized"
+  | "network-error"
+  | "server-error";
+interface FieldErrors {
+  username?: string;
+  password?: string;
+}
+
+export function LoginForm() {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
+  const [formStatus, setFormStatus] = useState<FormStatus>("idle");
+  const [formMessage, setFormMessage] = useState<string | null>(null);
+
+  const { setUserAfterLogin } = useAuth();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const resetSuccess = searchParams.get("reset") === "success";
+
+  function validate(): boolean {
+    const errors: FieldErrors = {};
+    const trimmedUsername = username.trim();
+    if (!trimmedUsername) errors.username = "نام کاربری را وارد کنید.";
+    else if (trimmedUsername.length < 3)
+      errors.username = "نام کاربری باید حداقل ۳ کاراکتر باشد.";
+
+    if (!password) errors.password = "رمز عبور را وارد کنید.";
+    else if (password.length < 6)
+      errors.password = "رمز عبور باید حداقل ۶ کاراکتر باشد.";
+
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  }
+
+  async function handleSubmit(event: FormEvent) {
+    event.preventDefault();
+    setFormMessage(null);
+    if (!validate()) return;
+
+    setFormStatus("submitting");
+    try {
+      const response = await loginRequest({
+        username: username.trim(),
+        password,
+      });
+      setUserAfterLogin(response.user);
+      const redirectParam = searchParams.get("redirect");
+      router.push(resolveRedirectTarget(redirectParam));
+    } catch (error) {
+      setPassword("");
+
+      if (error instanceof TypeError) {
+        setFormStatus("network-error");
+        setFormMessage(
+          "ارتباط با سرور برقرار نشد. اتصال اینترنت را بررسی کنید.",
+        );
+        return;
+      }
+      if (error instanceof ApiError && error.status === 401) {
+        setFormStatus("unauthorized");
+        setFormMessage("نام کاربری یا رمز عبور صحیح نیست.");
+        return;
+      }
+      if (error instanceof ApiError && error.status === 403) {
+        setFormStatus("unauthorized");
+        setFormMessage(
+          "حساب کاربری شما غیرفعال است. با مدیر سیستم تماس بگیرید.",
+        );
+        return;
+      }
+      setFormStatus("server-error");
+      setFormMessage(getErrorMessage(error));
+    } finally {
+      setFormStatus((current) => (current === "submitting" ? "idle" : current));
+    }
+  }
+
+  const isSubmitting = formStatus === "submitting";
+
+  return (
+    <form onSubmit={handleSubmit} noValidate dir="rtl" className="space-y-5">
+      <div>
+        <label htmlFor="username" className="mb-1.5 block text-sm font-medium text-card-foreground">
+          نام کاربری
+        </label>
+        <input
+          id="username"
+          name="username"
+          type="text"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          disabled={isSubmitting}
+          autoComplete="username"
+          aria-invalid={Boolean(fieldErrors.username)}
+          placeholder="نام کاربری خود را وارد کنید"
+          className="block w-full rounded-lg border border-border bg-background px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted-foreground transition-colors hover:border-muted-foreground/30 focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-50"
+        />
+        {fieldErrors.username && (
+          <p role="alert" className="mt-1.5 text-xs text-destructive">
+            {fieldErrors.username}
+          </p>
+        )}
+      </div>
+
+      <div>
+        <label htmlFor="password" className="mb-1.5 block text-sm font-medium text-card-foreground">
+          رمز عبور
+        </label>
+        <div className="relative">
+          <input
+            id="password"
+            name="password"
+            type={showPassword ? "text" : "password"}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            disabled={isSubmitting}
+            autoComplete="current-password"
+            aria-invalid={Boolean(fieldErrors.password)}
+            placeholder="رمز عبور خود را وارد کنید"
+            className="block w-full rounded-lg border border-border bg-background px-3.5 py-2.5 pl-10 text-sm text-foreground placeholder:text-muted-foreground transition-colors hover:border-muted-foreground/30 focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-50"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword((v) => !v)}
+            disabled={isSubmitting}
+            className="absolute left-2.5 top-1/2 -translate-y-1/2 rounded p-1 text-muted-foreground transition-colors hover:text-foreground disabled:opacity-50"
+            aria-label={showPassword ? "پنهان کردن رمز عبور" : "نمایش رمز عبور"}
+          >
+            {showPassword ? (
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
+                <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
+                <path d="M14.12 14.12a3 3 0 1 1-4.24-4.24" />
+                <line x1="1" y1="1" x2="23" y2="23" />
+              </svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+            )}
+          </button>
+        </div>
+        {fieldErrors.password && (
+          <p role="alert" className="mt-1.5 text-xs text-destructive">
+            {fieldErrors.password}
+          </p>
+        )}
+      </div>
+
+      {resetSuccess && !formMessage && (
+        <div
+          role="status"
+          className="rounded-lg px-3.5 py-2.5 text-sm bg-success/10 text-success"
+        >
+          رمز عبور شما با موفقیت تغییر کرد.
+        </div>
+      )}
+
+      {formMessage && (
+        <div
+          role="alert"
+          className={`rounded-lg px-3.5 py-2.5 text-sm ${
+            formStatus === "unauthorized" || formStatus === "network-error" || formStatus === "server-error"
+              ? "bg-destructive/10 text-destructive"
+              : "bg-primary-light text-primary-dark"
+          }`}
+        >
+          {formMessage}
+        </div>
+      )}
+
+      <button
+        type="submit"
+        disabled={isSubmitting}
+        className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-primary-hover active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        {isSubmitting ? (
+          <>
+            <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+            در حال ورود...
+          </>
+        ) : (
+          "ورود به سامانه"
+        )}
+      </button>
+
+      <p className="text-center text-sm text-muted-foreground">
+        <Link
+          href="/auth/forgot-password"
+          className="text-primary hover:text-primary-hover transition-colors"
+        >
+          رمز عبور خود را فراموش کرده‌اید؟
+        </Link>
+      </p>
+    </form>
+  );
+}

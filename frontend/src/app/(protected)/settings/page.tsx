@@ -1,7 +1,7 @@
 "use client";
 
 import Breadcrumb from "@/components/layout/Breadcrumb";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 import { useSecretaries } from "@/context/SecretaryContext";
 import SecretariesCard from "@/components/settings/SecretariesCard";
 import TrashCard from "@/components/settings/TrashCard";
@@ -10,14 +10,17 @@ import MyPermissionsCard from "@/components/settings/MyPermissionsCard";
 import MyProfileCard from "@/components/settings/MyProfileCard";
 
 export default function SettingsPage() {
-  const { currentUser, isLawyer } = useAuth();
+  const { user, hasRole } = useAuth();
   const { getSecretaryById } = useSecretaries();
 
-  const currentSecretary = currentUser.secretaryId
-    ? getSecretaryById(currentUser.secretaryId)
-    : undefined;
+  const isLawyer = hasRole("ADMIN");
 
-  const canSeeTrash = isLawyer || Boolean(currentSecretary?.permissions.canDeleteFiles);
+  // موقت: چون نوع کاربر جدید هنوز secretaryId نداره، این بخش باید
+  // بعداً که بک‌اند واقعی وصل شد اصلاح بشه
+  const currentSecretary = user ? getSecretaryById(user.id) : undefined;
+
+  const canSeeTrash =
+    isLawyer || Boolean(currentSecretary?.permissions.canDeleteFiles);
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -39,7 +42,6 @@ export default function SettingsPage() {
             {currentSecretary ? (
               <>
                 <MyPermissionsCard secretary={currentSecretary} />
-                {canSeeTrash && <TrashCard />}
                 <MyProfileCard secretary={currentSecretary} />
                 <ChangePasswordCard />
               </>

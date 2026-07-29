@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -10,11 +10,10 @@ import {
   CheckSquare,
   Settings,
   X,
-  Repeat,
 } from "lucide-react";
 
-import { useAuth } from "@/context/AuthContext";
-import { useSecretaries } from "@/context/SecretaryContext";
+import { useAuth } from "@/features/auth/hooks/useAuth";
+import { LogoutButton } from "@/features/auth/components/LogoutButton";
 
 const menuItems = [
   { title: "داشبورد", href: "/", icon: LayoutDashboard },
@@ -25,6 +24,11 @@ const menuItems = [
   { title: "تنظیمات", href: "/settings", icon: Settings },
 ];
 
+const ROLE_LABELS: Record<string, string> = {
+  ADMIN: "مدیر دفتر",
+  STAFF: "کارمند",
+};
+
 interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
@@ -32,16 +36,7 @@ interface SidebarProps {
 
 export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
-  const { currentUser, toggleRole } = useAuth();
-  const { getSecretaryById } = useSecretaries();
-
-  const secretaryRecord =
-    currentUser.role === "SECRETARY" && currentUser.secretaryId
-      ? getSecretaryById(currentUser.secretaryId)
-      : undefined;
-
-  const displayName = secretaryRecord?.name ?? currentUser.name;
-  const displayTitle = currentUser.title;
+  const { user } = useAuth();
 
   return (
     <>
@@ -97,27 +92,22 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           </nav>
 
           <div className="border-t border-slate-200 p-4">
-            <button
-              type="button"
-              onClick={toggleRole}
-              title="جابه‌جایی بین حالت وکیل و منشی (موقت، تا پیاده‌سازی لاگین)"
-              className="w-full rounded-xl bg-slate-50 p-3 text-right transition hover:bg-slate-100"
-            >
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-slate-900 text-sm font-semibold text-white">
-                  {displayName?.slice(0, 2) ?? "کا"}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium text-slate-800">
-                    {displayName}
-                  </p>
-                  <p className="mt-0.5 truncate text-xs text-slate-500">
-                    {displayTitle}
-                  </p>
-                </div>
-                <Repeat size={16} className="shrink-0 text-slate-400" />
+            <div className="flex items-center gap-3 rounded-xl bg-slate-50 p-3">
+              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-slate-900 text-sm font-semibold text-white">
+                {user?.fullName?.slice(0, 2) ?? "کا"}
               </div>
-            </button>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-medium text-slate-800">
+                  {user?.fullName ?? "کاربر"}
+                </p>
+                <p className="mt-0.5 truncate text-xs text-slate-500">
+                  {user ? ROLE_LABELS[user.role] ?? user.role : ""}
+                </p>
+              </div>
+            </div>
+            <div className="mt-2">
+              <LogoutButton />
+            </div>
           </div>
         </div>
       </aside>

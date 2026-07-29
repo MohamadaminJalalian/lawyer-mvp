@@ -1,57 +1,48 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 
 interface ModalProps {
-    onClose: () => void;
-    children: ReactNode;
-    maxWidthClass?: string;
+  open: boolean;
+  onClose: () => void;
+  title?: string;
+  children: ReactNode;
+  actions?: ReactNode;
 }
 
-export default function Modal({
-    onClose,
-    children,
-    maxWidthClass = "max-w-sm",
-}: ModalProps) {
-    const [mounted, setMounted] = useState(false);
-    const [closing, setClosing] = useState(false);
+export function Modal({ open, onClose, title, children, actions }: ModalProps) {
+  const dialogRef = useRef<HTMLDialogElement>(null);
 
-    useEffect(() => {
-        const frame = requestAnimationFrame(() => setMounted(true));
-        return () => cancelAnimationFrame(frame);
-    }, []);
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
 
-    function handleClose() {
-        setClosing(true);
-        setTimeout(onClose, 150);
+    if (open) {
+      dialog.showModal();
+    } else {
+      dialog.close();
     }
+  }, [open]);
 
-    useEffect(() => {
-        function handleKeyDown(event: KeyboardEvent) {
-            if (event.key === "Escape") {
-                handleClose();
-            }
-        }
-        window.addEventListener("keydown", handleKeyDown);
-        return () => window.removeEventListener("keydown", handleKeyDown);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
-    const isVisible = mounted && !closing;
-
-    return (
-        <div
-            onClick={handleClose}
-            className={`fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 transition-opacity duration-150 ${isVisible ? "opacity-100" : "opacity-0"
-                }`}
-        >
-            <div
-                onClick={(event) => event.stopPropagation()}
-                className={`bg-white rounded-xl w-full ${maxWidthClass} max-h-[90vh] overflow-y-auto transition-all duration-150 ${isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"
-                    }`}
-            >
-                {children}
-            </div>
+  return (
+    <dialog
+      ref={dialogRef}
+      onClose={onClose}
+      className="backdrop:bg-black/50 rounded-xl border border-slate-200 p-0 w-full max-w-md shadow-xl"
+    >
+      <div className="p-6">
+        {title && (
+          <h2 className="text-lg font-semibold text-slate-900 mb-3">
+            {title}
+          </h2>
+        )}
+        <div className="text-slate-700 text-sm leading-relaxed mb-6">
+          {children}
         </div>
-    );
+        {actions && (
+          <div className="flex gap-3 justify-start">{actions}</div>
+        )}
+      </div>
+    </dialog>
+  );
 }

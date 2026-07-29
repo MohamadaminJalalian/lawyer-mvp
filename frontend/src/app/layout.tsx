@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Vazirmatn } from "next/font/google";
-import DashboardLayout from "@/components/layout/DashboardLayout";
-import { AuthProvider } from "@/context/AuthContext";
+import { AuthProvider } from "@/providers/AuthProvider";
 import { SecretaryProvider } from "@/context/SecretaryContext";
 import { TrashProvider } from "@/context/TrashContext";
 import { ClientProvider } from "@/context/ClientContext";
@@ -27,9 +26,7 @@ export default function RootLayout({
         <AuthProvider>
           <SecretaryProvider>
             <TrashProvider>
-              <ClientProvider>
-                <DashboardLayout>{children}</DashboardLayout>
-              </ClientProvider>
+              <ClientProvider>{children}</ClientProvider>
             </TrashProvider>
           </SecretaryProvider>
         </AuthProvider>
