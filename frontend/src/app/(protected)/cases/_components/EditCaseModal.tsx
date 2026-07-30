@@ -8,8 +8,8 @@ import DatePicker from "react-multi-date-picker";
 import persian from "react-date-object/calendars/persian";
 import persian_fa from "react-date-object/locales/persian_fa";
 import Modal from "./Modal";
-import { mockCategories } from "../../../mocks/cases.mock";
-import type { CaseListItem, CasePriority } from "../../../mocks/cases.types";
+import { getCategories } from "@/lib/api/clients-categories.api";
+import type { CaseListItem, CasePriority } from "../../../../mocks/cases.types";
 
 const CURRENT_USER_ROLE: "ADMIN" | "SECRETARY" = "ADMIN";
 

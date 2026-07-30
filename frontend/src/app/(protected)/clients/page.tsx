@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useMemo, useState } from "react";
 import { Calendar } from "lucide-react";
@@ -102,14 +102,14 @@ export default function ClientsPage() {
   return (
     <div className="max-w-6xl mx-auto">
       <div className="mb-6">
-        <Breadcrumb trail={["╪»╪º╪┤╪¿┘ê╪▒╪»", "┘à┘ê┌⌐┘äΓÇî┘ç╪º"]} title="┘ä█î╪│╪¬ ┘à┘ê┌⌐┘äΓÇî┘ç╪º" />
+        <Breadcrumb trail={["داشبورد", "موکل‌ها"]} title="لیست موکل‌ها" />
       </div>
 
       <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-2.5 mb-4">
         <SearchBox
           value={searchInput}
           onChange={setSearchInput}
-          placeholder="┘å╪º┘à╪î ┌⌐╪» ┘à┘ä█î █î╪º ╪┤┘à╪º╪▒┘ç ┘à┘ê╪¿╪º█î┘ä ┘à┘ê┌⌐┘ä ╪▒╪º ┘ê╪º╪▒╪» ┌⌐┘å█î╪»"
+          placeholder="نام، کد ملی یا شماره موبایل موکل را وارد کنید"
         />
 
         <button
@@ -122,7 +122,7 @@ export default function ClientsPage() {
           }`}
         >
           <Calendar size={16} />
-          ╪¼╪│╪¬ΓÇî┘ê╪¼┘ê ╪¿╪▒ ╪º╪│╪º╪│ ╪¬╪º╪▒█î╪«
+          جست‌وجو بر اساس تاریخ
         </button>
 
         {hasActiveFilter && (
@@ -130,7 +130,7 @@ export default function ClientsPage() {
             onClick={handleClearFilter}
             className="px-3 py-2 text-sm text-[#A32D2D] hover:underline whitespace-nowrap"
           >
-            ┘╛╪º┌⌐ ┌⌐╪▒╪»┘å ┘ü█î┘ä╪¬╪▒┘ç╪º
+            پاک کردن فیلترها
           </button>
         )}
 
@@ -139,7 +139,7 @@ export default function ClientsPage() {
           onClick={() => setNewModalOpen(true)}
           className="sm:mr-auto px-4 py-2 bg-[#A9762F] text-white rounded-lg text-sm font-medium hover:bg-[#946A2A] transition-colors whitespace-nowrap"
         >
-          + ╪½╪¿╪¬ ┘à┘ê┌⌐┘ä ╪¼╪»█î╪»
+          + ثبت موکل جدید
         </button>
       </div>
 
@@ -147,7 +147,7 @@ export default function ClientsPage() {
         <ClientsTableSkeleton />
       ) : filteredClients.length === 0 ? (
         <p className="mt-6 text-[#8C8A80] text-sm">
-          {hasActiveFilter ? "┘à┘ê┌⌐┘ä█î ╪¿╪º ╪º╪╖┘ä╪º╪╣╪º╪¬ ┘ê╪º╪▒╪»╪┤╪»┘ç ┘╛█î╪»╪º ┘å╪┤╪»." : "┘ç┘å┘ê╪▓ ┘à┘ê┌⌐┘ä█î ╪½╪¿╪¬ ┘å╪┤╪»┘ç ╪º╪│╪¬."}
+          {hasActiveFilter ? "موکلی با اطلاعات واردشده پیدا نشد." : "هنوز موکلی ثبت نشده است."}
         </p>
       ) : (
         <>
@@ -163,11 +163,11 @@ export default function ClientsPage() {
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               className="px-4 py-2 bg-white border border-[#E4E1D8] rounded-lg text-sm disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              ┘é╪¿┘ä█î
+              قبلی
             </button>
 
             <span className="text-sm text-[#6B6A63]">
-              ╪╡┘ü╪¡┘ç {currentPage} ╪º╪▓ {totalPages}
+              صفحه {currentPage} از {totalPages}
             </span>
 
             <button
@@ -175,7 +175,7 @@ export default function ClientsPage() {
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               className="px-4 py-2 bg-white border border-[#E4E1D8] rounded-lg text-sm disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              ╪¿╪╣╪»█î
+              بعدی
             </button>
           </div>
         </>

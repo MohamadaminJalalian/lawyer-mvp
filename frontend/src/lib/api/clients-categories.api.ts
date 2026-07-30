@@ -2,7 +2,7 @@
 // توابع API موکل‌ها و دسته‌بندی‌ها (وابسته به BE1 و BE2)
 // ==========================================================
 
-import { apiFetch } from "./api-client";
+import { apiClient as apiFetch } from "@/lib/api-client";
 import type { ClientSummary, CategorySummary } from "../../mocks/cases.types";
 
 export function searchClients(query: string): Promise<ClientSummary[]> {

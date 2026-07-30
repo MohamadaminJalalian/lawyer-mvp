@@ -2,7 +2,7 @@
 // توابع API ماژول «پرونده‌ها»
 // ==========================================================
 
-import { apiFetch } from "./api-client";
+import { apiClient as apiFetch } from "@/lib/api-client";
 import type {
   CaseListItem,
   CreateCaseRequest,
@@ -27,6 +27,19 @@ function buildQueryString(params: Record<string, string | number | undefined>): 
   });
   const queryString = query.toString();
   return queryString ? `?${queryString}` : "";
+}
+
+function mapCaseDto(dto: any): CaseListItem {
+  return {
+    ...dto,
+    client: {
+      id: dto.clientId,
+      fullName: dto.clientFullName,
+      nationalCode: dto.clientNationalCode,
+      isActive: true,
+    },
+    category: { id: dto.categoryId, name: dto.categoryName },
+  };
 }
 
 export function getCases(

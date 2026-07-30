@@ -3,8 +3,8 @@
 // مسیر این فایل: app/cases/_components/FilterModal.tsx
 
 import Modal from "./Modal";
-import { mockCategories } from "../../../mocks/cases.mock";
-import type { CaseStatus } from "../../../mocks/cases.types";
+import { getCategories } from "@/lib/api/clients-categories.api";
+import type { CaseStatus } from "../../../../mocks/cases.types";
 export type UrgencyOption = "URGENT" | "NOT_URGENT";
 
 interface FilterModalProps {

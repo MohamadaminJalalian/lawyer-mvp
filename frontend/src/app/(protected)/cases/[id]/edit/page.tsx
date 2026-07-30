@@ -5,8 +5,8 @@
 import { useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { mockCases, mockCategories } from "../../../../mocks/cases.mock";
-import type { CasePriority } from "../../../../mocks/cases.types";
+import { mockCases, mockCategories } from "../../../../../mocks/cases.mock";
+import type { CasePriority } from "../../../../../mocks/cases.types";
 
 const CURRENT_USER_ROLE: "ADMIN" | "SECRETARY" = "ADMIN";
 
