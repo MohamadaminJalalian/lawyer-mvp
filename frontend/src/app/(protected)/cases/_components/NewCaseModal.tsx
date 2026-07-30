@@ -14,7 +14,7 @@ import {
   CalendarDays,
 } from "lucide-react";
 import Modal from "./Modal";
-import { mockClients, mockCategories } from "../../../mocks/cases.mock";
+import { mockClients, mockCategories } from "../../../../mocks/cases.mock";
 
 
 interface FormValues {
