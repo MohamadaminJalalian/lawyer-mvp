@@ -1,12 +1,45 @@
 "use client";
 
-import { X, Calendar, User, FolderOpen, FileText, Star } from "lucide-react";
+import type { ReactNode } from "react";
+import { Bell, Users, Calendar, ClipboardList, X } from "lucide-react";
 import type { NoticeListItem } from "./NoticesTable";
 
 interface NoticeDetailsModalProps {
   open: boolean;
   notice: NoticeListItem | null;
   onClose: () => void;
+}
+
+function InfoCard({
+  icon: Icon,
+  title,
+  children,
+}: {
+  icon: React.ElementType;
+  title: string;
+  children: ReactNode;
+}) {
+  return (
+    <div className="overflow-hidden rounded-xl border border-[#EDEBE2] bg-white">
+      <div className="flex items-center gap-2 border-b border-[#EDEBE2] bg-[#FAF8F3] px-4 py-3">
+        <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#FCF6EA] text-[#8A5D1F]">
+          <Icon size={15} />
+        </span>
+        <h4 className="text-sm font-bold text-[#262420]">{title}</h4>
+      </div>
+
+      <div className="space-y-2.5 bg-white px-4 py-3">{children}</div>
+    </div>
+  );
+}
+
+function Field({ label, value }: { label: string; value: ReactNode }) {
+  return (
+    <div className="flex items-center justify-between border-b border-[#EDEBE2] py-1.5 text-sm last:border-0">
+      <span className="text-[#8C8A80]">{label}</span>
+      <span className="font-medium text-[#262420]">{value}</span>
+    </div>
+  );
 }
 
 export default function NoticeDetailsModal({
@@ -18,135 +51,68 @@ export default function NoticeDetailsModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-      <div className="w-full max-w-3xl rounded-2xl bg-white shadow-2xl">
-
-        {/* Header */}
-        <div className="flex items-center justify-between border-b border-[#ece7dd] px-6 py-5">
-          <div>
-            <h2 className="text-2xl font-bold text-neutral-900">
+      <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-xl border border-[#e5e0d6] bg-[#fdfcf9] shadow-2xl">
+        {/* هدر */}
+        <div className="border-b border-[#EDEBE2]">
+          <div className="flex items-center justify-between p-5">
+            <h2 className="flex items-center gap-2 text-xl font-bold text-[#262420]">
+              <Bell size={20} className="text-[#8A5D1F]" />
               جزئیات اطلاعیه
             </h2>
 
-            <p className="mt-1 text-sm text-neutral-500">
-              شناسه اطلاعیه #{notice.id}
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="بستن"
+              className="text-[#8C8A80] transition-colors hover:text-[#262420]"
+            >
+              <X size={22} />
+            </button>
+          </div>
+
+          <div className="flex flex-wrap items-center justify-between gap-3 px-5 pb-5">
+            <div>
+              <h3 className="text-lg font-bold text-[#262420]">
+                {notice.title}
+              </h3>
+              <p className="mt-1 text-sm text-[#8C8A80]">
+                اطلاعات کامل اطلاعیه
+              </p>
+            </div>
+
+            {notice.isImportant && (
+              <span className="flex items-center gap-1.5 rounded-full border border-[#E9D9A8] bg-[#FFF4D8] px-3 py-1 text-sm text-[#8A5D1F]">
+                <span className="h-1.5 w-1.5 rounded-full bg-current" />
+                ضروری
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* محتوا */}
+        <div className="space-y-4 p-5 text-sm">
+          <InfoCard icon={Bell} title="اطلاعات اطلاعیه">
+            <Field label="عنوان" value={notice.title} />
+            <Field label="دسته‌بندی" value={notice.category} />
+          </InfoCard>
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <InfoCard icon={Users} title="اشخاص">
+              <Field label="موکل" value={notice.clientName} />
+            </InfoCard>
+
+            <InfoCard icon={Calendar} title="زمان‌بندی">
+              <Field label="تاریخ موعد" value={notice.date} />
+            </InfoCard>
+          </div>
+
+          <InfoCard icon={ClipboardList} title="متن اطلاعیه">
+            <p className="rounded-lg border border-[#EDEBE2] bg-white p-3 leading-6 text-[#262420]">
+              {notice.description || "متنی برای این اطلاعیه ثبت نشده است."}
             </p>
-          </div>
-
-          <button
-            onClick={onClose}
-            className="rounded-lg p-2 transition hover:bg-gray-100"
-          >
-            <X size={22} />
-          </button>
+          </InfoCard>
         </div>
-
-        {/* Body */}
-
-        <div className="space-y-6 p-6">
-
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-
-            <InfoCard
-              icon={<FileText size={18} />}
-              title="عنوان"
-              value={notice.title}
-            />
-
-            <InfoCard
-              icon={<User size={18} />}
-              title="نام موکل"
-              value={notice.clientName}
-            />
-
-            <InfoCard
-              icon={<FolderOpen size={18} />}
-              title="دسته‌بندی"
-              value={notice.category}
-            />
-
-            <InfoCard
-              icon={<Calendar size={18} />}
-              title="تاریخ موعد"
-              value={notice.date}
-            />
-
-            <InfoCard
-              icon={<Star size={18} />}
-              title="وضعیت"
-              value={notice.isImportant ? "ضروری" : "عادی"}
-            />
-          </div>
-
-          {/* متن اطلاعیه */}
-
-          <div className="rounded-xl border border-[#ece7dd] bg-[#faf8f4] p-5">
-
-            <h3 className="mb-3 text-lg font-bold">
-              متن اطلاعیه
-            </h3>
-
-            <p className="leading-8 text-neutral-700">
-              {notice.description}
-            </p>
-
-          </div>
-
-        </div>
-
-        {/* Footer */}
-
-        <div className="flex justify-end border-t border-[#ece7dd] px-6 py-5">
-
-          <button
-            onClick={onClose}
-            className="
-              rounded-xl
-              bg-[#a9762f]
-              px-6
-              py-2.5
-              text-white
-              transition
-              hover:bg-[#946727]
-            "
-          >
-            بستن
-          </button>
-
-        </div>
-
       </div>
-    </div>
-  );
-}
-
-interface InfoCardProps {
-  icon: React.ReactNode;
-  title: string;
-  value: string;
-}
-
-function InfoCard({
-  icon,
-  title,
-  value,
-}: InfoCardProps) {
-  return (
-    <div className="rounded-xl border border-[#ece7dd] bg-[#fcfbf8] p-4">
-
-      <div className="mb-2 flex items-center gap-2 text-[#a9762f]">
-
-        {icon}
-
-        <span className="text-sm font-semibold">
-          {title}
-        </span>
-
-      </div>
-
-      <p className="text-neutral-700">
-        {value}
-      </p>
-
     </div>
   );
 }

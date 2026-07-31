@@ -57,7 +57,7 @@ export default function NoticesPage() {
   );
 
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
+  const pageSize = 5;
 
   const toEnglishDigits = (value: string) =>
     value.replace(/[۰-۹]/g, (d) => "۰۱۲۳۴۵۶۷۸۹".indexOf(d).toString());
@@ -141,32 +141,34 @@ export default function NoticesPage() {
 
       {/* جستجو + فیلتر + دکمه‌ی ثبت */}
       <div className="mb-4 flex flex-col gap-2.5 sm:flex-row sm:items-center">
-        <div className="relative w-full sm:w-93">
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="جستجو بر اساس عنوان یا نام موکل"
-            className="w-full rounded-lg border border-[#E4E1D8] bg-white p-2 pr-9 text-right text-sm placeholder:text-[#8C8A80] focus:border-[#A9762F] focus:outline-none"
-          />
-          <Search
-            size={16}
-            className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#8C8A80]"
-          />
-        </div>
+        <div className="flex items-center gap-2.5">
+          <div className="relative min-w-0 flex-1 sm:w-93 sm:flex-none">
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="جستجو بر اساس عنوان یا نام موکل"
+              className="w-full rounded-lg border border-[#E4E1D8] bg-white p-2 pr-9 text-right text-sm placeholder:text-[#8C8A80] focus:border-[#A9762F] focus:outline-none"
+            />
+            <Search
+              size={16}
+              className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#8C8A80]"
+            />
+          </div>
 
-        <button
-          type="button"
-          onClick={() => setFilterModalOpen(true)}
-          className="relative flex items-center gap-1.5 rounded-lg border border-[#E4E1D8] bg-white px-3 py-2 text-sm text-[#4B4A44] transition-colors hover:border-[#A9762F]"
-        >
-          <Filter size={16} />
-          {activeFilterCount > 0 && (
-            <span className="absolute -right-1.5 -top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#A9762F] text-[10px] text-white">
-              {activeFilterCount}
-            </span>
-          )}
-        </button>
+          <button
+            type="button"
+            onClick={() => setFilterModalOpen(true)}
+            className="relative flex shrink-0 items-center gap-1.5 rounded-lg border border-[#E4E1D8] bg-white px-3 py-2 text-sm text-[#4B4A44] transition-colors hover:border-[#A9762F]"
+          >
+            <Filter size={16} />
+            {activeFilterCount > 0 && (
+              <span className="absolute -right-1.5 -top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#A9762F] text-[10px] text-white">
+                {activeFilterCount}
+              </span>
+            )}
+          </button>
+        </div>
 
         <button
           type="button"
@@ -187,6 +189,7 @@ export default function NoticesPage() {
           </button>
         )}
       </div>
+
 
       {/* مودال فیلتر (فقط بازه‌ی تاریخ موعد) */}
       {filterModalOpen && (

@@ -1,12 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { Paperclip, X } from "lucide-react";
+import { Paperclip, X, CalendarDays } from "lucide-react";
+import DatePicker from "react-multi-date-picker";
+import type { DateObject } from "react-multi-date-picker";
+import persian from "react-date-object/calendars/persian";
+import persian_fa from "react-date-object/locales/persian_fa";
 import type { NoticeListItem } from "./NoticesTable";
 
 // دیتای موقتِ موکل‌ها و دسته‌بندی‌ها — بعداً از API واقعی (searchClients / getCategories) میاد
 const mockClients = ["محمد احمدی", "علی رضایی", "زهرا کریمی"];
 const mockCategories = ["ملکی", "کیفری", "خانواده", "تجاری"];
+
+// تاریخ رو با اعداد انگلیسی ذخیره می‌کنیم (نه فارسی) تا فیلتر/جستجوی تاریخ درست کار کنه
+const toEnglishDigits = (value: string) =>
+  value.replace(/[۰-۹]/g, (d) => "۰۱۲۳۴۵۶۷۸۹".indexOf(d).toString());
 
 interface NoticeFormModalProps {
   onClose: () => void;
@@ -16,11 +24,12 @@ interface NoticeFormModalProps {
 export default function NoticeFormModal({ onClose, onSubmit }: NoticeFormModalProps) {
   const [title, setTitle] = useState("");
   const [clientName, setClientName] = useState("");
+  const [dueDate, setDueDate] = useState<DateObject | null>(null);
   const [category, setCategory] = useState("");
   const [description, setDescription] = useState("");
   const [files, setFiles] = useState<File[]>([]);
 
-  const isValid = title.trim() !== "" && clientName !== "" && category !== "";
+  const isValid = title.trim() !== "" && category !== "" && dueDate !== null;
 
   function handleFilesSelected(fileList: FileList | null) {
     if (!fileList) return;
@@ -32,21 +41,17 @@ export default function NoticeFormModal({ onClose, onSubmit }: NoticeFormModalPr
   }
 
   function handleSubmit() {
-    if (!isValid) return;
+    if (!isValid || !dueDate) return;
 
-  onSubmit({
-  title,
-  clientName,
-  category,
-  documentsCount: files.length,
-  date: new Date()
-    .toLocaleDateString("fa-IR-u-nu-latn")
-    .replaceAll("/", "/"),
-
-  isImportant: false,
-
-  description,
-});
+    onSubmit({
+      title,
+      clientName,
+      category,
+      documentsCount: files.length,
+      date: toEnglishDigits(dueDate.format("YYYY/MM/DD")),
+      isImportant: false,
+      description,
+    });
     onClose();
   }
 
@@ -83,7 +88,7 @@ export default function NoticeFormModal({ onClose, onSubmit }: NoticeFormModalPr
           {/* موکل مرتبط */}
           <div>
             <label className="mb-2 block text-sm font-semibold text-neutral-700">
-              موکل مرتبط <span className="text-red-500">*</span>
+              موکل مرتبط
             </label>
             <select
               value={clientName}
@@ -97,6 +102,28 @@ export default function NoticeFormModal({ onClose, onSubmit }: NoticeFormModalPr
                 </option>
               ))}
             </select>
+          </div>
+
+          {/* تاریخ موعد */}
+          <div>
+            <label className="mb-2 block text-sm font-semibold text-neutral-700">
+              تاریخ موعد <span className="text-red-500">*</span>
+            </label>
+            <div className="relative">
+              <CalendarDays
+                size={18}
+                className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#a9762f]"
+              />
+              <DatePicker
+                calendar={persian}
+                locale={persian_fa}
+                format="YYYY/MM/DD"
+                value={dueDate}
+                onChange={(date) => setDueDate(date as DateObject)}
+                calendarPosition="bottom-right"
+                inputClass="w-full rounded-xl border border-[#ddd5c8] bg-white px-4 py-2.5 pr-11 text-sm outline-none focus:border-[#a9762f]"
+              />
+            </div>
           </div>
 
           {/* دسته‌بندی */}
