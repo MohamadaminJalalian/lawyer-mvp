@@ -1,4 +1,4 @@
-export default function SearchBar() {
+﻿export default function SearchBar() {
   return (
     <div className="mb-8">
       <input

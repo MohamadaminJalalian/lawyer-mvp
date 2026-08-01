@@ -1,25 +1,14 @@
-﻿import type { ReactNode } from "react";
-import { FileText, Users, Calendar, ClipboardList, X } from "lucide-react";
+﻿"use client";
 
-export interface CaseDetailsData {
-  id: string;
-  client: string;
-  category: string;
-  subject: string;
-  date: string;
-  status: string;
-}
+import type { ReactNode } from "react";
+import { Bell, Users, Calendar, ClipboardList, X } from "lucide-react";
+import type { NoticeListItem } from "./NoticesTable";
 
-interface CaseDetailsModalProps {
-  caseItem: CaseDetailsData | null;
+interface NoticeDetailsModalProps {
+  open: boolean;
+  notice: NoticeListItem | null;
   onClose: () => void;
 }
-
-const statusStyles: Record<string, string> = {
-  فعال: "bg-[#EAF6EE] border-[#BFE3CB] text-[#2F6B4F]",
-  مختومه: "bg-[#efefef] border-[#dedede] text-[#6d6d6d]",
-  بایگانی: "bg-[#FFF4D8] border-[#E9D9A8] text-[#8A5D1F]",
-};
 
 function InfoCard({
   icon: Icon,
@@ -53,14 +42,12 @@ function Field({ label, value }: { label: string; value: ReactNode }) {
   );
 }
 
-export default function CaseDetailsModal({
-  caseItem,
+export default function NoticeDetailsModal({
+  open,
+  notice,
   onClose,
-}: CaseDetailsModalProps) {
-  if (!caseItem) return null;
-
-  const statusClass =
-    statusStyles[caseItem.status] ?? statusStyles["فعال"];
+}: NoticeDetailsModalProps) {
+  if (!open || !notice) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
@@ -69,8 +56,8 @@ export default function CaseDetailsModal({
         <div className="border-b border-[#EDEBE2]">
           <div className="flex items-center justify-between p-5">
             <h2 className="flex items-center gap-2 text-xl font-bold text-[#262420]">
-              <FileText size={20} className="text-[#8A5D1F]" />
-              جزئیات پرونده
+              <Bell size={20} className="text-[#8A5D1F]" />
+              جزئیات اطلاعیه
             </h2>
 
             <button
@@ -85,49 +72,43 @@ export default function CaseDetailsModal({
 
           <div className="flex flex-wrap items-center justify-between gap-3 px-5 pb-5">
             <div>
-              <div className="flex items-center gap-2">
-                <h3 className="text-lg font-bold text-[#262420]">
-                  {caseItem.subject}
-                </h3>
-                <span className="rounded-md border border-[#E4D3B0] bg-[#FCF6EA] px-2 py-0.5 font-mono text-xs text-[#8A5D1F]">
-                  {caseItem.id}
-                </span>
-              </div>
+              <h3 className="text-lg font-bold text-[#262420]">
+                {notice.title}
+              </h3>
               <p className="mt-1 text-sm text-[#8C8A80]">
-                اطلاعات کامل پرونده
+                اطلاعات کامل اطلاعیه
               </p>
             </div>
 
-            <span
-              className={`flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm ${statusClass}`}
-            >
-              <span className="h-1.5 w-1.5 rounded-full bg-current" />
-              {caseItem.status}
-            </span>
+            {notice.isImportant && (
+              <span className="flex items-center gap-1.5 rounded-full border border-[#E9D9A8] bg-[#FFF4D8] px-3 py-1 text-sm text-[#8A5D1F]">
+                <span className="h-1.5 w-1.5 rounded-full bg-current" />
+                ضروری
+              </span>
+            )}
           </div>
         </div>
 
         {/* محتوا */}
         <div className="space-y-4 p-5 text-sm">
-          <InfoCard icon={FileText} title="اطلاعات پرونده">
-            <Field label="موضوع" value={caseItem.subject} />
-            <Field label="دسته‌بندی" value={caseItem.category} />
-            <Field label="وضعیت" value={caseItem.status} />
+          <InfoCard icon={Bell} title="اطلاعات اطلاعیه">
+            <Field label="عنوان" value={notice.title} />
+            <Field label="دسته‌بندی" value={notice.category} />
           </InfoCard>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <InfoCard icon={Users} title="اشخاص">
-              <Field label="موکل" value={caseItem.client} />
+              <Field label="موکل" value={notice.clientName} />
             </InfoCard>
 
             <InfoCard icon={Calendar} title="زمان‌بندی">
-              <Field label="تاریخ ثبت" value={caseItem.date} />
+              <Field label="تاریخ موعد" value={notice.date} />
             </InfoCard>
           </div>
 
-          <InfoCard icon={ClipboardList} title="توضیحات">
+          <InfoCard icon={ClipboardList} title="متن اطلاعیه">
             <p className="rounded-lg border border-[#EDEBE2] bg-white p-3 leading-6 text-[#262420]">
-              توضیحات جداگانه‌ای برای این پرونده ثبت نشده است.
+              {notice.description || "متنی برای این اطلاعیه ثبت نشده است."}
             </p>
           </InfoCard>
         </div>

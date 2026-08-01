@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { createPortal } from "react-dom";
@@ -11,8 +11,11 @@ import {
 import CaseDetailsModal from "./CaseDetailsModal";
 import DateRangePicker from "./DateRangePicker";
 import type { DateObject } from "react-multi-date-picker";
+
 export default function ImportantCases() {
-  const [openModal, setOpenModal] = useState(false);
+  const [selectedCase, setSelectedCase] = useState<(typeof cases)[number] | null>(
+    null
+  );
   const [rowTooltip, setRowTooltip] = useState<{ top: number; left: number } | null>(
     null
   );
@@ -99,10 +102,6 @@ const to = toEnglishDigits(
   selectedRange[1].format("YYYYMMDD")
 );
 
-        console.log("itemDate:", itemDate);
-        console.log("from:", from);
-        console.log("to:", to);
-
         return itemDate >= from && itemDate <= to;
       })();
 
@@ -124,7 +123,7 @@ const to = toEnglishDigits(
 
         <div className="mb-6 flex items-center gap-3">
 
-          <div className="relative min-w-0 flex-1">
+          <div className="relative min-w-0 flex-1 sm:max-w-[372px]">
 
             <Search
               size={20}
@@ -324,8 +323,8 @@ const to = toEnglishDigits(
                     onClick={() => {
                       setSelectedStatus("");
                       setSelectedCategory("");
-                      
-                      
+
+
                       setSearch("");
                       setSelectedRange([]);
                     }}
@@ -373,11 +372,11 @@ const to = toEnglishDigits(
 
         )}
 
-        {/* Table */}
+        {/* Table (دسکتاپ) — نسخه‌ی خلاصه‌شده: فقط شماره، موکل، موضوع، وضعیت، عملیات */}
 
-        <div className="max-h-[272px] overflow-auto rounded-xl border border-[#e5e0d6]">
+        <div className="hidden max-h-[272px] overflow-auto rounded-xl border border-[#e5e0d6] sm:block">
 
-          <table className="w-full min-w-[760px] text-right">
+          <table className="w-full min-w-[560px] text-right">
 
             <thead className="sticky top-0 z-10 bg-[#f5f1e8]">
 
@@ -392,15 +391,7 @@ const to = toEnglishDigits(
                 </th>
 
                 <th className="px-5 py-3 text-sm font-semibold text-neutral-700">
-                  دسته‌بندی
-                </th>
-
-                <th className="px-5 py-3 text-sm font-semibold text-neutral-700">
                   موضوع
-                </th>
-
-                <th className="px-5 py-3 text-sm font-semibold text-neutral-700">
-                  تاریخ ثبت پرونده
                 </th>
 
                 <th className="px-5 py-3 text-sm font-semibold text-neutral-700">
@@ -415,7 +406,7 @@ const to = toEnglishDigits(
 
             </thead>
 
-            <tbody>             
+            <tbody>
                {filteredCases.map((item) => (
 
                 <tr
@@ -428,19 +419,8 @@ const to = toEnglishDigits(
                   <td className="px-5 py-4">
 
                     <span
-                      className="
-                        inline-flex
-                        items-center
-                        rounded-md
-                        border
-                        border-[#d7b97a]
-                        bg-[#fffaf0]
-                        px-3
-                        py-1
-                        text-sm
-                        font-medium
-                        text-[#8a6a2f]
-                      "
+                      className="rounded border border-[#E4D3B0] bg-[#FCF6EA] px-2 py-1 font-mono text-xs text-[#8A5D1F]"
+                      style={{ borderInlineStart: "3px solid #A9762F" }}
                     >
                       {item.id}
                     </span>
@@ -453,22 +433,10 @@ const to = toEnglishDigits(
                     {item.client}
                   </td>
 
-                  {/* دسته بندی */}
-
-                  <td className="px-5 py-4 text-sm text-[#4b4b4b]">
-                    {item.category}
-                  </td>
-
                   {/* موضوع */}
 
                   <td className="px-5 py-4 text-sm text-[#4b4b4b]">
                     {item.subject}
-                  </td>
-
-                  {/* تاریخ */}
-
-                  <td className="px-5 py-4 text-sm text-[#4b4b4b]">
-                    {item.date}
                   </td>
 
                   {/* وضعیت */}
@@ -503,7 +471,7 @@ const to = toEnglishDigits(
 
                     <div className="inline-flex">
                       <button
-                        onClick={() => setOpenModal(true)}
+                        onClick={() => setSelectedCase(item)}
                         onMouseEnter={(e) => {
                           const rect = e.currentTarget.getBoundingClientRect();
                           setRowTooltip({
@@ -535,7 +503,7 @@ const to = toEnglishDigits(
                 <tr>
 
                   <td
-                    colSpan={7}
+                    colSpan={5}
                     className="p-8 text-center text-[#8b8b8b]"
                   >
                     هیچ پرونده‌ای یافت نشد.
@@ -551,11 +519,102 @@ const to = toEnglishDigits(
 
         </div>
 
+        {/* کارت‌ها (موبایل) — همه‌ی فیلدها همچنان نمایش داده می‌شن */}
+
+        <div className="space-y-3 sm:hidden">
+
+          {filteredCases.map((item) => (
+
+            <div
+              key={item.id}
+              className="rounded-xl border border-[#e5e0d6] bg-white p-4"
+            >
+
+              {/* شماره پرونده */}
+
+              <div className="mb-1 text-right font-mono text-sm text-[#8A5D1F]">
+                {item.id}
+              </div>
+
+              {/* نام موکل */}
+
+              <div className="mb-3 text-right font-bold text-neutral-900">
+                {item.client}
+              </div>
+
+              {/* ردیف‌های برچسب:مقدار */}
+
+              <div className="mb-3 space-y-1.5">
+
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-[#8a8175]">دسته‌بندی</span>
+                  <span className="text-[#4b4b4b]">{item.category}</span>
+                </div>
+
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-[#8a8175]">موضوع</span>
+                  <span className="text-[#4b4b4b]">{item.subject}</span>
+                </div>
+
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-[#8a8175]">تاریخ ثبت پرونده</span>
+                  <span className="text-[#4b4b4b]">{item.date}</span>
+                </div>
+
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-[#8a8175]">وضعیت</span>
+                  <span
+                    className={`
+                      rounded-full
+                      px-2.5
+                      py-0.5
+                      text-xs
+                      font-medium
+                      ${
+                        item.status === "فعال"
+                          ? "bg-[#e8f5ec] text-[#3d8b5a]"
+                          : item.status === "مختومه"
+                          ? "bg-[#efefef] text-[#6d6d6d]"
+                          : "bg-[#fff4d8] text-[#a9762f]"
+                      }
+                    `}
+                  >
+                    {item.status}
+                  </span>
+                </div>
+
+              </div>
+
+              {/* خط جداکننده + دکمه‌ی مشاهده، وسط‌چین */}
+
+              <div className="flex items-center justify-center gap-6 border-t border-[#ece7dd] pt-3 text-[#8a6a2f]">
+
+                <button
+                  onClick={() => setSelectedCase(item)}
+                  className="transition hover:text-[#a9762f]"
+                >
+                  <Eye size={18} />
+                </button>
+
+              </div>
+
+            </div>
+
+          ))}
+
+          {filteredCases.length === 0 && (
+            <p className="p-4 text-center text-sm text-[#8b8b8b]">
+              هیچ پرونده‌ای یافت نشد.
+            </p>
+          )}
+
+        </div>
+
       </section>
 
       <CaseDetailsModal
-        open={openModal}
-        onClose={() => setOpenModal(false)}
+        caseItem={selectedCase}
+        onClose={() => setSelectedCase(null)}
       />
 
       {rowTooltip &&
@@ -574,4 +633,3 @@ const to = toEnglishDigits(
   );
 
 }
-            
