@@ -5,8 +5,11 @@
 import { useState } from "react";
 import { X, CalendarDays } from "lucide-react";
 import DatePicker from "react-multi-date-picker";
+import DateObject from "react-date-object";
 import persian from "react-date-object/calendars/persian";
 import persian_fa from "react-date-object/locales/persian_fa";
+import gregorian from "react-date-object/calendars/gregorian";
+import gregorian_en from "react-date-object/locales/gregorian_en";
 import Modal from "./Modal";
 import { mockCategories } from "../../../../mocks/cases.mock";
 import type { CaseListItem, CasePriority } from "../../../../mocks/cases.types";
@@ -23,7 +26,6 @@ interface FormValues {
   branch: string;
   opponentName: string;
   formedAt: string;
-  nextSessionAt: string;
   description: string;
 }
 
@@ -57,16 +59,24 @@ function validate(values: FormValues): FormErrors {
     errors.formedAt = "تاریخ تشکیل پرونده الزامی است.";
   }
 
-  if (
-    values.nextSessionAt &&
-    values.formedAt &&
-    values.nextSessionAt < values.formedAt
-  ) {
-    errors.nextSessionAt =
-      "تاریخ جلسه بعدی نمی‌تواند قبل از تاریخ تشکیل پرونده باشد.";
-  }
-
   return errors;
+}
+
+// تبدیل رشته‌ی میلادی ISO (مثل "2026-04-04") به DateObject شمسی برای نمایش در DatePicker
+function toPersianDateObject(isoDate: string): DateObject | null {
+  if (!isoDate) return null;
+  return new DateObject({
+    date: isoDate,
+    format: "YYYY-MM-DD",
+    calendar: gregorian,
+    locale: gregorian_en,
+  }).convert(persian, persian_fa);
+}
+
+// تبدیل DateObject شمسی انتخاب‌شده در DatePicker به رشته‌ی میلادی ISO برای ذخیره
+function toGregorianISO(date: DateObject | null): string {
+  if (!date) return "";
+  return date.convert(gregorian, gregorian_en).format("YYYY-MM-DD");
 }
 
 const fieldClass =
@@ -98,12 +108,11 @@ export default function EditCaseModal({
     branch: caseItem.branch ?? "",
     opponentName: caseItem.opponentName ?? "",
     formedAt: caseItem.formedAt,
-    nextSessionAt: caseItem.nextSessionAt ?? "",
     description: caseItem.description ?? "",
   }));
 
   const [errors, setErrors] = useState<FormErrors>({});
-  const [submitStatus, setSubmitStatus] = useState<
+  const [submitStatus, setSubmitStatus] = useState <
     "idle" | "submitting" | "success"
   >("idle");
 
@@ -138,8 +147,9 @@ export default function EditCaseModal({
       branch: values.branch || null,
       opponentName: values.opponentName || null,
       formedAt: values.formedAt,
-      nextSessionAt: values.nextSessionAt || null,
       description: values.description || null,
+      // nextSessionAt از فرم حذف شده، پس مقدار قبلی پرونده دست‌نخورده باقی می‌ماند
+      nextSessionAt: caseItem.nextSessionAt,
       updatedAt: new Date().toISOString(),
     };
 
@@ -241,8 +251,8 @@ export default function EditCaseModal({
                   <p className={errorClass}>{errors.categoryId}</p>
                 )}
               </div>
-</div>
-            
+            </div>
+
             <div className={rowClass}>
               <div>
                 <label className={labelClass}>شماره پرونده دادگاه</label>
@@ -295,58 +305,31 @@ export default function EditCaseModal({
               </div>
             </div>
 
-           <div className={rowClass}>
-              <div>
-                <label className={labelClass}>تاریخ تشکیل پرونده</label>
-                <div className="relative">
-                  <CalendarDays
-                    size={18}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 text-[#A9762F] pointer-events-none z-10"
-                  />
-                  <DatePicker
-                    calendar={persian}
-                    locale={persian_fa}
-                    format="YYYY/MM/DD"
-                    value={values.formedAt}
-                    onChange={(date) =>
-                      handleChange("formedAt", date?.format("YYYY/MM/DD") ?? "")
-                    }
-                    calendarPosition="bottom-right"
-                    inputClass={`${fieldClass} pl-10`}
-                  />
-                </div>
-                {errors.formedAt && (
-                  <p className={errorClass}>{errors.formedAt}</p>
-                )}
-              </div>
-
-              <div>
-                <label className={labelClass}>تاریخ جلسه بعدی</label>
-                <div className="relative">
-                  <CalendarDays
-                    size={18}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 text-[#A9762F] pointer-events-none z-10"
-                  />
-                  <DatePicker
-                    calendar={persian}
-                    locale={persian_fa}
-                    format="YYYY/MM/DD"
-                    value={values.nextSessionAt}
-                    onChange={(date) =>
-                      handleChange(
-                        "nextSessionAt",
-                        date?.format("YYYY/MM/DD") ?? ""
-                      )
-                    }
-                    calendarPosition="bottom-right"
-                    inputClass={`${fieldClass} pl-10`}
-                  />
-                </div>
-                {errors.nextSessionAt && (
-                  <p className={errorClass}>{errors.nextSessionAt}</p>
-                )}
-              </div>
-            </div>
+            <div>
+  <label className={labelClass}>تاریخ تشکیل پرونده</label>
+  <div className="relative w-full">
+    <CalendarDays
+      size={18}
+      className="absolute left-3 top-1/2 -translate-y-1/2 text-[#A9762F] pointer-events-none z-10"
+    />
+    <DatePicker
+      calendar={persian}
+      locale={persian_fa}
+      format="YYYY/MM/DD"
+      value={toPersianDateObject(values.formedAt)}
+      onChange={(date) =>
+        handleChange("formedAt", toGregorianISO(date as DateObject | null))
+      }
+      calendarPosition="bottom-right"
+      containerClassName="w-full"
+      inputClass={`${fieldClass} pl-10 w-full`}
+      style={{ width: "100%" }}
+    />
+  </div>
+  {errors.formedAt && (
+    <p className={errorClass}>{errors.formedAt}</p>
+  )}
+</div>
 
             <div>
               <label className={labelClass}>توضیحات</label>
