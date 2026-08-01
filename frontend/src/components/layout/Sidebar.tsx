@@ -6,8 +6,8 @@ import {
   LayoutDashboard,
   FolderKanban,
   Users,
-  CalendarDays,
-  CheckSquare,
+  MessageSquare,
+  Megaphone,
   Settings,
   X,
 } from "lucide-react";
@@ -19,8 +19,8 @@ const menuItems = [
   { title: "داشبورد", href: "/", icon: LayoutDashboard },
   { title: "پرونده‌ها", href: "/cases", icon: FolderKanban },
   { title: "موکلین", href: "/clients", icon: Users },
-  { title: "جلسات دادگاه", href: "/hearings", icon: CalendarDays },
-  { title: "وظایف", href: "/tasks", icon: CheckSquare },
+  { title: "جلسات مشاوره", href: "/consultations", icon: MessageSquare },
+  { title: "اطلاعیه‌ها", href: "/announcements", icon: Megaphone },
   { title: "تنظیمات", href: "/settings", icon: Settings },
 ];
 
