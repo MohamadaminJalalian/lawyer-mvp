@@ -97,7 +97,7 @@ export default function NoticeDocumentsPage({ noticeId }: NoticeDocumentsPagePro
       addMockNoticeFile(noticeId, {
         name: f.name,
         type: isImage ? "image" : f.type.includes("pdf") ? "pdf" : "other",
-        url: isImage ? URL.createObjectURL(f) : "#",
+        url: URL.createObjectURL(f),
         size: f.size,
         folderId: currentFolderId,
       });
