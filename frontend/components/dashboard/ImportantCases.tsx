@@ -29,6 +29,9 @@ export default function ImportantCases() {
 
   const [selectedCategory, setSelectedCategory] = useState("");
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 5;
+
   const toEnglishDigits = (value: string) =>
     value.replace(/[۰-۹]/g, (d) =>
       "۰۱۲۳۴۵۶۷۸۹".indexOf(d).toString()
@@ -115,6 +118,13 @@ const to = toEnglishDigits(
   matchesDate
 );
   });
+
+  const totalPages = Math.max(1, Math.ceil(filteredCases.length / pageSize));
+  const safePage = Math.min(currentPage, totalPages);
+  const paginatedCases = filteredCases.slice(
+    (safePage - 1) * pageSize,
+    safePage * pageSize
+  );
 
   return (
     <>
@@ -418,7 +428,7 @@ const to = toEnglishDigits(
             </thead>
 
             <tbody>             
-               {filteredCases.map((item) => (
+               {paginatedCases.map((item) => (
 
                 <tr
                   key={item.id}
@@ -546,7 +556,7 @@ const to = toEnglishDigits(
 
         <div className="space-y-3 sm:hidden">
 
-          {filteredCases.map((item) => (
+          {paginatedCases.map((item) => (
 
             <div
               key={item.id}
@@ -632,6 +642,32 @@ const to = toEnglishDigits(
           )}
 
         </div>
+
+        {filteredCases.length > 0 && (
+          <div className="mt-4 flex items-center justify-between">
+            <button
+              onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+              disabled={safePage === 1}
+              className="rounded-lg border border-[#ddd5c8] bg-white px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              قبلی
+            </button>
+
+            <span className="text-sm text-[#8a8175]">
+              صفحه {safePage} از {totalPages}
+            </span>
+
+            <button
+              onClick={() =>
+                setCurrentPage((page) => Math.min(totalPages, page + 1))
+              }
+              disabled={safePage === totalPages}
+              className="rounded-lg border border-[#ddd5c8] bg-white px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              بعدی
+            </button>
+          </div>
+        )}
 
       </section>
 

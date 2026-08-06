@@ -11,6 +11,8 @@ export default function ImportantNotices() {
   const [search, setSearch] = useState("");
   const [selectedRange, setSelectedRange] = useState<DateObject[]>([]);
   const [filterModalOpen, setFilterModalOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 5;
   const [selectedNotice, setSelectedNotice] = useState<
     (typeof notices)[number] | null
   >(null);
@@ -66,6 +68,13 @@ export default function ImportantNotices() {
 
     return matchesSearch && matchesDate;
   });
+
+  const totalPages = Math.max(1, Math.ceil(filteredNotices.length / pageSize));
+  const safePage = Math.min(currentPage, totalPages);
+  const paginatedNotices = filteredNotices.slice(
+    (safePage - 1) * pageSize,
+    safePage * pageSize
+  );
 
   return (
     <>
@@ -238,7 +247,7 @@ export default function ImportantNotices() {
           </thead>
 
           <tbody>
-            {filteredNotices.map((notice) => (
+            {paginatedNotices.map((notice) => (
               <tr
                 key={notice.id}
                 className="border-t border-[#ece7dd] transition-colors hover:bg-[#faf8f4]"
@@ -294,7 +303,7 @@ export default function ImportantNotices() {
 
       {/* کارت‌ها (موبایل) */}
       <div className="space-y-3 sm:hidden">
-        {filteredNotices.map((notice) => (
+        {paginatedNotices.map((notice) => (
           <div
             key={notice.id}
             className="rounded-xl border border-[#e5e0d6] bg-white p-4"
@@ -336,6 +345,32 @@ export default function ImportantNotices() {
           </p>
         )}
       </div>
+
+      {filteredNotices.length > 0 && (
+        <div className="mt-4 flex items-center justify-between">
+          <button
+            onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+            disabled={safePage === 1}
+            className="rounded-lg border border-[#ddd5c8] bg-white px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            قبلی
+          </button>
+
+          <span className="text-sm text-[#8a8175]">
+            صفحه {safePage} از {totalPages}
+          </span>
+
+          <button
+            onClick={() =>
+              setCurrentPage((page) => Math.min(totalPages, page + 1))
+            }
+            disabled={safePage === totalPages}
+            className="rounded-lg border border-[#ddd5c8] bg-white px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            بعدی
+          </button>
+        </div>
+      )}
     </section>
 
     <NoticeDetailsModal
