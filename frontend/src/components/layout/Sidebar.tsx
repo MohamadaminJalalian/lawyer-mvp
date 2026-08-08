@@ -22,7 +22,7 @@ const menuItems = [
   { title: "داشبورد", href: "/", icon: LayoutDashboard },
   { title: "پرونده‌ها", href: "/cases", icon: FolderKanban },
   { title: "موکلین", href: "/clients", icon: Users },
-{ title: "جلسات مشاوره", href: "/sessions", icon: MessageSquare },
+  { title: "جلسات مشاوره", href: "/consultations", icon: MessageSquare },
   { title: "اطلاعیه‌ها", href: "/announcements", icon: Megaphone },
   { title: "تنظیمات", href: "/settings", icon: Settings },
 ];

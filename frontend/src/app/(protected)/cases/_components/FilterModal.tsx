@@ -73,7 +73,7 @@ export default function FilterModal({
   return (
     <Modal onClose={onClose} maxWidthClass="max-w-md">
       <div className="flex items-center justify-between p-5 border-b border-[#EDEBE2]">
-        <h2 className="text-lg font-bold text-[#262420]">فیلتر ها</h2>
+        <h2 className="font-bold text-[#262420]">فیلتر ها</h2>
         <button
           type="button"
           onClick={onClose}
@@ -153,10 +153,11 @@ export default function FilterModal({
                 key={option.value}
                 type="button"
                 onClick={() => onToggleUrgency(option.value)}
-                className={`flex-1 px-3 py-2 rounded-lg text-sm border transition-colors ${selectedUrgencies.includes(option.value)
+                className={`flex-1 px-3 py-2 rounded-lg text-sm border transition-colors ${
+                  selectedUrgencies.includes(option.value)
                     ? "bg-[#A9762F] text-white border-[#A9762F]"
                     : "bg-white text-[#4B4A44] border-[#E4E1D8]"
-                  }`}
+                }`}
               >
                 {option.label}
               </button>
@@ -175,10 +176,11 @@ export default function FilterModal({
                   key={category.id}
                   type="button"
                   onClick={() => onToggleCategory(category.id)}
-                  className={`px-3 py-1.5 rounded-full text-sm border transition-colors ${isSelected
+                  className={`px-3 py-1.5 rounded-full text-sm border transition-colors ${
+                    isSelected
                       ? "bg-[#A9762F] text-white border-[#A9762F]"
                       : "bg-white text-[#4B4A44] border-[#E4E1D8]"
-                    }`}
+                  }`}
                 >
                   {category.name}
                 </button>
@@ -203,10 +205,11 @@ export default function FilterModal({
                   key={option.value}
                   type="button"
                   onClick={() => onToggleStatus(option.value)}
-                  className={`px-3 py-1.5 rounded-full text-sm border transition-colors ${isSelected
+                  className={`px-3 py-1.5 rounded-full text-sm border transition-colors ${
+                    isSelected
                       ? "bg-[#A9762F] text-white border-[#A9762F]"
                       : "bg-white text-[#4B4A44] border-[#E4E1D8]"
-                    }`}
+                  }`}
                 >
                   {option.label}
                 </button>

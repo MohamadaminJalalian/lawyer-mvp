@@ -22,7 +22,7 @@ function ProtectedGuard({ children }: { children: ReactNode }) {
 
   if (status === "loading") {
     return (
-      <div className="flex min-h-dvh items-center justify-center bg-[#f8f6f2]">
+      <div className="flex min-h-dvh items-center justify-center bg-slate-50">
         <div className="flex flex-col items-center gap-3">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-slate-200 border-t-slate-900" />
           <p className="text-sm text-slate-500">در حال بررسی نشست...</p>
@@ -40,7 +40,7 @@ export default function ProtectedLayout({ children }: { children: ReactNode }) {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-dvh items-center justify-center bg-[#f8f6f2]">
+        <div className="flex min-h-dvh items-center justify-center bg-slate-50">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-slate-200 border-t-slate-900" />
         </div>
       }

@@ -27,7 +27,7 @@ export function DashboardTable<T extends { id: string }>({
   return (
     <div className="bg-white rounded-xl border border-border shadow-sm overflow-hidden">
       <div className="flex items-center justify-between px-5 py-4 border-b border-border">
-        <h3 className="text-lg font-bold text-[#262420]">{title}</h3>
+        <h3 className="font-semibold text-foreground">{title}</h3>
         <Link
           href={viewAllHref}
           className="text-sm text-primary hover:text-primary-light transition-colors"

@@ -88,36 +88,36 @@ export default function ImportantCases() {
       selectedCategory === "" ||
       item.category === selectedCategory;
 
-    const matchesDate =
-      selectedRange.length < 2
-        ? true
-        : (() => {
-          const itemDate = item.date.replace(/\//g, "");
+      const matchesDate =
+  selectedRange.length < 2
+    ? true
+    : (() => {
+        const itemDate = item.date.replace(/\//g, "");
 
-          const from = toEnglishDigits(
-            selectedRange[0].format("YYYYMMDD")
-          );
+       const from = toEnglishDigits(
+  selectedRange[0].format("YYYYMMDD")
+);
 
-          const to = toEnglishDigits(
-            selectedRange[1].format("YYYYMMDD")
-          );
+const to = toEnglishDigits(
+  selectedRange[1].format("YYYYMMDD")
+);
 
-          return itemDate >= from && itemDate <= to;
-        })();
+        return itemDate >= from && itemDate <= to;
+      })();
 
     return (
-      matchesSearch &&
-      matchesStatus &&
-      matchesCategory &&
-      matchesDate
-    );
+  matchesSearch &&
+  matchesStatus &&
+  matchesCategory &&
+  matchesDate
+);
   });
 
   return (
     <>
       <section className="mt-8 flex h-full flex-col rounded-xl border border-[#e5e0d6] bg-white p-4 sm:p-5">
 
-        <h2 className="mb-4 text-lg font-bold text-[#262420]">
+        <h2 className="mb-4 text-lg font-bold text-neutral-900">
           پرونده‌های مهم
         </h2>
 
@@ -152,11 +152,11 @@ export default function ImportantCases() {
 
           </div>
 
-          <div className="group relative inline-flex shrink-0">
+<div className="group relative inline-flex shrink-0">
 
-            <button
-              onClick={() => setFilterModalOpen(true)}
-              className="
+  <button
+    onClick={() => setFilterModalOpen(true)}
+    className="
       flex
       items-center
       justify-center
@@ -169,15 +169,15 @@ export default function ImportantCases() {
       transition
       hover:bg-[#f8f5ef]
     "
-            >
-              <Filter
-                size={20}
-                className="text-[#a9762f]"
-              />
-            </button>
+  >
+    <Filter
+      size={20}
+      className="text-[#a9762f]"
+    />
+  </button>
 
-            <span
-              className="
+  <span
+    className="
       pointer-events-none
       absolute
       right-full
@@ -196,11 +196,11 @@ export default function ImportantCases() {
       duration-200
       group-hover:opacity-100
     "
-            >
-              فیلترها
-            </span>
+  >
+    فیلترها
+  </span>
 
-          </div>
+</div>
 
         </div>
 
@@ -212,7 +212,7 @@ export default function ImportantCases() {
 
               <div className="flex items-center justify-between border-b border-[#ece7dd] px-4 py-4 sm:px-8 sm:py-6">
 
-                <h3 className="text-lg font-bold text-[#262420]">
+                <h3 className="text-xl font-bold text-neutral-900 sm:text-2xl">
                   فیلترها
                 </h3>
 
@@ -227,19 +227,19 @@ export default function ImportantCases() {
 
               <div className="space-y-8 p-4 sm:p-8">
 
-                <div>
+<div>
 
-                  <p className="mb-4 text-lg font-semibold">
-                    بازه تاریخ تشکیل پرونده
-                  </p>
+  <p className="mb-4 text-lg font-semibold">
+    بازه تاریخ تشکیل پرونده
+  </p>
 
-                  <DateRangePicker
-                    value={selectedRange}
-                    onChange={setSelectedRange}
-                  />
+  <DateRangePicker
+  value={selectedRange}
+  onChange={setSelectedRange}
+/>
 
-                </div>
-                {/* وضعیت */}
+</div>
+                                {/* وضعیت */}
 
                 <div>
 
@@ -261,9 +261,10 @@ export default function ImportantCases() {
                           text-sm
                           transition
 
-                          ${selectedStatus === status
-                            ? "bg-[#a9762f] text-white"
-                            : "border border-[#ddd5c8] bg-[#f1efe6] text-[#7a6b52] hover:bg-[#e8e2d4]"
+                          ${
+                            selectedStatus === status
+                              ? "bg-[#a9762f] text-white"
+                              : "border border-[#ddd5c8] bg-[#f1efe6] text-[#7a6b52] hover:bg-[#e8e2d4]"
                           }
                         `}
                       >
@@ -298,9 +299,10 @@ export default function ImportantCases() {
                           text-sm
                           transition
 
-                          ${selectedCategory === category
-                            ? "bg-[#a9762f] text-white"
-                            : "border border-[#ddd5c8] bg-[#f1efe6] text-[#7a6b52] hover:bg-[#e8e2d4]"
+                          ${
+                            selectedCategory === category
+                              ? "bg-[#a9762f] text-white"
+                              : "border border-[#ddd5c8] bg-[#f1efe6] text-[#7a6b52] hover:bg-[#e8e2d4]"
                           }
                         `}
                       >
@@ -405,7 +407,7 @@ export default function ImportantCases() {
             </thead>
 
             <tbody>
-              {filteredCases.map((item) => (
+               {filteredCases.map((item) => (
 
                 <tr
                   key={item.id}
@@ -449,9 +451,10 @@ export default function ImportantCases() {
                         text-xs
                         font-medium
 
-                        ${item.status === "فعال"
-                          ? "bg-[#e8f5ec] text-[#3d8b5a]"
-                          : item.status === "مختومه"
+                        ${
+                          item.status === "فعال"
+                            ? "bg-[#e8f5ec] text-[#3d8b5a]"
+                            : item.status === "مختومه"
                             ? "bg-[#efefef] text-[#6d6d6d]"
                             : "bg-[#fff4d8] text-[#a9762f]"
                         }
@@ -567,9 +570,10 @@ export default function ImportantCases() {
                       py-0.5
                       text-xs
                       font-medium
-                      ${item.status === "فعال"
-                        ? "bg-[#e8f5ec] text-[#3d8b5a]"
-                        : item.status === "مختومه"
+                      ${
+                        item.status === "فعال"
+                          ? "bg-[#e8f5ec] text-[#3d8b5a]"
+                          : item.status === "مختومه"
                           ? "bg-[#efefef] text-[#6d6d6d]"
                           : "bg-[#fff4d8] text-[#a9762f]"
                       }
