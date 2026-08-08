@@ -32,13 +32,13 @@ export default function SessionsTable({
     <>
       {/* دسکتاپ / تبلت: جدول */}
       <div
-        className="hidden overflow-x-auto rounded-2xl border border-[var(--border)] bg-[var(--surface)] shadow-sm md:block"
+        className="hidden overflow-x-auto rounded-xl border border-[var(--border)] bg-[var(--surface)] md:block"
         dir="rtl"
       >
         <table className="min-w-full border-collapse">
           <thead className="bg-[var(--surface-muted)]">
             <tr className="border-b border-[var(--border)]">
-              <th className="px-6 py-3 text-right text-sm font-medium text-[var(--text-secondary)]">
+              <th className="px-4 py-3 text-right text-sm font-medium text-[var(--text-secondary)]">
                 نام موکل
               </th>
 
@@ -75,65 +75,65 @@ export default function SessionsTable({
                 className="border-b border-[var(--border)] transition hover:bg-[var(--surface-muted)]/60"
               >
                 {/* Client */}
-                <td className="px-6 py-4">
+                <td className="px-4 py-3">
                   <span className="font-medium text-[var(--text-primary)]">
                     {session.clientName}
                   </span>
                 </td>
 
                 {/* Phone */}
-<td className="px-6 py-4">
-  <div className="flex items-center justify-center gap-2">
-    <a
-      href={`tel:${session.clientPhone}`}
-      className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[var(--surface-muted)] text-[var(--brand)] transition hover:bg-[var(--brand)] hover:text-[var(--brand-foreground)]"
-      aria-label={`تماس با ${session.clientName}`}
-      title="تماس"
-    >
-      <svg
-        width="12"
-        height="12"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
-      </svg>
-    </a>
+                <td className="px-4 py-3">
+                  <div className="flex items-center justify-center gap-2">
+                    <a
+                      href={`tel:${session.clientPhone}`}
+                      className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[var(--surface-muted)] text-[var(--brand)] transition hover:bg-[var(--brand)] hover:text-[var(--brand-foreground)]"
+                      aria-label={`تماس با ${session.clientName}`}
+                      title="تماس"
+                    >
+                      <svg
+                        width="12"
+                        height="12"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
+                      </svg>
+                    </a>
 
-    <span dir="ltr" className="text-[var(--text-secondary)]">
-      {session.clientPhone}
-    </span>
-  </div>
-</td>
+                    <span dir="ltr" className="text-[var(--text-secondary)]">
+                      {session.clientPhone}
+                    </span>
+                  </div>
+                </td>
 
                 {/* Date */}
-                <td className="px-6 py-4 text-center text-[var(--text-secondary)] whitespace-nowrap">
+                <td className="px-4 py-3 text-center text-[var(--text-secondary)] whitespace-nowrap">
                   {toJalaliDate(session.sessionDate)}
                 </td>
 
                 {/* Weekday */}
-                <td className="px-6 py-4 text-center text-[var(--text-secondary)] whitespace-nowrap">
+                <td className="px-4 py-3 text-center text-[var(--text-secondary)] whitespace-nowrap">
                   {toWeekdayName(session.sessionDate)}
                 </td>
 
                 {/* Time */}
-                <td className="px-6 py-4 text-center text-[var(--text-secondary)] whitespace-nowrap">
+                <td className="px-4 py-3 text-center text-[var(--text-secondary)] whitespace-nowrap">
                   {formatTime12(session.sessionTime)}
                 </td>
 
                 {/* Status */}
-                <td className="px-6 py-4">
+                <td className="px-4 py-3">
                   <div className="flex justify-center">
                     <SessionStatusBadge status={session.status} />
                   </div>
                 </td>
 
                 {/* Action */}
-                <td className="px-6 py-4">
+                <td className="px-4 py-3">
                   <div className="flex justify-center">
                     <button
                       type="button"

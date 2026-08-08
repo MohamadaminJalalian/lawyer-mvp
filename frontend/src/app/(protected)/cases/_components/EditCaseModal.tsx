@@ -112,7 +112,7 @@ export default function EditCaseModal({
   }));
 
   const [errors, setErrors] = useState<FormErrors>({});
-  const [submitStatus, setSubmitStatus] = useState <
+  const [submitStatus, setSubmitStatus] = useState<
     "idle" | "submitting" | "success"
   >("idle");
 
@@ -160,7 +160,7 @@ export default function EditCaseModal({
   return (
     <Modal onClose={onClose} maxWidthClass="max-w-2xl">
       <div className="flex items-center justify-between p-5 border-b border-[#EDEBE2] sticky top-0 bg-white">
-        <h2 className="font-bold text-[#262420]">ویرایش پرونده</h2>
+        <h2 className="text-lg font-bold text-[#262420]">ویرایش پرونده</h2>
         <div className="flex items-center gap-3">
           <button
             type="button"
@@ -306,30 +306,30 @@ export default function EditCaseModal({
             </div>
 
             <div>
-  <label className={labelClass}>تاریخ تشکیل پرونده</label>
-  <div className="relative w-full">
-    <CalendarDays
-      size={18}
-      className="absolute left-3 top-1/2 -translate-y-1/2 text-[#A9762F] pointer-events-none z-10"
-    />
-    <DatePicker
-      calendar={persian}
-      locale={persian_fa}
-      format="YYYY/MM/DD"
-      value={toPersianDateObject(values.formedAt)}
-      onChange={(date) =>
-        handleChange("formedAt", toGregorianISO(date as DateObject | null))
-      }
-      calendarPosition="bottom-right"
-      containerClassName="w-full"
-      inputClass={`${fieldClass} pl-10 w-full`}
-      style={{ width: "100%" }}
-    />
-  </div>
-  {errors.formedAt && (
-    <p className={errorClass}>{errors.formedAt}</p>
-  )}
-</div>
+              <label className={labelClass}>تاریخ تشکیل پرونده</label>
+              <div className="relative w-full">
+                <CalendarDays
+                  size={18}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-[#A9762F] pointer-events-none z-10"
+                />
+                <DatePicker
+                  calendar={persian}
+                  locale={persian_fa}
+                  format="YYYY/MM/DD"
+                  value={toPersianDateObject(values.formedAt)}
+                  onChange={(date) =>
+                    handleChange("formedAt", toGregorianISO(date as DateObject | null))
+                  }
+                  calendarPosition="bottom-right"
+                  containerClassName="w-full"
+                  inputClass={`${fieldClass} pl-10 w-full`}
+                  style={{ width: "100%" }}
+                />
+              </div>
+              {errors.formedAt && (
+                <p className={errorClass}>{errors.formedAt}</p>
+              )}
+            </div>
 
             <div>
               <label className={labelClass}>توضیحات</label>
