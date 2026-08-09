@@ -72,11 +72,11 @@ export default function NoticesPage() {
       selectedRange.length < 2
         ? true
         : (() => {
-            const itemDate = item.date.replace(/\//g, "");
-            const from = toEnglishDigits(selectedRange[0].format("YYYYMMDD"));
-            const to = toEnglishDigits(selectedRange[1].format("YYYYMMDD"));
-            return itemDate >= from && itemDate <= to;
-          })();
+          const itemDate = item.date.replace(/\//g, "");
+          const from = toEnglishDigits(selectedRange[0].format("YYYYMMDD"));
+          const to = toEnglishDigits(selectedRange[1].format("YYYYMMDD"));
+          return itemDate >= from && itemDate <= to;
+        })();
 
     return matchesSearch && matchesDate;
   });
@@ -128,15 +128,13 @@ export default function NoticesPage() {
   }
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-6 sm:py-8" dir="rtl">
+    <div className="mx-auto" dir="rtl">
       {/* هدر */}
-      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <div className="mb-0.5 text-xs text-[#8C8A80]">
-            داشبورد / اطلاعیه‌ها
-          </div>
-          <h1 className="text-xl font-bold text-[#262420]">اطلاعیه‌ها</h1>
-        </div>
+      <div className="mb-6">
+        <h1 className="text-xl font-bold text-[var(--text-primary)]">اطلاعیه‌ها</h1>
+        <p className="mt-1 text-sm text-[var(--text-secondary)]">
+          ثبت و پیگیری اطلاعیه‌ها
+        </p>
       </div>
 
       {/* جستجو + فیلتر + دکمه‌ی ثبت */}
@@ -147,7 +145,7 @@ export default function NoticesPage() {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="جستجو بر اساس عنوان یا نام موکل"
+              placeholder="جستجو کنید..."
               className="w-full rounded-lg border border-[#E4E1D8] bg-white p-2 pr-9 text-right text-sm placeholder:text-[#8C8A80] focus:border-[#A9762F] focus:outline-none"
             />
             <Search

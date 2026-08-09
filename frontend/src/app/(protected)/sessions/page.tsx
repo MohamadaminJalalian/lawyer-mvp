@@ -41,7 +41,7 @@ export default function SessionsPage() {
 
   return (
     <div className="min-h-screen bg-[var(--bg-page)]">
-      <div className="mx-auto max-w-5xl p-6" dir="rtl">
+      <div className="mx-auto" dir="rtl">
         <div className="mb-6">
           <h1 className="text-xl font-bold text-[var(--text-primary)]">جلسات مشاوره</h1>
           <p className="mt-1 text-sm text-[var(--text-secondary)]">

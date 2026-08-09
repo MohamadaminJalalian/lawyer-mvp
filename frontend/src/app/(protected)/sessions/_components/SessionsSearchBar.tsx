@@ -12,7 +12,7 @@ export default function SessionsSearchBar({ query, onQueryChange }: SessionsSear
         type="text"
         value={query}
         onChange={(e) => onQueryChange(e.target.value)}
-        placeholder="جست‌وجو با نام موکل یا تاریخ"
+        placeholder="جستجو کنید..."
         className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm text-[var(--text-primary)] outline-none transition focus:border-[var(--brand)]"
       />
       {query && (

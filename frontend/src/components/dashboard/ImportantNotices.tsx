@@ -86,7 +86,7 @@ export default function ImportantNotices() {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="جستجو بر اساس عنوان"
+              placeholder="جستجو کنید..."
               className="
               w-full
               rounded-xl

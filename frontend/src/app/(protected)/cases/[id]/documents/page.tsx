@@ -102,7 +102,7 @@ export default function CaseDocumentsPage() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto p-6">
+    <div className=" mx-auto">
       {/* هدر صفحه */}
       <div className="flex items-center gap-2 mb-4">
         <Link href={`/cases`} className="flex items-center gap-1 text-sm text-[#8C8A80] hover:text-[#262420]">

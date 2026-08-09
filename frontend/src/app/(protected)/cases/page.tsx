@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 // مسیر این فایل: app/cases/page.tsx
 import { getCaseDocuments } from "@/mocks/documents.mock";
@@ -391,25 +391,20 @@ const docCountByCase = Object.fromEntries(
 
   return (
     <>
-    <div className="max-w-6xl mx-auto px-4">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
-        <div>
-          <div className="text-xs text-[#8C8A80] mb-0.5">
-            داشبورد / پرونده‌ها
-          </div>
-          <h1 className="text-xl font-bold text-[#262420]">
-            لیست پرونده‌ها
-          </h1>
+    <div className="mx-auto">
+        <div className="mb-6">
+          <h1 className="text-xl font-bold text-[var(--text-primary)]">لیست پرونده‌ها</h1>
+          <p className="mt-1 text-sm text-[var(--text-secondary)]">
+            ثبت و پیگیری پرونده‌های موکلین
+          </p>
         </div>
-        
-      </div>
 
       <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 mb-4">
         <input
           type="text"
           value={searchTerm}
           onChange={(event) => handleSearchChange(event.target.value)}
-          placeholder="جست‌وجو بر اساس شماره داخلی، عنوان، موکل یا دادگاه، موضوع"
+          placeholder="جستجو کنید..."
           className="w-full sm:w-93 p-2 bg-white border border-[#E4E1D8] rounded-lg text-right text-sm placeholder:text-[#8C8A80] focus:outline-none focus:border-[#A9762F]"
         />
         <button

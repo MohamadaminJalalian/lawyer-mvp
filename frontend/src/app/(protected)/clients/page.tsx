@@ -13,6 +13,7 @@ import DateRangeModal from "@/components/clients/DateRangeModal";
 import Breadcrumb from "@/components/layout/Breadcrumb";
 import { Client } from "@/types/client";
 import { parseJalaliDate } from "@/lib/utils";
+import { Filter } from "lucide-react";
 
 const PAGE_SIZE = 10;
 
@@ -100,29 +101,32 @@ export default function ClientsPage() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto">
+    <div className="mx-auto">
       <div className="mb-6">
-        <Breadcrumb trail={["داشبورد", "موکل‌ها"]} title="لیست موکل‌ها" />
+        <h1 className="text-xl font-bold text-[var(--text-primary)]">لیست موکلین</h1>
+        <p className="mt-1 text-sm text-[var(--text-secondary)]">
+          ثبت و پیگیری موکلین
+        </p>
       </div>
 
       <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-2.5 mb-4">
         <SearchBox
           value={searchInput}
           onChange={setSearchInput}
-          placeholder="نام، کد ملی یا شماره موبایل موکل را وارد کنید"
+          placeholder="جستجو کنید..."
         />
 
         <button
           type="button"
           onClick={() => setDateModalOpen(true)}
-          className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm whitespace-nowrap border transition-colors ${
-            fromDateInput || toDateInput
+          aria-label="فیلتر"
+          title="فیلتر"
+          className={`flex h-10 w-10 items-center justify-center rounded-lg border transition-colors ${fromDateInput || toDateInput
               ? "bg-[#A9762F]/10 border-[#A9762F] text-[#A9762F]"
               : "bg-white border-[#E4E1D8] text-[#4B4A44] hover:bg-[#FAF9F5]"
-          }`}
+            }`}
         >
-          <Calendar size={16} />
-          جست‌وجو بر اساس تاریخ
+          <Filter size={18} />
         </button>
 
         {hasActiveFilter && (

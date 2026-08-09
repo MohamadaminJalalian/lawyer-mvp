@@ -134,11 +134,11 @@ export default function ImportantCases() {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="جستجو بر اساس شماره پرونده، نام موکل یا موضوع"
+              placeholder="جستجو کنید..."
               className="
                 w-full
                 rounded-xl
-                border
+                borderُُُُُ
                 border-[#ddd5c8]
                 bg-white
                 py-2.5
