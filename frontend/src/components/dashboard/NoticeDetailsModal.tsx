@@ -1,4 +1,4 @@
-﻿import type { ReactNode } from "react";
+import type { ReactNode } from "react";
 import { Bell, Users, Calendar, ClipboardList, X } from "lucide-react";
 
 export interface NoticeDetailsData {
@@ -59,7 +59,7 @@ export default function NoticeDetailsModal({
         {/* هدر */}
         <div className="border-b border-[#EDEBE2]">
           <div className="flex items-center justify-between p-5">
-            <h2 className="flex items-center gap-2 text-lg font-bold text-[#262420]">
+            <h2 className="flex items-center gap-2 text-xl font-bold text-[#262420]">
               <Bell size={20} className="text-[#8A5D1F]" />
               جزئیات اطلاعیه
             </h2>

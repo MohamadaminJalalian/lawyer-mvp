@@ -109,8 +109,9 @@ export default function ClientsPage() {
         </p>
       </div>
 
-      <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-2.5 mb-4">
+      <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-2.5 mb-4 ">
         <SearchBox
+        
           value={searchInput}
           onChange={setSearchInput}
           placeholder="جستجو کنید..."
@@ -123,10 +124,10 @@ export default function ClientsPage() {
           title="فیلتر"
           className={`flex h-10 w-10 items-center justify-center rounded-lg border transition-colors ${fromDateInput || toDateInput
               ? "bg-[#A9762F]/10 border-[#A9762F] text-[#A9762F]"
-              : "bg-white border-[#E4E1D8] text-[#4B4A44] hover:bg-[#FAF9F5]"
+              : "bg-white border-[#E4E1D8] text-[#A9762F] hover:bg-[#FAF9F5]"
             }`}
         >
-          <Filter size={18} />
+          <Filter size={20} />
         </button>
 
         {hasActiveFilter && (

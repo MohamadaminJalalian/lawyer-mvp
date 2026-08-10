@@ -46,13 +46,12 @@ export default function SearchBox({
       <Search
         size={16}
         className="
-          pointer-events-none
-          absolute
-          right-3
-          top-1/2
-          -translate-y-1/2
-          text-[#8C8A80]
-        "
+    absolute
+    right-3
+    top-1/2
+    -translate-y-1/2
+    text-[#A9762F]
+  "
       />
     </div>
   );

@@ -1,28 +1,29 @@
 "use client";
 
+import { Search } from "lucide-react";
+
 interface SessionsSearchBarProps {
   query: string;
   onQueryChange: (value: string) => void;
 }
 
-export default function SessionsSearchBar({ query, onQueryChange }: SessionsSearchBarProps) {
+export default function SessionsSearchBar({
+  query,
+  onQueryChange,
+}: SessionsSearchBarProps) {
   return (
-    <div className="flex w-full items-center gap-2 sm:max-w-xs">
+    <div className="relative w-full sm:w-[372px] sm:flex-none">
       <input
         type="text"
         value={query}
         onChange={(e) => onQueryChange(e.target.value)}
         placeholder="جستجو کنید..."
-        className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm text-[var(--text-primary)] outline-none transition focus:border-[var(--brand)]"
+        className="w-full h-10 rounded-lg border border-[#E4E1D8] bg-white pr-9 pl-3 text-right text-sm text-[#262420] placeholder:text-[#8C8A80] transition-colors focus:border-[#A9762F] focus:outline-none"
       />
-      {query && (
-        <button
-          onClick={() => onQueryChange("")}
-          className="whitespace-nowrap rounded-xl px-2 py-2 text-xs font-medium text-[var(--text-secondary)] transition hover:bg-[var(--surface-muted)]"
-        >
-          پاک کردن
-        </button>
-      )}
+      <Search
+        size={18}
+        className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#A9762F]"
+      />
     </div>
   );
 }

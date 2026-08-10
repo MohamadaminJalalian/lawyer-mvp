@@ -149,19 +149,19 @@ export default function NoticesPage() {
               className="w-full rounded-lg border border-[#E4E1D8] bg-white p-2 pr-9 text-right text-sm placeholder:text-[#8C8A80] focus:border-[#A9762F] focus:outline-none"
             />
             <Search
-              size={16}
-              className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#8C8A80]"
+              size={18}
+              className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#A9762F]"
             />
           </div>
 
           <button
             type="button"
             onClick={() => setFilterModalOpen(true)}
-            className="relative flex shrink-0 items-center gap-1.5 rounded-lg border border-[#E4E1D8] bg-white px-3 py-2 text-sm text-[#4B4A44] transition-colors hover:border-[#A9762F]"
+            className="relative flex shrink-0 items-center gap-1.5 rounded-lg border border-[#E4E1D8] bg-white px-3 py-2 text-sm text-[#A9762F] transition-colors hover:border-[#A9762F]"
           >
-            <Filter size={16} />
+            <Filter size={20} />
             {activeFilterCount > 0 && (
-              <span className="absolute -right-1.5 -top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#A9762F] text-[10px] text-white">
+              <span className="absolute -right-1.5 -top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#A9762F] text-[10px] text-white ">
                 {activeFilterCount}
               </span>
             )}

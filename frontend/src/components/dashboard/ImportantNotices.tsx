@@ -11,6 +11,8 @@ export default function ImportantNotices() {
   const [search, setSearch] = useState("");
   const [selectedRange, setSelectedRange] = useState<DateObject[]>([]);
   const [filterModalOpen, setFilterModalOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 5;
   const [selectedNotice, setSelectedNotice] = useState<
     (typeof notices)[number] | null
   >(null);
@@ -56,38 +58,45 @@ export default function ImportantNotices() {
       selectedRange.length < 2
         ? true
         : (() => {
-          const itemDate = item.date.replace(/\//g, "");
+            const itemDate = item.date.replace(/\//g, "");
 
-          const from = toEnglishDigits(selectedRange[0].format("YYYYMMDD"));
-          const to = toEnglishDigits(selectedRange[1].format("YYYYMMDD"));
+            const from = toEnglishDigits(selectedRange[0].format("YYYYMMDD"));
+            const to = toEnglishDigits(selectedRange[1].format("YYYYMMDD"));
 
-          return itemDate >= from && itemDate <= to;
-        })();
+            return itemDate >= from && itemDate <= to;
+          })();
 
     return matchesSearch && matchesDate;
   });
 
+  const totalPages = Math.max(1, Math.ceil(filteredNotices.length / pageSize));
+  const safePage = Math.min(currentPage, totalPages);
+  const paginatedNotices = filteredNotices.slice(
+    (safePage - 1) * pageSize,
+    safePage * pageSize
+  );
+
   return (
     <>
-      <section className="mt-8 flex h-full flex-col rounded-xl border border-[#e5e0d6] bg-white p-4 sm:p-5">
-        {/* عنوان */}
-        <h2 className="mb-4 text-lg font-bold text-[#262420]">
-          اطلاعیه‌های مهم
-        </h2>
+    <section className="mt-8 flex h-full flex-col rounded-xl border border-[#e5e0d6] bg-white p-4 sm:p-5">
+      {/* عنوان */}
+      <h2 className="mb-4 text-lg font-bold text-neutral-900">
+        اطلاعیه‌های مهم
+      </h2>
 
-        <div className="mb-6 flex items-center gap-3">
-          <div className="relative min-w-0 flex-1 sm:max-w-[372px]">
-            <Search
-              size={20}
-              className="absolute right-5 top-1/2 -translate-y-1/2 text-[#a9762f]"
-            />
+      <div className="mb-6 flex items-center gap-3">
+        <div className="relative min-w-0 flex-1 sm:max-w-[372px]">
+          <Search
+            size={20}
+            className="absolute right-5 top-1/2 -translate-y-1/2 text-[#a9762f]"
+          />
 
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="جستجو کنید..."
-              className="
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="جستجو کنید..."
+            className="
               w-full
               rounded-xl
               border
@@ -100,13 +109,13 @@ export default function ImportantNotices() {
               outline-none
               focus:border-[#a9762f]
             "
-            />
-          </div>
+          />
+        </div>
 
-          <div className="group relative inline-flex shrink-0">
-            <button
-              onClick={() => setFilterModalOpen(true)}
-              className="
+        <div className="group relative inline-flex shrink-0">
+          <button
+            onClick={() => setFilterModalOpen(true)}
+            className="
               flex
               items-center
               justify-center
@@ -119,12 +128,12 @@ export default function ImportantNotices() {
               transition
               hover:bg-[#f8f5ef]
             "
-            >
-              <Filter size={20} className="text-[#a9762f]" />
-            </button>
+          >
+            <Filter size={20} className="text-[#a9762f]" />
+          </button>
 
-            <span
-              className="
+          <span
+            className="
               pointer-events-none
               absolute
               right-full
@@ -143,43 +152,43 @@ export default function ImportantNotices() {
               duration-200
               group-hover:opacity-100
             "
-            >
-              فیلترها
-            </span>
-          </div>
+          >
+            فیلترها
+          </span>
         </div>
+      </div>
 
-        {filterModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-            <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-xl border border-[#e5e0d6] bg-[#fdfcf9] shadow-xl">
-              <div className="flex items-center justify-between border-b border-[#ece7dd] px-4 py-4 sm:px-8 sm:py-6">
-                <h3 className="text-lg font-bold text-[#262420]">فیلترها</h3>
+      {filterModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-xl border border-[#e5e0d6] bg-[#fdfcf9] shadow-xl">
+            <div className="flex items-center justify-between border-b border-[#ece7dd] px-4 py-4 sm:px-8 sm:py-6">
+              <h3 className="text-xl font-bold text-neutral-900 sm:text-2xl">فیلترها</h3>
 
-                <button
-                  onClick={() => setFilterModalOpen(false)}
-                  className="text-3xl text-slate-500 transition hover:text-[#a9762f]"
-                >
-                  ×
-                </button>
+              <button
+                onClick={() => setFilterModalOpen(false)}
+                className="text-3xl text-slate-500 transition hover:text-[#a9762f]"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="space-y-8 p-4 sm:p-8">
+              <div>
+                <p className="mb-4 text-lg font-semibold">بازه تاریخ موعد</p>
+
+                <DateRangePicker
+                  value={selectedRange}
+                  onChange={setSelectedRange}
+                />
               </div>
 
-              <div className="space-y-8 p-4 sm:p-8">
-                <div>
-                  <p className="mb-4 text-lg font-semibold">بازه تاریخ موعد</p>
-
-                  <DateRangePicker
-                    value={selectedRange}
-                    onChange={setSelectedRange}
-                  />
-                </div>
-
-                <div className="flex flex-col gap-3 border-t border-[#ece7dd] pt-6 sm:flex-row sm:items-center sm:justify-between">
-                  <button
-                    onClick={() => {
-                      setSearch("");
-                      setSelectedRange([]);
-                    }}
-                    className="
+              <div className="flex flex-col gap-3 border-t border-[#ece7dd] pt-6 sm:flex-row sm:items-center sm:justify-between">
+                <button
+                  onClick={() => {
+                    setSearch("");
+                    setSelectedRange([]);
+                  }}
+                  className="
                     w-full
                     rounded-xl
                     border
@@ -192,13 +201,13 @@ export default function ImportantNotices() {
                     hover:bg-[#f8f3e8]
                     sm:w-auto
                   "
-                  >
-                    حذف فیلترها
-                  </button>
+                >
+                  حذف فیلترها
+                </button>
 
-                  <button
-                    onClick={() => setFilterModalOpen(false)}
-                    className="
+                <button
+                  onClick={() => setFilterModalOpen(false)}
+                  className="
                     w-full
                     rounded-xl
                     bg-[#a9762f]
@@ -209,150 +218,176 @@ export default function ImportantNotices() {
                     hover:bg-[#946727]
                     sm:w-auto
                   "
-                  >
-                    اعمال فیلتر
-                  </button>
-                </div>
+                >
+                  اعمال فیلتر
+                </button>
               </div>
             </div>
           </div>
-        )}
+        </div>
+      )}
 
-        {/* جدول (دسکتاپ) */}
-        <div className="hidden max-h-[272px] overflow-auto rounded-xl border border-[#e5e0d6] sm:block">
-          <table className="w-full min-w-[420px] text-right sm:min-w-0">
-            <thead className="sticky top-0 z-10 bg-[#f5f1e8]">
-              <tr>
-                <th className="px-5 py-3 text-sm font-semibold text-neutral-700">
-                  عنوان
-                </th>
+      {/* جدول (دسکتاپ) */}
+      <div className="hidden max-h-[272px] overflow-auto rounded-xl border border-[#e5e0d6] sm:block">
+        <table className="w-full min-w-[420px] text-right sm:min-w-0">
+          <thead className="sticky top-0 z-10 bg-[#f5f1e8]">
+            <tr>
+              <th className="px-5 py-3 text-sm font-semibold text-neutral-700">
+                عنوان
+              </th>
 
-                <th className="px-5 py-3 text-sm font-semibold text-neutral-700">
-                  موعد تاریخ
-                </th>
+              <th className="px-5 py-3 text-sm font-semibold text-neutral-700">
+                موعد تاریخ
+              </th>
 
-                <th className="px-5 py-3 text-center text-sm font-semibold text-neutral-700">
-                  عملیات
-                </th>
-              </tr>
-            </thead>
+              <th className="px-5 py-3 text-center text-sm font-semibold text-neutral-700">
+                عملیات
+              </th>
+            </tr>
+          </thead>
 
-            <tbody>
-              {filteredNotices.map((notice) => (
-                <tr
-                  key={notice.id}
-                  className="border-t border-[#ece7dd] transition-colors hover:bg-[#faf8f4]"
-                >
-                  {/* عنوان */}
-                  <td className="px-5 py-4 text-sm text-[#4b4b4b]">
-                    {notice.title}
-                  </td>
+          <tbody>
+            {paginatedNotices.map((notice) => (
+              <tr
+                key={notice.id}
+                className="border-t border-[#ece7dd] transition-colors hover:bg-[#faf8f4]"
+              >
+                {/* عنوان */}
+                <td className="px-5 py-4 text-sm text-[#4b4b4b]">
+                  {notice.title}
+                </td>
 
-                  {/* موعد تاریخ */}
-                  <td className="px-5 py-4 whitespace-nowrap text-sm text-[#4b4b4b]">
-                    {notice.date}
-                  </td>
+                {/* موعد تاریخ */}
+                <td className="px-5 py-4 whitespace-nowrap text-sm text-[#4b4b4b]">
+                  {notice.date}
+                </td>
 
-                  {/* عملیات */}
-                  <td className="px-5 py-4 text-center">
-                    <div className="inline-flex">
-                      <button
-                        onClick={() => setSelectedNotice(notice)}
-                        onMouseEnter={(e) => {
-                          const rect = e.currentTarget.getBoundingClientRect();
-                          setRowTooltip({
-                            top: rect.top + rect.height / 2,
-                            left: rect.left,
-                          });
-                        }}
-                        onMouseLeave={() => setRowTooltip(null)}
-                        className="
+                {/* عملیات */}
+                <td className="px-5 py-4 text-center">
+                  <div className="inline-flex">
+                    <button
+                      onClick={() => setSelectedNotice(notice)}
+                      onMouseEnter={(e) => {
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        setRowTooltip({
+                          top: rect.top + rect.height / 2,
+                          left: rect.left,
+                        });
+                      }}
+                      onMouseLeave={() => setRowTooltip(null)}
+                      className="
                         rounded-lg
                         p-2
                         text-[#8a6a2f]
                         transition
                         hover:bg-[#f1efe6]
                       "
-                      >
-                        <Eye size={18} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                    >
+                      <Eye size={18} />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
 
-              {filteredNotices.length === 0 && (
-                <tr>
-                  <td colSpan={3} className="p-8 text-center text-[#8b8b8b]">
-                    هیچ اطلاعیه‌ای یافت نشد.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+            {filteredNotices.length === 0 && (
+              <tr>
+                <td colSpan={3} className="p-8 text-center text-[#8b8b8b]">
+                  هیچ اطلاعیه‌ای یافت نشد.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
 
-        {/* کارت‌ها (موبایل) */}
-        <div className="space-y-3 sm:hidden">
-          {filteredNotices.map((notice) => (
-            <div
-              key={notice.id}
-              className="rounded-xl border border-[#e5e0d6] bg-white p-4"
-            >
-              {/* عنوان */}
-              <div className="mb-3 text-right font-bold text-neutral-900">
-                {notice.title}
-              </div>
-
-              {/* موعد تاریخ */}
-              <div className="mb-3 flex items-center justify-between text-sm">
-                <span className="text-[#8a8175]">موعد تاریخ</span>
-                <span className="text-[#4b4b4b]">{notice.date}</span>
-              </div>
-
-              {/* خط جداکننده + دکمه‌ی مشاهده، وسط‌چین */}
-              <div className="flex items-center justify-center gap-6 border-t border-[#ece7dd] pt-3 text-[#8a6a2f]">
-                <button
-                  onClick={() => setSelectedNotice(notice)}
-                  onMouseEnter={(e) => {
-                    const rect = e.currentTarget.getBoundingClientRect();
-                    setRowTooltip({
-                      top: rect.top + rect.height / 2,
-                      left: rect.left,
-                    });
-                  }}
-                  onMouseLeave={() => setRowTooltip(null)}
-                  className="transition hover:text-[#a9762f]"
-                >
-                  <Eye size={18} />
-                </button>
-              </div>
-            </div>
-          ))}
-
-          {filteredNotices.length === 0 && (
-            <p className="p-4 text-center text-sm text-[#8b8b8b]">
-              هیچ اطلاعیه‌ای یافت نشد.
-            </p>
-          )}
-        </div>
-      </section>
-
-      <NoticeDetailsModal
-        notice={selectedNotice}
-        onClose={() => setSelectedNotice(null)}
-      />
-
-      {rowTooltip &&
-        createPortal(
-          <span
-            className="pointer-events-none fixed z-50 -translate-x-full -translate-y-1/2 whitespace-nowrap rounded-lg bg-[#2b2b2b] px-3 py-2 text-xs text-white"
-            style={{ top: rowTooltip.top, left: rowTooltip.left - 12 }}
+      {/* کارت‌ها (موبایل) */}
+      <div className="space-y-3 sm:hidden">
+        {paginatedNotices.map((notice) => (
+          <div
+            key={notice.id}
+            className="rounded-xl border border-[#e5e0d6] bg-white p-4"
           >
-            مشاهده اطلاعیه
-          </span>,
-          document.body
+            {/* عنوان */}
+            <div className="mb-3 text-right font-bold text-neutral-900">
+              {notice.title}
+            </div>
+
+            {/* موعد تاریخ */}
+            <div className="mb-3 flex items-center justify-between text-sm">
+              <span className="text-[#8a8175]">موعد تاریخ</span>
+              <span className="text-[#4b4b4b]">{notice.date}</span>
+            </div>
+
+            {/* خط جداکننده + دکمه‌ی مشاهده، وسط‌چین */}
+            <div className="flex items-center justify-center gap-6 border-t border-[#ece7dd] pt-3 text-[#8a6a2f]">
+              <button
+                onClick={() => setSelectedNotice(notice)}
+                onMouseEnter={(e) => {
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  setRowTooltip({
+                    top: rect.top + rect.height / 2,
+                    left: rect.left,
+                  });
+                }}
+                onMouseLeave={() => setRowTooltip(null)}
+                className="transition hover:text-[#a9762f]"
+              >
+                <Eye size={18} />
+              </button>
+            </div>
+          </div>
+        ))}
+
+        {filteredNotices.length === 0 && (
+          <p className="p-4 text-center text-sm text-[#8b8b8b]">
+            هیچ اطلاعیه‌ای یافت نشد.
+          </p>
         )}
+      </div>
+
+      {filteredNotices.length > 0 && (
+        <div className="mt-4 flex items-center justify-between">
+          <button
+            onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+            disabled={safePage === 1}
+            className="rounded-lg border border-[#ddd5c8] bg-white px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            قبلی
+          </button>
+
+          <span className="text-sm text-[#8a8175]">
+            صفحه {safePage} از {totalPages}
+          </span>
+
+          <button
+            onClick={() =>
+              setCurrentPage((page) => Math.min(totalPages, page + 1))
+            }
+            disabled={safePage === totalPages}
+            className="rounded-lg border border-[#ddd5c8] bg-white px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            بعدی
+          </button>
+        </div>
+      )}
+    </section>
+
+    <NoticeDetailsModal
+      notice={selectedNotice}
+      onClose={() => setSelectedNotice(null)}
+    />
+
+    {rowTooltip &&
+      createPortal(
+        <span
+          className="pointer-events-none fixed z-50 -translate-x-full -translate-y-1/2 whitespace-nowrap rounded-lg bg-[#2b2b2b] px-3 py-2 text-xs text-white"
+          style={{ top: rowTooltip.top, left: rowTooltip.left - 12 }}
+        >
+          مشاهده اطلاعیه
+        </span>,
+        document.body
+      )}
     </>
   );
 }

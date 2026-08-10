@@ -22,7 +22,7 @@ const menuItems = [
   { title: "داشبورد", href: "/", icon: LayoutDashboard },
   { title: "پرونده‌ها", href: "/cases", icon: FolderKanban },
   { title: "موکلین", href: "/clients", icon: Users },
-{ title: "جلسات مشاوره", href: "/sessions", icon: MessageSquare },
+  { title: "جلسات مشاوره", href: "/sessions", icon: MessageSquare },
   { title: "اطلاعیه‌ها", href: "/announcements", icon: Megaphone },
   { title: "تنظیمات", href: "/settings", icon: Settings },
 ];
@@ -76,22 +76,21 @@ export default function Sidebar({
       {isOpen && (
         <div
           onClick={onClose}
-          className="fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-40 bg-[#262420]/40 backdrop-blur-sm lg:hidden"
         />
       )}
 
       <aside
-        className={`fixed right-0 top-0 z-50 h-screen w-64 border-l border-slate-200 bg-white shadow-xl transition-all duration-300 ease-in-out lg:translate-x-0 lg:shadow-none ${
+        className={`fixed right-0 top-0 z-50 h-screen w-64 border-l border-[#E4E1D8] bg-white shadow-xl transition-all duration-300 ease-in-out lg:translate-x-0 lg:shadow-none ${
           isOpen ? "translate-x-0" : "translate-x-full"
         } ${isCollapsed ? "lg:w-16" : ""}`}
       >
         <div className="flex h-full flex-col">
           <div
-            className={`flex items-center justify-between border-b border-slate-200 px-6 py-6 ${
+            className={`flex items-center justify-between border-b border-[#E4E1D8] px-6 py-6 ${
               isCollapsed ? "lg:justify-center lg:px-3" : ""
             }`}
           >
-            {/* نشان + عنوان — خودِ نشان، دکمه‌ی toggle هست */}
             <button
               type="button"
               onClick={onToggleCollapse}
@@ -104,20 +103,20 @@ export default function Sidebar({
               onMouseLeave={handleItemMouseLeave}
               className="flex cursor-pointer items-center gap-3 rounded-lg transition hover:opacity-80"
             >
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-slate-900 text-white">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#A9762F] text-white">
                 <Scale size={19} />
               </div>
               <div className={`text-right ${isCollapsed ? "lg:hidden" : ""}`}>
-                <h1 className="text-xl font-bold tracking-tight text-slate-900">
+                <h1 className="text-xl font-bold tracking-tight text-[#262420]">
                   دفتر وکالت
                 </h1>
-                <p className="mt-1 text-sm text-slate-500">مدیریت پرونده‌ها</p>
+                <p className="mt-1 text-sm text-[#8C8A80]">مدیریت پرونده‌ها</p>
               </div>
             </button>
 
             <button
               onClick={onClose}
-              className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 lg:hidden"
+              className="flex h-8 w-8 items-center justify-center rounded-lg text-[#8C8A80] transition hover:bg-[#F1EFE6] hover:text-[#262420] lg:hidden"
               aria-label="بستن منو"
             >
               <X size={18} />
@@ -139,8 +138,8 @@ export default function Sidebar({
                     isCollapsed ? "lg:justify-center lg:px-0" : ""
                   } ${
                     isActive
-                      ? "bg-slate-900 text-white shadow-sm"
-                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                      ? "bg-[#A9762F] text-white shadow-sm"
+                      : "text-[#4B4A44] hover:bg-[#F1EFE6] hover:text-[#262420]"
                   }`}
                 >
                   <Icon size={20} className="shrink-0" />
@@ -152,20 +151,20 @@ export default function Sidebar({
             })}
           </nav>
 
-          <div className="border-t border-slate-200 p-4">
+          <div className="border-t border-[#E4E1D8] p-4">
             <div
-              className={`flex items-center gap-3 rounded-xl bg-slate-50 p-3 ${
+              className={`flex items-center gap-3 rounded-xl bg-[#F1EFE6] p-3 ${
                 isCollapsed ? "lg:justify-center lg:p-2" : ""
               }`}
             >
-              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-slate-900 text-sm font-semibold text-white">
+              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-[#A9762F] text-sm font-semibold text-white">
                 {user?.fullName?.slice(0, 2) ?? "کا"}
               </div>
               <div className={`min-w-0 flex-1 ${isCollapsed ? "lg:hidden" : ""}`}>
-                <p className="truncate text-sm font-medium text-slate-800">
+                <p className="truncate text-sm font-medium text-[#262420]">
                   {user?.fullName ?? "کاربر"}
                 </p>
-                <p className="mt-0.5 truncate text-xs text-slate-500">
+                <p className="mt-0.5 truncate text-xs text-[#8C8A80]">
                   {user ? ROLE_LABELS[user.role] ?? user.role : ""}
                 </p>
               </div>

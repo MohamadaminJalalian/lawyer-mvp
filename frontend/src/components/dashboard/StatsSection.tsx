@@ -1,4 +1,6 @@
-﻿import {
+"use client";
+
+import {
   FolderOpen,
   Users,
   CalendarDays,

@@ -45,7 +45,7 @@ export default function NoticesTable({
   return (
     <>
       {/* جدول — فقط از sm به بعد دیده می‌شه؛ برای موبایل بعداً می‌شه کارت اضافه کرد */}
-      <div className="hidden max-w-6xl overflow-hidden rounded-xl border border-[#E4E1D8] bg-white sm:block">
+      <div className="hidden  overflow-hidden rounded-xl border border-[#E4E1D8] bg-white sm:block">
         <table className="w-full min-w-[720px] border-collapse text-right text-sm">
           <thead>
             <tr className="bg-[#F1EFE6]">

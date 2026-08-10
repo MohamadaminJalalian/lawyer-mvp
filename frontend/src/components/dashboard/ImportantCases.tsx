@@ -11,7 +11,6 @@ import {
 import CaseDetailsModal from "./CaseDetailsModal";
 import DateRangePicker from "./DateRangePicker";
 import type { DateObject } from "react-multi-date-picker";
-
 export default function ImportantCases() {
   const [selectedCase, setSelectedCase] = useState<(typeof cases)[number] | null>(
     null
@@ -29,6 +28,9 @@ export default function ImportantCases() {
   const [selectedStatus, setSelectedStatus] = useState("");
 
   const [selectedCategory, setSelectedCategory] = useState("");
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 5;
 
   const toEnglishDigits = (value: string) =>
     value.replace(/[۰-۹]/g, (d) =>
@@ -88,36 +90,47 @@ export default function ImportantCases() {
       selectedCategory === "" ||
       item.category === selectedCategory;
 
-    const matchesDate =
-      selectedRange.length < 2
-        ? true
-        : (() => {
-          const itemDate = item.date.replace(/\//g, "");
+      const matchesDate =
+  selectedRange.length < 2
+    ? true
+    : (() => {
+        const itemDate = item.date.replace(/\//g, "");
 
-          const from = toEnglishDigits(
-            selectedRange[0].format("YYYYMMDD")
-          );
+       const from = toEnglishDigits(
+  selectedRange[0].format("YYYYMMDD")
+);
 
-          const to = toEnglishDigits(
-            selectedRange[1].format("YYYYMMDD")
-          );
+const to = toEnglishDigits(
+  selectedRange[1].format("YYYYMMDD")
+);
 
-          return itemDate >= from && itemDate <= to;
-        })();
+        console.log("itemDate:", itemDate);
+        console.log("from:", from);
+        console.log("to:", to);
+
+        return itemDate >= from && itemDate <= to;
+      })();
 
     return (
-      matchesSearch &&
-      matchesStatus &&
-      matchesCategory &&
-      matchesDate
-    );
+  matchesSearch &&
+  matchesStatus &&
+  matchesCategory &&
+  matchesDate
+);
   });
+
+  const totalPages = Math.max(1, Math.ceil(filteredCases.length / pageSize));
+  const safePage = Math.min(currentPage, totalPages);
+  const paginatedCases = filteredCases.slice(
+    (safePage - 1) * pageSize,
+    safePage * pageSize
+  );
 
   return (
     <>
       <section className="mt-8 flex h-full flex-col rounded-xl border border-[#e5e0d6] bg-white p-4 sm:p-5">
 
-        <h2 className="mb-4 text-lg font-bold text-[#262420]">
+        <h2 className="mb-4 text-lg font-bold text-neutral-900">
           پرونده‌های مهم
         </h2>
 
@@ -138,7 +151,7 @@ export default function ImportantCases() {
               className="
                 w-full
                 rounded-xl
-                borderُُُُُ
+                border
                 border-[#ddd5c8]
                 bg-white
                 py-2.5
@@ -152,11 +165,11 @@ export default function ImportantCases() {
 
           </div>
 
-          <div className="group relative inline-flex shrink-0">
+<div className="group relative inline-flex shrink-0">
 
-            <button
-              onClick={() => setFilterModalOpen(true)}
-              className="
+  <button
+    onClick={() => setFilterModalOpen(true)}
+    className="
       flex
       items-center
       justify-center
@@ -169,15 +182,15 @@ export default function ImportantCases() {
       transition
       hover:bg-[#f8f5ef]
     "
-            >
-              <Filter
-                size={20}
-                className="text-[#a9762f]"
-              />
-            </button>
+  >
+    <Filter
+      size={20}
+      className="text-[#a9762f]"
+    />
+  </button>
 
-            <span
-              className="
+  <span
+    className="
       pointer-events-none
       absolute
       right-full
@@ -196,11 +209,11 @@ export default function ImportantCases() {
       duration-200
       group-hover:opacity-100
     "
-            >
-              فیلترها
-            </span>
+  >
+    فیلترها
+  </span>
 
-          </div>
+</div>
 
         </div>
 
@@ -212,7 +225,7 @@ export default function ImportantCases() {
 
               <div className="flex items-center justify-between border-b border-[#ece7dd] px-4 py-4 sm:px-8 sm:py-6">
 
-                <h3 className="text-lg font-bold text-[#262420]">
+                <h3 className="text-xl font-bold text-neutral-900 sm:text-2xl">
                   فیلترها
                 </h3>
 
@@ -227,19 +240,19 @@ export default function ImportantCases() {
 
               <div className="space-y-8 p-4 sm:p-8">
 
-                <div>
+<div>
 
-                  <p className="mb-4 text-lg font-semibold">
-                    بازه تاریخ تشکیل پرونده
-                  </p>
+  <p className="mb-4 text-lg font-semibold">
+    بازه تاریخ تشکیل پرونده
+  </p>
 
-                  <DateRangePicker
-                    value={selectedRange}
-                    onChange={setSelectedRange}
-                  />
+  <DateRangePicker
+  value={selectedRange}
+  onChange={setSelectedRange}
+/>
 
-                </div>
-                {/* وضعیت */}
+</div>
+                                {/* وضعیت */}
 
                 <div>
 
@@ -261,9 +274,10 @@ export default function ImportantCases() {
                           text-sm
                           transition
 
-                          ${selectedStatus === status
-                            ? "bg-[#a9762f] text-white"
-                            : "border border-[#ddd5c8] bg-[#f1efe6] text-[#7a6b52] hover:bg-[#e8e2d4]"
+                          ${
+                            selectedStatus === status
+                              ? "bg-[#a9762f] text-white"
+                              : "border border-[#ddd5c8] bg-[#f1efe6] text-[#7a6b52] hover:bg-[#e8e2d4]"
                           }
                         `}
                       >
@@ -298,9 +312,10 @@ export default function ImportantCases() {
                           text-sm
                           transition
 
-                          ${selectedCategory === category
-                            ? "bg-[#a9762f] text-white"
-                            : "border border-[#ddd5c8] bg-[#f1efe6] text-[#7a6b52] hover:bg-[#e8e2d4]"
+                          ${
+                            selectedCategory === category
+                              ? "bg-[#a9762f] text-white"
+                              : "border border-[#ddd5c8] bg-[#f1efe6] text-[#7a6b52] hover:bg-[#e8e2d4]"
                           }
                         `}
                       >
@@ -321,8 +336,8 @@ export default function ImportantCases() {
                     onClick={() => {
                       setSelectedStatus("");
                       setSelectedCategory("");
-
-
+                      
+                      
                       setSearch("");
                       setSelectedRange([]);
                     }}
@@ -370,11 +385,11 @@ export default function ImportantCases() {
 
         )}
 
-        {/* Table (دسکتاپ) — نسخه‌ی خلاصه‌شده: فقط شماره، موکل، موضوع، وضعیت، عملیات */}
+        {/* Table (دسکتاپ) */}
 
         <div className="hidden max-h-[272px] overflow-auto rounded-xl border border-[#e5e0d6] sm:block">
 
-          <table className="w-full min-w-[560px] text-right">
+          <table className="w-full min-w-[760px] text-right">
 
             <thead className="sticky top-0 z-10 bg-[#f5f1e8]">
 
@@ -389,7 +404,15 @@ export default function ImportantCases() {
                 </th>
 
                 <th className="px-5 py-3 text-sm font-semibold text-neutral-700">
+                  دسته‌بندی
+                </th>
+
+                <th className="px-5 py-3 text-sm font-semibold text-neutral-700">
                   موضوع
+                </th>
+
+                <th className="px-5 py-3 text-sm font-semibold text-neutral-700">
+                  تاریخ ثبت پرونده
                 </th>
 
                 <th className="px-5 py-3 text-sm font-semibold text-neutral-700">
@@ -404,8 +427,8 @@ export default function ImportantCases() {
 
             </thead>
 
-            <tbody>
-              {filteredCases.map((item) => (
+            <tbody>             
+               {paginatedCases.map((item) => (
 
                 <tr
                   key={item.id}
@@ -431,10 +454,22 @@ export default function ImportantCases() {
                     {item.client}
                   </td>
 
+                  {/* دسته بندی */}
+
+                  <td className="px-5 py-4 text-sm text-[#4b4b4b]">
+                    {item.category}
+                  </td>
+
                   {/* موضوع */}
 
                   <td className="px-5 py-4 text-sm text-[#4b4b4b]">
                     {item.subject}
+                  </td>
+
+                  {/* تاریخ */}
+
+                  <td className="px-5 py-4 text-sm text-[#4b4b4b]">
+                    {item.date}
                   </td>
 
                   {/* وضعیت */}
@@ -449,9 +484,10 @@ export default function ImportantCases() {
                         text-xs
                         font-medium
 
-                        ${item.status === "فعال"
-                          ? "bg-[#e8f5ec] text-[#3d8b5a]"
-                          : item.status === "مختومه"
+                        ${
+                          item.status === "فعال"
+                            ? "bg-[#e8f5ec] text-[#3d8b5a]"
+                            : item.status === "مختومه"
                             ? "bg-[#efefef] text-[#6d6d6d]"
                             : "bg-[#fff4d8] text-[#a9762f]"
                         }
@@ -500,7 +536,7 @@ export default function ImportantCases() {
                 <tr>
 
                   <td
-                    colSpan={5}
+                    colSpan={7}
                     className="p-8 text-center text-[#8b8b8b]"
                   >
                     هیچ پرونده‌ای یافت نشد.
@@ -516,11 +552,11 @@ export default function ImportantCases() {
 
         </div>
 
-        {/* کارت‌ها (موبایل) — همه‌ی فیلدها همچنان نمایش داده می‌شن */}
+        {/* کارت‌ها (موبایل) */}
 
         <div className="space-y-3 sm:hidden">
 
-          {filteredCases.map((item) => (
+          {paginatedCases.map((item) => (
 
             <div
               key={item.id}
@@ -567,9 +603,10 @@ export default function ImportantCases() {
                       py-0.5
                       text-xs
                       font-medium
-                      ${item.status === "فعال"
-                        ? "bg-[#e8f5ec] text-[#3d8b5a]"
-                        : item.status === "مختومه"
+                      ${
+                        item.status === "فعال"
+                          ? "bg-[#e8f5ec] text-[#3d8b5a]"
+                          : item.status === "مختومه"
                           ? "bg-[#efefef] text-[#6d6d6d]"
                           : "bg-[#fff4d8] text-[#a9762f]"
                       }
@@ -606,6 +643,32 @@ export default function ImportantCases() {
 
         </div>
 
+        {filteredCases.length > 0 && (
+          <div className="mt-4 flex items-center justify-between">
+            <button
+              onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+              disabled={safePage === 1}
+              className="rounded-lg border border-[#ddd5c8] bg-white px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              قبلی
+            </button>
+
+            <span className="text-sm text-[#8a8175]">
+              صفحه {safePage} از {totalPages}
+            </span>
+
+            <button
+              onClick={() =>
+                setCurrentPage((page) => Math.min(totalPages, page + 1))
+              }
+              disabled={safePage === totalPages}
+              className="rounded-lg border border-[#ddd5c8] bg-white px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              بعدی
+            </button>
+          </div>
+        )}
+
       </section>
 
       <CaseDetailsModal
@@ -629,3 +692,4 @@ export default function ImportantCases() {
   );
 
 }
+            
