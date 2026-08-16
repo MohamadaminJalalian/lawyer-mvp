@@ -1,27 +1,22 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import {
   ArrowRight,
-  Folder,
-  FolderPlus,
-  Upload,
-  FileText,
-  Image as ImageIcon,
-  FileSpreadsheet,
-  File as FileIcon,
+  CalendarDays,
   Download,
+  FileImage,
+  FileText,
+  FileSpreadsheet,
+  File,
+  Paperclip,
+  Upload,
   X,
-  ChevronLeft,
 } from "lucide-react";
 import { mockCases } from "@/mocks/cases.mock";
-import {
-  getCaseDocuments,
-  addMockFolder,
-  addMockFile,
-} from "@/mocks/documents.mock";
+import { addMockFile, getCaseDocuments } from "@/mocks/documents.mock";
 import type { DocumentFile } from "@/mocks/cases.types";
 
 function fileIconFor(type: DocumentFile["type"]) {
@@ -29,11 +24,13 @@ function fileIconFor(type: DocumentFile["type"]) {
     case "pdf":
       return FileText;
     case "image":
-      return ImageIcon;
+      return FileImage;
     case "excel":
       return FileSpreadsheet;
+    case "word":
+      return FileText;
     default:
-      return FileIcon;
+      return File;
   }
 }
 
@@ -43,65 +40,89 @@ function formatSize(bytes: number) {
   return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
 }
 
+function formatPersianDate(iso: string) {
+  return new Intl.DateTimeFormat("fa-IR", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date(iso));
+}
+
+
 export default function CaseDocumentsPage() {
   const { id: caseId } = useParams<{ id: string }>();
   const caseItem = mockCases.find((c) => c.id === caseId);
-
-  const [{ folders, files }, setDocs] = useState(() => getCaseDocuments(caseId));
-  const [currentFolderId, setCurrentFolderId] = useState<string | null>(null);
-  const [newFolderOpen, setNewFolderOpen] = useState(false);
-  const [newFolderName, setNewFolderName] = useState("");
+  const [{ files }, setDocs] = useState(() => getCaseDocuments(caseId));
+  const [title, setTitle] = useState("");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewFile, setPreviewFile] = useState<DocumentFile | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const refresh = () => setDocs(getCaseDocuments(caseId));
-
-  // مسیر breadcrumb از فولدر جاری تا ریشه
-  const breadcrumb = useMemo(() => {
-    const trail: { id: string | null; name: string }[] = [{ id: null, name: "اسناد" }];
-    let cursor = currentFolderId;
-    const chain: { id: string; name: string }[] = [];
-    while (cursor) {
-      const f = folders.find((x) => x.id === cursor);
-      if (!f) break;
-      chain.unshift({ id: f.id, name: f.name });
-      cursor = f.parentId;
-    }
-    return [...trail, ...chain];
-  }, [currentFolderId, folders]);
-
-  const visibleFolders = folders.filter((f) => f.parentId === currentFolderId);
-  const visibleFiles = files.filter((f) => f.folderId === currentFolderId);
-
-  function handleCreateFolder() {
-    if (!newFolderName.trim()) return;
-    addMockFolder(caseId, newFolderName.trim(), currentFolderId);
-    setNewFolderName("");
-    setNewFolderOpen(false);
-    refresh();
-  }
-
-  function handleUpload(fileList: FileList | null) {
-    if (!fileList) return;
-    Array.from(fileList).forEach((f) => {
-      const isImage = f.type.startsWith("image/");
-      addMockFile(caseId, {
-        name: f.name,
-        type: isImage ? "image" : f.type.includes("pdf") ? "pdf" : "other",
-        url: isImage ? URL.createObjectURL(f) : "#",
-        size: f.size,
-        folderId: currentFolderId,
-      });
-    });
-    refresh();
-    if (fileInputRef.current) fileInputRef.current.value = "";
-  }
 
   if (!caseItem) {
     return <div className="p-8 text-sm text-[#8C8A80]">پرونده پیدا نشد.</div>;
   }
 
+  function refresh() {
+    setDocs(getCaseDocuments(caseId));
+  }
+
+  function openDocument(file: DocumentFile) {
+    if (file.url && file.url !== "#") {
+      if (file.type === "image") {
+        setPreviewFile(file);
+      } else {
+        window.open(file.url, "_blank", "noopener,noreferrer");
+      }
+    }
+  }
+
+  function handleFileChange(file: File | null) {
+    setSelectedFile(file);
+    setError("");
+  }
+
+  function handleRegister() {
+    if (!title.trim()) {
+      setError("عنوان سند را وارد کنید.");
+      return;
+    }
+    if (!selectedFile) {
+      setError("لطفاً فایل سند را انتخاب کنید.");
+      return;
+    }
+
+    setIsSaving(true);
+    const isImage = selectedFile.type.startsWith("image/");
+    const isPdf = selectedFile.type === "application/pdf";
+    const isWord =
+      selectedFile.type.includes("word") ||
+      selectedFile.name.toLowerCase().endsWith(".doc") ||
+      selectedFile.name.toLowerCase().endsWith(".docx");
+    const isExcel =
+      selectedFile.type.includes("sheet") ||
+      selectedFile.name.toLowerCase().endsWith(".xls") ||
+      selectedFile.name.toLowerCase().endsWith(".xlsx");
+
+    const url = URL.createObjectURL(selectedFile);
+    addMockFile(caseId, {
+      title: title.trim(),
+      name: selectedFile.name,
+      type: isImage ? "image" : isPdf ? "pdf" : isWord ? "word" : isExcel ? "excel" : "other",
+      url,
+      size: selectedFile.size,
+    });
+
+    setTitle("");
+    setSelectedFile(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+    refresh();
+    setIsSaving(false);
+  }
+
   return (
+<<<<<<< HEAD:frontend/src/app/(protected)/cases/[id]/documents/page.tsx
     <div className=" mx-auto">
       {/* هدر صفحه */}
       <div className="flex items-center gap-2 mb-4">
@@ -114,134 +135,169 @@ export default function CaseDocumentsPage() {
       <div className="rounded-xl border border-[#EDEBE2] bg-white overflow-hidden mb-5">
         <div className="px-5 py-4 bg-[#FAF8F3] border-b border-[#EDEBE2]">
           <h1 className="text-lg font-bold text-[#262420]">اسناد پرونده: {caseItem.title}</h1>
+=======
+    <div dir="rtl" className="min-h-full bg-[#FAF9F6] p-5 sm:p-7">
+      <div className="max-w-5xl mx-auto">
+        <div className="mb-5">
+          <Link
+            href={`/cases`}
+            className="inline-flex items-center gap-1.5 text-sm text-[#8C8A80] hover:text-[#262420] transition-colors"
+          >
+            <ArrowRight size={16} />
+            بازگشت به لیست پرونده‌ها
+          </Link>
+>>>>>>> origin/feature/cases-mock-data:frontend/src/app/cases/[id]/documents/page.tsx
         </div>
-        <div className="px-5 py-4 grid grid-cols-2 gap-4 text-sm">
-          <div>
-            <span className="text-[#8C8A80]">موکل: </span>
-            <span className="font-medium text-[#262420]">{caseItem.client.fullName}</span>
-          </div>
-          <div>
-            <span className="text-[#8C8A80]">شماره داخلی: </span>
-            <span className="font-mono text-[#262420]">{caseItem.internalNumber}</span>
-          </div>
-        </div>
-      </div>
 
-      {/* باکس مدیریت اسناد */}
-      <div className="rounded-xl border border-[#EDEBE2] bg-white overflow-hidden">
-        {/* نوار ابزار: breadcrumb + دکمه‌ها */}
-        <div className="px-5 py-3 bg-[#FAF8F3] border-b border-[#EDEBE2] flex items-center justify-between flex-wrap gap-3">
-          <div className="flex items-center gap-1 text-sm text-[#8C8A80]">
-            {breadcrumb.map((crumb, i) => (
-              <span key={crumb.id ?? "root"} className="flex items-center gap-1">
-                {i > 0 && <ChevronLeft size={14} />}
+        <div className="rounded-2xl border border-[#E8E3D9] bg-white shadow-sm overflow-hidden">
+          <div className="px-5 sm:px-7 py-5 border-b border-[#EDEBE2]">
+            <h1 className="text-xl font-bold text-[#262420]">اسناد پرونده</h1>
+            <p className="text-sm text-[#8C8A80] mt-1">
+              {caseItem.title}
+            </p>
+          </div>
+
+          <div className="p-5 sm:p-7">
+            <div className="rounded-2xl border border-[#E5E0D6] bg-[#FCFBF8] p-5">
+              <div className="flex items-start gap-3 mb-5">
+                <div className="w-10 h-10 rounded-xl bg-[#F5EBD9] text-[#9A6A24] flex items-center justify-center shrink-0">
+                  <Paperclip size={19} />
+                </div>
+                <div>
+                  <h2 className="font-bold text-[#262420]">ثبت سند جدید</h2>
+                  <p className="text-xs text-[#8C8A80] mt-1">برای هر سند یک عنوان توضیحی انتخاب کنید و فایل آن را بارگذاری کنید.</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.35fr_auto] gap-3 items-end">
+                <label className="block">
+                  <span className="block text-sm font-medium text-[#262420] mb-2">عنوان سند <span className="text-red-600">*</span></span>
+                  <input
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder="مثلاً: قرارداد اجاره و پیوست‌ها"
+                    className="w-full h-11 rounded-xl border border-[#E2DDD2] bg-white px-3.5 text-sm text-[#262420] placeholder:text-[#A6A198] outline-none focus:border-[#B17A2B]"
+                  />
+                </label>
+
+                <div>
+                  <span className="block text-sm font-medium text-[#262420] mb-2">فایل سند <span className="text-red-600">*</span></span>
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="w-full h-11 rounded-xl border border-dashed border-[#CFC7B8] bg-white px-3.5 flex items-center justify-between gap-3 text-sm hover:border-[#B17A2B] transition-colors"
+                  >
+                    <span className="flex items-center gap-2 min-w-0">
+                      <Upload size={17} className="text-[#9A6A24] shrink-0" />
+                      <span className="truncate text-[#6F6B63]">{selectedFile?.name ?? "انتخاب PDF، عکس یا فایل مستندات"}</span>
+                    </span>
+                    <span className="text-xs text-[#9A6A24] shrink-0">انتخاب فایل</span>
+                  </button>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="application/pdf,image/*,.doc,.docx,.xls,.xlsx"
+                    className="hidden"
+                    onChange={(e) => handleFileChange(e.target.files?.[0] ?? null)}
+                  />
+                </div>
+
                 <button
                   type="button"
-                  onClick={() => setCurrentFolderId(crumb.id)}
-                  className={i === breadcrumb.length - 1 ? "text-[#262420] font-medium" : "hover:text-[#262420]"}
+                  onClick={handleRegister}
+                  disabled={isSaving}
+                  className="h-11 px-5 rounded-xl bg-[#A9762F] text-white text-sm font-medium hover:bg-[#8F6327] disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
                 >
-                  {crumb.name}
+                  <Upload size={17} />
+                  {isSaving ? "در حال ثبت..." : "ثبت سند"}
                 </button>
-              </span>
-            ))}
-          </div>
+              </div>
 
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setNewFolderOpen(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#E4E1D8] bg-white text-sm text-[#262420] hover:bg-[#FAF8F3]"
-            >
-              <FolderPlus size={16} />
-              فولدر جدید
-            </button>
-
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#8A5D1F] text-white text-sm hover:bg-[#734C19]"
-            >
-              <Upload size={16} />
-              آپلود فایل
-            </button>
-            <input ref={fileInputRef} type="file" multiple className="hidden" onChange={(e) => handleUpload(e.target.files)} />
-          </div>
-        </div>
-
-        {/* فرم فولدر جدید */}
-        {newFolderOpen && (
-          <div className="px-5 py-3 border-b border-[#EDEBE2] flex items-center gap-2">
-            <input
-              autoFocus
-              value={newFolderName}
-              onChange={(e) => setNewFolderName(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleCreateFolder()}
-              placeholder="نام فولدر"
-              className="flex-1 px-3 py-1.5 rounded-lg border border-[#E4E1D8] text-sm focus:outline-none focus:border-[#8A5D1F]"
-            />
-            <button type="button" onClick={handleCreateFolder} className="px-3 py-1.5 rounded-lg bg-[#8A5D1F] text-white text-sm">
-              ایجاد
-            </button>
-            <button type="button" onClick={() => setNewFolderOpen(false)} className="px-3 py-1.5 rounded-lg border border-[#E4E1D8] text-sm">
-              انصراف
-            </button>
-          </div>
-        )}
-
-        {/* محتوا: فولدرها و فایل‌ها */}
-        <div className="p-5">
-          {visibleFolders.length === 0 && visibleFiles.length === 0 ? (
-            <p className="text-center text-sm text-[#8C8A80] py-10">هنوز سندی در این بخش ثبت نشده است.</p>
-          ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-              {visibleFolders.map((folder) => (
-                <button
-                  key={folder.id}
-                  type="button"
-                  onClick={() => setCurrentFolderId(folder.id)}
-                  className="flex flex-col items-center gap-2 p-4 rounded-xl border border-[#EDEBE2] hover:border-[#E4D3B0] hover:bg-[#FAF8F3] transition-colors"
-                >
-                  <Folder size={32} className="text-[#8A5D1F]" />
-                  <span className="text-sm text-[#262420] text-center truncate w-full">{folder.name}</span>
-                </button>
-              ))}
-
-              {visibleFiles.map((file) => {
-                const Icon = fileIconFor(file.type);
-                return (
-                  <div key={file.id} className="flex flex-col items-center gap-2 p-4 rounded-xl border border-[#EDEBE2] hover:bg-[#FAF8F3] transition-colors group">
-                    <button
-                      type="button"
-                      onClick={() => (file.type === "image" ? setPreviewFile(file) : window.open(file.url, "_blank"))}
-                      className="flex flex-col items-center gap-2 w-full"
-                    >
-                      <Icon size={32} className="text-[#8C8A80]" />
-                      <span className="text-sm text-[#262420] text-center truncate w-full">{file.name}</span>
-                      <span className="text-xs text-[#8C8A80]">{formatSize(file.size)}</span>
-                    </button>
-                    <a href={file.url} download={file.name} className="opacity-0 group-hover:opacity-100 flex items-center gap-1 text-xs text-[#8A5D1F] transition-opacity">
-                      <Download size={12} />
-                      دانلود
-                    </a>
-                  </div>
-                );
-              })}
+              {error && <p className="text-xs text-red-600 mt-3">{error}</p>}
+              <p className="text-xs text-[#9A958C] mt-3">فرمت‌های قابل قبول: PDF، JPG، PNG، WEBP، Word و Excel</p>
             </div>
-          )}
+
+            <div className="mt-7">
+              <div className="flex items-center justify-between mb-3">
+                <div>
+                  <h2 className="font-bold text-[#262420]">اسناد ثبت‌شده</h2>
+                  <p className="text-xs text-[#8C8A80] mt-1">برای مشاهده سند روی عنوان آن کلیک کنید.</p>
+                </div>
+                <span className="text-xs text-[#8C8A80] bg-[#F5F2EC] rounded-full px-3 py-1">{files.length} سند</span>
+              </div>
+
+              {files.length === 0 ? (
+                <div className="rounded-2xl border border-dashed border-[#DCD6CA] py-12 text-center">
+                  <FileText size={30} className="mx-auto text-[#C1BAAE]" />
+                  <p className="text-sm text-[#8C8A80] mt-3">هنوز سندی برای این پرونده ثبت نشده است.</p>
+                </div>
+              ) : (
+                <div className="rounded-2xl border border-[#E5E0D6] overflow-hidden">
+                  <div className="hidden sm:grid grid-cols-[1fr_150px_130px] gap-4 px-5 py-3 bg-[#FAF8F3] border-b border-[#EDEBE2] text-xs text-[#8C8A80]">
+                    <span>عنوان سند</span>
+                    <span>تاریخ ثبت</span>
+                    <span className="text-center">عملیات</span>
+                  </div>
+
+                  {files.map((file) => {
+                    const Icon = fileIconFor(file.type);
+                    return (
+                      <div key={file.id} className="grid grid-cols-1 sm:grid-cols-[1fr_150px_130px] gap-3 sm:gap-4 items-center px-5 py-4 border-b last:border-b-0 border-[#EEEAE2] hover:bg-[#FCFBF8] transition-colors">
+                        <button
+                          type="button"
+                          onClick={() => openDocument(file)}
+                          className="flex items-center gap-3 min-w-0 text-right group"
+                        >
+                          <span className="w-10 h-10 rounded-xl bg-[#F7F3EA] flex items-center justify-center shrink-0">
+                            <Icon size={19} className="text-[#9A6A24]" />
+                          </span>
+                          <span className="min-w-0">
+                            <span className="block text-sm font-medium text-[#262420] group-hover:text-[#9A6A24] transition-colors whitespace-normal break-words leading-6">{file.title}</span>
+                            <span className="block text-xs text-[#9A958C] mt-1 truncate">{file.name} · {formatSize(file.size)}</span>
+                          </span>
+                        </button>
+
+                        <div className="flex items-center gap-1.5 text-xs text-[#6F6B63]">
+                          <CalendarDays size={15} className="text-[#A9762F]" />
+                          {formatPersianDate(file.uploadedAt)}
+                        </div>
+
+                        <div className="flex sm:justify-center">
+                          <a
+                            href={file.url}
+                            download={file.name}
+                            onClick={(e) => e.stopPropagation()}
+                            className="inline-flex items-center justify-center gap-1.5 h-9 px-3 rounded-lg border border-[#E1D9CB] bg-white text-xs text-[#7A531F] hover:bg-[#F9F5ED] transition-colors"
+                          >
+                            <Download size={15} />
+                            دانلود سند
+                          </a>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* لایت‌باکس پیش‌نمایش عکس */}
       {previewFile && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-6" onClick={() => setPreviewFile(null)}>
-          <div className="bg-white rounded-xl overflow-hidden max-w-2xl w-full" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-5" onClick={() => setPreviewFile(null)}>
+          <div className="bg-white rounded-2xl overflow-hidden max-w-4xl w-full max-h-[90vh]" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between px-4 py-3 border-b border-[#EDEBE2]">
-              <span className="text-sm font-medium text-[#262420]">{previewFile.name}</span>
-              <button type="button" onClick={() => setPreviewFile(null)}>
-                <X size={18} className="text-[#8C8A80]" />
+              <div className="min-w-0">
+                <p className="font-medium text-sm truncate">{previewFile.title}</p>
+                <p className="text-xs text-[#8C8A80] mt-1">{previewFile.name}</p>
+              </div>
+              <button type="button" onClick={() => setPreviewFile(null)} className="p-2 text-[#8C8A80] hover:text-[#262420]">
+                <X size={19} />
               </button>
             </div>
-            <img src={previewFile.url} alt={previewFile.name} className="w-full max-h-[70vh] object-contain bg-[#FAF8F3]" />
+            <div className="p-4 max-h-[78vh] overflow-auto bg-[#F7F5F0]">
+              <img src={previewFile.url} alt={previewFile.title} className="max-w-full h-auto mx-auto rounded-lg" />
+            </div>
           </div>
         </div>
       )}

@@ -41,7 +41,7 @@ export default function JusticeBanner() {
         {/* تصویر ترازو + چکش */}
         <div className="jb-float relative h-44 w-44 shrink-0 overflow-hidden rounded-2xl sm:h-60 sm:w-60">
           <Image
-            src="/images/scale-gavel.png"
+            src="/images/scale-gavel-cutout-rm-background.png"
             alt="ترازوی عدالت"
             fill
             className="rounded-2xl object-contain"
