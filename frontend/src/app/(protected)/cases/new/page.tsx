@@ -3,8 +3,8 @@
 // مسیر این فایل: app/cases/new/page.tsx
 
 import { useState } from "react";
-import { mockClients, mockCategories } from "../../../mocks/cases.mock";
-import type { CasePriority } from "../../../mocks/cases.types";
+import { mockClients, mockCategories } from "../../../../mocks/cases.mock";
+import type { CasePriority } from "../../../../mocks/cases.types";
 
 interface FormValues {
   internalNumber: string;

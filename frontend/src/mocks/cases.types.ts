@@ -62,6 +62,9 @@ export interface CaseListItem {
   subject?: string;
   // اطلاعات قضایی — همه اختیاری
   opponentName?: string | null;
+    courtName?: string | null;
+  branch?: string | null;
+  courtCaseNumber?: string | null;
 
   // زمان‌بندی — تاریخ‌ها همیشه رشته ISO از سرور می‌آن (مثل "2026-04-04")
   formedAt: string;

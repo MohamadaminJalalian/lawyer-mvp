@@ -1,0 +1,306 @@
+﻿"use client";
+
+import { useRef, useState } from "react";
+import { useParams } from "next/navigation";
+import Link from "next/link";
+import {
+  ArrowRight,
+  CalendarDays,
+  Download,
+  FileImage,
+  FileText,
+  FileSpreadsheet,
+  File,
+  Paperclip,
+  Upload,
+  X,
+} from "lucide-react";
+import { mockCases } from "@/mocks/cases.mock";
+import { addMockFile, getCaseDocuments } from "@/mocks/documents.mock";
+import type { DocumentFile } from "@/mocks/cases.types";
+
+function fileIconFor(type: DocumentFile["type"]) {
+  switch (type) {
+    case "pdf":
+      return FileText;
+    case "image":
+      return FileImage;
+    case "excel":
+      return FileSpreadsheet;
+    case "word":
+      return FileText;
+    default:
+      return File;
+  }
+}
+
+function formatSize(bytes: number) {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
+  return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
+}
+
+function formatPersianDate(iso: string) {
+  return new Intl.DateTimeFormat("fa-IR", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date(iso));
+}
+
+
+export default function CaseDocumentsPage() {
+  const { id: caseId } = useParams<{ id: string }>();
+  const caseItem = mockCases.find((c) => c.id === caseId);
+  const [{ files }, setDocs] = useState(() => getCaseDocuments(caseId));
+  const [title, setTitle] = useState("");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewFile, setPreviewFile] = useState<DocumentFile | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  if (!caseItem) {
+    return <div className="p-8 text-sm text-[#8C8A80]">Ù¾Ø±ÙˆÙ†Ø¯Ù‡ Ù¾ÛŒØ¯Ø§ Ù†Ø´Ø¯.</div>;
+  }
+
+  function refresh() {
+    setDocs(getCaseDocuments(caseId));
+  }
+
+  function openDocument(file: DocumentFile) {
+    if (file.url && file.url !== "#") {
+      if (file.type === "image") {
+        setPreviewFile(file);
+      } else {
+        window.open(file.url, "_blank", "noopener,noreferrer");
+      }
+    }
+  }
+
+  function handleFileChange(file: File | null) {
+    setSelectedFile(file);
+    setError("");
+  }
+
+  function handleRegister() {
+    if (!title.trim()) {
+      setError("Ø¹Ù†ÙˆØ§Ù† Ø³Ù†Ø¯ Ø±Ø§ ÙˆØ§Ø±Ø¯ Ú©Ù†ÛŒØ¯.");
+      return;
+    }
+    if (!selectedFile) {
+      setError("Ù„Ø·ÙØ§Ù‹ ÙØ§ÛŒÙ„ Ø³Ù†Ø¯ Ø±Ø§ Ø§Ù†ØªØ®Ø§Ø¨ Ú©Ù†ÛŒØ¯.");
+      return;
+    }
+
+    setIsSaving(true);
+    const isImage = selectedFile.type.startsWith("image/");
+    const isPdf = selectedFile.type === "application/pdf";
+    const isWord =
+      selectedFile.type.includes("word") ||
+      selectedFile.name.toLowerCase().endsWith(".doc") ||
+      selectedFile.name.toLowerCase().endsWith(".docx");
+    const isExcel =
+      selectedFile.type.includes("sheet") ||
+      selectedFile.name.toLowerCase().endsWith(".xls") ||
+      selectedFile.name.toLowerCase().endsWith(".xlsx");
+
+    const url = URL.createObjectURL(selectedFile);
+    addMockFile(caseId, {
+      title: title.trim(),
+      name: selectedFile.name,
+      type: isImage ? "image" : isPdf ? "pdf" : isWord ? "word" : isExcel ? "excel" : "other",
+      url,
+      size: selectedFile.size,
+    });
+
+    setTitle("");
+    setSelectedFile(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+    refresh();
+    setIsSaving(false);
+  }
+
+  return (
+<<<<<<< HEAD:frontend/src/app/(protected)/cases/[id]/documents/page.tsx
+    <div className=" mx-auto">
+      {/* Ù‡Ø¯Ø± ØµÙØ­Ù‡ */}
+      <div className="flex items-center gap-2 mb-4">
+        <Link href={`/cases`} className="flex items-center gap-1 text-sm text-[#8C8A80] hover:text-[#262420]">
+          <ArrowRight size={16} />
+          Ø¨Ø§Ø²Ú¯Ø´Øª Ø¨Ù‡ Ù„ÛŒØ³Øª Ù¾Ø±ÙˆÙ†Ø¯Ù‡â€ŒÙ‡Ø§
+        </Link>
+      </div>
+
+      <div className="rounded-xl border border-[#EDEBE2] bg-white overflow-hidden mb-5">
+        <div className="px-5 py-4 bg-[#FAF8F3] border-b border-[#EDEBE2]">
+          <h1 className="text-lg font-bold text-[#262420]">Ø§Ø³Ù†Ø§Ø¯ Ù¾Ø±ÙˆÙ†Ø¯Ù‡: {caseItem.title}</h1>
+=======
+    <div dir="rtl" className="min-h-full bg-[#FAF9F6] p-5 sm:p-7">
+      <div className="max-w-5xl mx-auto">
+        <div className="mb-5">
+          <Link
+            href={`/cases`}
+            className="inline-flex items-center gap-1.5 text-sm text-[#8C8A80] hover:text-[#262420] transition-colors"
+          >
+            <ArrowRight size={16} />
+            Ø¨Ø§Ø²Ú¯Ø´Øª Ø¨Ù‡ Ù„ÛŒØ³Øª Ù¾Ø±ÙˆÙ†Ø¯Ù‡â€ŒÙ‡Ø§
+          </Link>
+>>>>>>> origin/feature/cases-mock-data:frontend/src/app/cases/[id]/documents/page.tsx
+        </div>
+
+        <div className="rounded-2xl border border-[#E8E3D9] bg-white shadow-sm overflow-hidden">
+          <div className="px-5 sm:px-7 py-5 border-b border-[#EDEBE2]">
+            <h1 className="text-xl font-bold text-[#262420]">Ø§Ø³Ù†Ø§Ø¯ Ù¾Ø±ÙˆÙ†Ø¯Ù‡</h1>
+            <p className="text-sm text-[#8C8A80] mt-1">
+              {caseItem.title}
+            </p>
+          </div>
+
+          <div className="p-5 sm:p-7">
+            <div className="rounded-2xl border border-[#E5E0D6] bg-[#FCFBF8] p-5">
+              <div className="flex items-start gap-3 mb-5">
+                <div className="w-10 h-10 rounded-xl bg-[#F5EBD9] text-[#9A6A24] flex items-center justify-center shrink-0">
+                  <Paperclip size={19} />
+                </div>
+                <div>
+                  <h2 className="font-bold text-[#262420]">Ø«Ø¨Øª Ø³Ù†Ø¯ Ø¬Ø¯ÛŒØ¯</h2>
+                  <p className="text-xs text-[#8C8A80] mt-1">Ø¨Ø±Ø§ÛŒ Ù‡Ø± Ø³Ù†Ø¯ ÛŒÚ© Ø¹Ù†ÙˆØ§Ù† ØªÙˆØ¶ÛŒØ­ÛŒ Ø§Ù†ØªØ®Ø§Ø¨ Ú©Ù†ÛŒØ¯ Ùˆ ÙØ§ÛŒÙ„ Ø¢Ù† Ø±Ø§ Ø¨Ø§Ø±Ú¯Ø°Ø§Ø±ÛŒ Ú©Ù†ÛŒØ¯.</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.35fr_auto] gap-3 items-end">
+                <label className="block">
+                  <span className="block text-sm font-medium text-[#262420] mb-2">Ø¹Ù†ÙˆØ§Ù† Ø³Ù†Ø¯ <span className="text-red-600">*</span></span>
+                  <input
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder="Ù…Ø«Ù„Ø§Ù‹: Ù‚Ø±Ø§Ø±Ø¯Ø§Ø¯ Ø§Ø¬Ø§Ø±Ù‡ Ùˆ Ù¾ÛŒÙˆØ³Øªâ€ŒÙ‡Ø§"
+                    className="w-full h-11 rounded-xl border border-[#E2DDD2] bg-white px-3.5 text-sm text-[#262420] placeholder:text-[#A6A198] outline-none focus:border-[#B17A2B]"
+                  />
+                </label>
+
+                <div>
+                  <span className="block text-sm font-medium text-[#262420] mb-2">ÙØ§ÛŒÙ„ Ø³Ù†Ø¯ <span className="text-red-600">*</span></span>
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="w-full h-11 rounded-xl border border-dashed border-[#CFC7B8] bg-white px-3.5 flex items-center justify-between gap-3 text-sm hover:border-[#B17A2B] transition-colors"
+                  >
+                    <span className="flex items-center gap-2 min-w-0">
+                      <Upload size={17} className="text-[#9A6A24] shrink-0" />
+                      <span className="truncate text-[#6F6B63]">{selectedFile?.name ?? "Ø§Ù†ØªØ®Ø§Ø¨ PDFØŒ Ø¹Ú©Ø³ ÛŒØ§ ÙØ§ÛŒÙ„ Ù…Ø³ØªÙ†Ø¯Ø§Øª"}</span>
+                    </span>
+                    <span className="text-xs text-[#9A6A24] shrink-0">Ø§Ù†ØªØ®Ø§Ø¨ ÙØ§ÛŒÙ„</span>
+                  </button>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="application/pdf,image/*,.doc,.docx,.xls,.xlsx"
+                    className="hidden"
+                    onChange={(e) => handleFileChange(e.target.files?.[0] ?? null)}
+                  />
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleRegister}
+                  disabled={isSaving}
+                  className="h-11 px-5 rounded-xl bg-[#A9762F] text-white text-sm font-medium hover:bg-[#8F6327] disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
+                >
+                  <Upload size={17} />
+                  {isSaving ? "Ø¯Ø± Ø­Ø§Ù„ Ø«Ø¨Øª..." : "Ø«Ø¨Øª Ø³Ù†Ø¯"}
+                </button>
+              </div>
+
+              {error && <p className="text-xs text-red-600 mt-3">{error}</p>}
+              <p className="text-xs text-[#9A958C] mt-3">ÙØ±Ù…Øªâ€ŒÙ‡Ø§ÛŒ Ù‚Ø§Ø¨Ù„ Ù‚Ø¨ÙˆÙ„: PDFØŒ JPGØŒ PNGØŒ WEBPØŒ Word Ùˆ Excel</p>
+            </div>
+
+            <div className="mt-7">
+              <div className="flex items-center justify-between mb-3">
+                <div>
+                  <h2 className="font-bold text-[#262420]">Ø§Ø³Ù†Ø§Ø¯ Ø«Ø¨Øªâ€ŒØ´Ø¯Ù‡</h2>
+                  <p className="text-xs text-[#8C8A80] mt-1">Ø¨Ø±Ø§ÛŒ Ù…Ø´Ø§Ù‡Ø¯Ù‡ Ø³Ù†Ø¯ Ø±ÙˆÛŒ Ø¹Ù†ÙˆØ§Ù† Ø¢Ù† Ú©Ù„ÛŒÚ© Ú©Ù†ÛŒØ¯.</p>
+                </div>
+                <span className="text-xs text-[#8C8A80] bg-[#F5F2EC] rounded-full px-3 py-1">{files.length} Ø³Ù†Ø¯</span>
+              </div>
+
+              {files.length === 0 ? (
+                <div className="rounded-2xl border border-dashed border-[#DCD6CA] py-12 text-center">
+                  <FileText size={30} className="mx-auto text-[#C1BAAE]" />
+                  <p className="text-sm text-[#8C8A80] mt-3">Ù‡Ù†ÙˆØ² Ø³Ù†Ø¯ÛŒ Ø¨Ø±Ø§ÛŒ Ø§ÛŒÙ† Ù¾Ø±ÙˆÙ†Ø¯Ù‡ Ø«Ø¨Øª Ù†Ø´Ø¯Ù‡ Ø§Ø³Øª.</p>
+                </div>
+              ) : (
+                <div className="rounded-2xl border border-[#E5E0D6] overflow-hidden">
+                  <div className="hidden sm:grid grid-cols-[1fr_150px_130px] gap-4 px-5 py-3 bg-[#FAF8F3] border-b border-[#EDEBE2] text-xs text-[#8C8A80]">
+                    <span>Ø¹Ù†ÙˆØ§Ù† Ø³Ù†Ø¯</span>
+                    <span>ØªØ§Ø±ÛŒØ® Ø«Ø¨Øª</span>
+                    <span className="text-center">Ø¹Ù…Ù„ÛŒØ§Øª</span>
+                  </div>
+
+                  {files.map((file) => {
+                    const Icon = fileIconFor(file.type);
+                    return (
+                      <div key={file.id} className="grid grid-cols-1 sm:grid-cols-[1fr_150px_130px] gap-3 sm:gap-4 items-center px-5 py-4 border-b last:border-b-0 border-[#EEEAE2] hover:bg-[#FCFBF8] transition-colors">
+                        <button
+                          type="button"
+                          onClick={() => openDocument(file)}
+                          className="flex items-center gap-3 min-w-0 text-right group"
+                        >
+                          <span className="w-10 h-10 rounded-xl bg-[#F7F3EA] flex items-center justify-center shrink-0">
+                            <Icon size={19} className="text-[#9A6A24]" />
+                          </span>
+                          <span className="min-w-0">
+                            <span className="block text-sm font-medium text-[#262420] group-hover:text-[#9A6A24] transition-colors whitespace-normal break-words leading-6">{file.title}</span>
+                            <span className="block text-xs text-[#9A958C] mt-1 truncate">{file.name} Â· {formatSize(file.size)}</span>
+                          </span>
+                        </button>
+
+                        <div className="flex items-center gap-1.5 text-xs text-[#6F6B63]">
+                          <CalendarDays size={15} className="text-[#A9762F]" />
+                          {formatPersianDate(file.uploadedAt)}
+                        </div>
+
+                        <div className="flex sm:justify-center">
+                          <a
+                            href={file.url}
+                            download={file.name}
+                            onClick={(e) => e.stopPropagation()}
+                            className="inline-flex items-center justify-center gap-1.5 h-9 px-3 rounded-lg border border-[#E1D9CB] bg-white text-xs text-[#7A531F] hover:bg-[#F9F5ED] transition-colors"
+                          >
+                            <Download size={15} />
+                            Ø¯Ø§Ù†Ù„ÙˆØ¯ Ø³Ù†Ø¯
+                          </a>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {previewFile && (
+        <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-5" onClick={() => setPreviewFile(null)}>
+          <div className="bg-white rounded-2xl overflow-hidden max-w-4xl w-full max-h-[90vh]" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between px-4 py-3 border-b border-[#EDEBE2]">
+              <div className="min-w-0">
+                <p className="font-medium text-sm truncate">{previewFile.title}</p>
+                <p className="text-xs text-[#8C8A80] mt-1">{previewFile.name}</p>
+              </div>
+              <button type="button" onClick={() => setPreviewFile(null)} className="p-2 text-[#8C8A80] hover:text-[#262420]">
+                <X size={19} />
+              </button>
+            </div>
+            <div className="p-4 max-h-[78vh] overflow-auto bg-[#F7F5F0]">
+              <img src={previewFile.url} alt={previewFile.title} className="max-w-full h-auto mx-auto rounded-lg" />
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
