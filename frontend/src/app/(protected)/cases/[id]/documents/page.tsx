@@ -122,20 +122,6 @@ export default function CaseDocumentsPage() {
   }
 
   return (
-<<<<<<< HEAD:frontend/src/app/(protected)/cases/[id]/documents/page.tsx
-    <div className=" mx-auto">
-      {/* هدر صفحه */}
-      <div className="flex items-center gap-2 mb-4">
-        <Link href={`/cases`} className="flex items-center gap-1 text-sm text-[#8C8A80] hover:text-[#262420]">
-          <ArrowRight size={16} />
-          بازگشت به لیست پرونده‌ها
-        </Link>
-      </div>
-
-      <div className="rounded-xl border border-[#EDEBE2] bg-white overflow-hidden mb-5">
-        <div className="px-5 py-4 bg-[#FAF8F3] border-b border-[#EDEBE2]">
-          <h1 className="text-lg font-bold text-[#262420]">اسناد پرونده: {caseItem.title}</h1>
-=======
     <div dir="rtl" className="min-h-full bg-[#FAF9F6] p-5 sm:p-7">
       <div className="max-w-5xl mx-auto">
         <div className="mb-5">
@@ -146,7 +132,6 @@ export default function CaseDocumentsPage() {
             <ArrowRight size={16} />
             بازگشت به لیست پرونده‌ها
           </Link>
->>>>>>> origin/feature/cases-mock-data:frontend/src/app/cases/[id]/documents/page.tsx
         </div>
 
         <div className="rounded-2xl border border-[#E8E3D9] bg-white shadow-sm overflow-hidden">
