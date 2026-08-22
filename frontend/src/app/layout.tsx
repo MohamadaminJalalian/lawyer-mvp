@@ -21,7 +21,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return (
+return (
     <html lang="fa" dir="rtl" className={vazirmatn.variable}>
       <body>
         <AuthProvider>

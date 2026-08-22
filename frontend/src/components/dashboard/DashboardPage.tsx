@@ -1,6 +1,7 @@
-import StatsSection from "./StatsSection";
+﻿import StatsSection from "./StatsSection";
 import ImportantCases from "./ImportantCases";
 import ImportantNotices from "./ImportantNotices";
+import JusticeBanner from "./JusticeBanner";
 
 
 export default function DashboardPage() {
@@ -10,7 +11,7 @@ export default function DashboardPage() {
 
       {/* محتوای اصلی */}
 
-      <main className="px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
+      <main className="">
 
 
         <div
@@ -19,17 +20,9 @@ export default function DashboardPage() {
         >
 
 
-          {/* Header */}
+          {/* طرح تزئینی ترازوی عدالت */}
 
-          <h1 className="text-2xl font-bold text-neutral-900 sm:text-3xl lg:text-4xl">
-            داشبورد
-          </h1>
-
-
-          <p className="mt-2 text-sm text-neutral-500">
-            نمای کلی پرونده‌ها و فعالیت‌های دفتر
-          </p>
-
+          <JusticeBanner />
 
 
 

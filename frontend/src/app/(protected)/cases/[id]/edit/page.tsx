@@ -15,9 +15,6 @@ interface FormValues {
   title: string;
   categoryId: string;
   priority: CasePriority;
-  courtCaseNumber: string;
-  courtName: string;
-  branch: string;
   opponentName: string;
   formedAt: string;
   nextSessionAt: string;
@@ -84,9 +81,6 @@ export default function EditCasePage() {
         title: "",
         categoryId: "",
         priority: "NORMAL",
-        courtCaseNumber: "",
-        courtName: "",
-        branch: "",
         opponentName: "",
         formedAt: "",
         nextSessionAt: "",
@@ -98,9 +92,6 @@ export default function EditCasePage() {
       title: existingCase.title,
       categoryId: existingCase.category.id,
       priority: existingCase.priority,
-      courtCaseNumber: existingCase.courtCaseNumber ?? "",
-      courtName: existingCase.courtName ?? "",
-      branch: existingCase.branch ?? "",
       opponentName: existingCase.opponentName ?? "",
       formedAt: existingCase.formedAt,
       nextSessionAt: existingCase.nextSessionAt ?? "",
@@ -268,60 +259,6 @@ export default function EditCasePage() {
               <option value="HIGH">بالا</option>
               <option value="URGENT">فوری</option>
             </select>
-          </div>
-        </div>
-
-        <div className="border-t border-[#EDEBE2] pt-5 space-y-5">
-          <p className="text-xs font-medium text-[#8C8A80]">اطلاعات قضایی</p>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className={labelClass}>شماره پرونده دادگاه</label>
-              <input
-                type="text"
-                value={values.courtCaseNumber}
-                onChange={(event) =>
-                  handleChange("courtCaseNumber", event.target.value)
-                }
-                className={`${fieldClass} font-mono`}
-              />
-            </div>
-
-            <div>
-              <label className={labelClass}>شعبه</label>
-              <input
-                type="text"
-                value={values.branch}
-                onChange={(event) =>
-                  handleChange("branch", event.target.value)
-                }
-                className={fieldClass}
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className={labelClass}>نام دادگاه</label>
-            <input
-              type="text"
-              value={values.courtName}
-              onChange={(event) =>
-                handleChange("courtName", event.target.value)
-              }
-              className={fieldClass}
-            />
-          </div>
-
-          <div>
-            <label className={labelClass}>طرف مقابل</label>
-            <input
-              type="text"
-              value={values.opponentName}
-              onChange={(event) =>
-                handleChange("opponentName", event.target.value)
-              }
-              className={fieldClass}
-            />
           </div>
         </div>
 

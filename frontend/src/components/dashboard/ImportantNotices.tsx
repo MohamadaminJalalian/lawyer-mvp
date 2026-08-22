@@ -1,15 +1,21 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import { Eye, Search, Filter } from "lucide-react";
 import DateRangePicker from "./DateRangePicker";
+import NoticeDetailsModal from "./NoticeDetailsModal";
 import type { DateObject } from "react-multi-date-picker";
 
 export default function ImportantNotices() {
   const [search, setSearch] = useState("");
   const [selectedRange, setSelectedRange] = useState<DateObject[]>([]);
   const [filterModalOpen, setFilterModalOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 5;
+  const [selectedNotice, setSelectedNotice] = useState<
+    (typeof notices)[number] | null
+  >(null);
   const [rowTooltip, setRowTooltip] = useState<{ top: number; left: number } | null>(
     null
   );
@@ -21,16 +27,26 @@ export default function ImportantNotices() {
     {
       id: 1,
       title: "جلسه دادگاه پرونده احمدی",
+      clientName: "محمد احمدی",
+      category: "ملکی",
+      description:
+        "جلسه‌ی دادگاه پرونده‌ی خلع ید، حضور موکل الزامی است.",
       date: "1405/03/20",
     },
     {
       id: 2,
       title: "ارسال لایحه دفاعیه",
+      clientName: "علی رضایی",
+      category: "کیفری",
+      description: "لایحه‌ی دفاعیه باید تا قبل از جلسه‌ی بعدی ارسال شود.",
       date: "1405/03/22",
     },
     {
       id: 3,
       title: "تمدید قرارداد موکل",
+      clientName: "زهرا کریمی",
+      category: "خانواده",
+      description: "قرارداد وکالت این موکل نیاز به تمدید دارد.",
       date: "1405/03/25",
     },
   ];
@@ -53,6 +69,13 @@ export default function ImportantNotices() {
     return matchesSearch && matchesDate;
   });
 
+  const totalPages = Math.max(1, Math.ceil(filteredNotices.length / pageSize));
+  const safePage = Math.min(currentPage, totalPages);
+  const paginatedNotices = filteredNotices.slice(
+    (safePage - 1) * pageSize,
+    safePage * pageSize
+  );
+
   return (
     <>
     <section className="mt-8 flex h-full flex-col rounded-xl border border-[#e5e0d6] bg-white p-4 sm:p-5">
@@ -62,7 +85,7 @@ export default function ImportantNotices() {
       </h2>
 
       <div className="mb-6 flex items-center gap-3">
-        <div className="relative min-w-0 flex-1">
+        <div className="relative min-w-0 flex-1 sm:max-w-[372px]">
           <Search
             size={20}
             className="absolute right-5 top-1/2 -translate-y-1/2 text-[#a9762f]"
@@ -72,7 +95,7 @@ export default function ImportantNotices() {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="جستجو بر اساس عنوان"
+            placeholder="جستجو کنید..."
             className="
               w-full
               rounded-xl
@@ -204,8 +227,8 @@ export default function ImportantNotices() {
         </div>
       )}
 
-      {/* جدول */}
-      <div className="max-h-[272px] overflow-auto rounded-xl border border-[#e5e0d6]">
+      {/* جدول (دسکتاپ) */}
+      <div className="hidden max-h-[272px] overflow-auto rounded-xl border border-[#e5e0d6] sm:block">
         <table className="w-full min-w-[420px] text-right sm:min-w-0">
           <thead className="sticky top-0 z-10 bg-[#f5f1e8]">
             <tr>
@@ -224,7 +247,7 @@ export default function ImportantNotices() {
           </thead>
 
           <tbody>
-            {filteredNotices.map((notice) => (
+            {paginatedNotices.map((notice) => (
               <tr
                 key={notice.id}
                 className="border-t border-[#ece7dd] transition-colors hover:bg-[#faf8f4]"
@@ -243,6 +266,7 @@ export default function ImportantNotices() {
                 <td className="px-5 py-4 text-center">
                   <div className="inline-flex">
                     <button
+                      onClick={() => setSelectedNotice(notice)}
                       onMouseEnter={(e) => {
                         const rect = e.currentTarget.getBoundingClientRect();
                         setRowTooltip({
@@ -276,7 +300,83 @@ export default function ImportantNotices() {
           </tbody>
         </table>
       </div>
+
+      {/* کارت‌ها (موبایل) */}
+      <div className="space-y-3 sm:hidden">
+        {paginatedNotices.map((notice) => (
+          <div
+            key={notice.id}
+            className="rounded-xl border border-[#e5e0d6] bg-white p-4"
+          >
+            {/* عنوان */}
+            <div className="mb-3 text-right font-bold text-neutral-900">
+              {notice.title}
+            </div>
+
+            {/* موعد تاریخ */}
+            <div className="mb-3 flex items-center justify-between text-sm">
+              <span className="text-[#8a8175]">موعد تاریخ</span>
+              <span className="text-[#4b4b4b]">{notice.date}</span>
+            </div>
+
+            {/* خط جداکننده + دکمه‌ی مشاهده، وسط‌چین */}
+            <div className="flex items-center justify-center gap-6 border-t border-[#ece7dd] pt-3 text-[#8a6a2f]">
+              <button
+                onClick={() => setSelectedNotice(notice)}
+                onMouseEnter={(e) => {
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  setRowTooltip({
+                    top: rect.top + rect.height / 2,
+                    left: rect.left,
+                  });
+                }}
+                onMouseLeave={() => setRowTooltip(null)}
+                className="transition hover:text-[#a9762f]"
+              >
+                <Eye size={18} />
+              </button>
+            </div>
+          </div>
+        ))}
+
+        {filteredNotices.length === 0 && (
+          <p className="p-4 text-center text-sm text-[#8b8b8b]">
+            هیچ اطلاعیه‌ای یافت نشد.
+          </p>
+        )}
+      </div>
+
+      {filteredNotices.length > 0 && (
+        <div className="mt-4 flex items-center justify-between">
+          <button
+            onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+            disabled={safePage === 1}
+            className="rounded-lg border border-[#ddd5c8] bg-white px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            قبلی
+          </button>
+
+          <span className="text-sm text-[#8a8175]">
+            صفحه {safePage} از {totalPages}
+          </span>
+
+          <button
+            onClick={() =>
+              setCurrentPage((page) => Math.min(totalPages, page + 1))
+            }
+            disabled={safePage === totalPages}
+            className="rounded-lg border border-[#ddd5c8] bg-white px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            بعدی
+          </button>
+        </div>
+      )}
     </section>
+
+    <NoticeDetailsModal
+      notice={selectedNotice}
+      onClose={() => setSelectedNotice(null)}
+    />
 
     {rowTooltip &&
       createPortal(

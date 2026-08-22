@@ -2,8 +2,15 @@
 
 // مسیر این فایل: app/cases/_components/FilterModal.tsx
 
+import { CalendarDays } from "lucide-react";
+import DatePicker from "react-multi-date-picker";
+import DateObject from "react-date-object";
+import persian from "react-date-object/calendars/persian";
+import persian_fa from "react-date-object/locales/persian_fa";
+import gregorian from "react-date-object/calendars/gregorian";
+import gregorian_en from "react-date-object/locales/gregorian_en";
 import Modal from "./Modal";
-import { getCategories } from "@/lib/api/clients-categories.api";
+import { mockCategories } from "../../../../mocks/cases.mock";
 import type { CaseStatus } from "../../../../mocks/cases.types";
 export type UrgencyOption = "URGENT" | "NOT_URGENT";
 
@@ -25,6 +32,23 @@ interface FilterModalProps {
   onToggleStatus: (status: CaseStatus) => void;
 
   onClearAll: () => void;
+}
+
+// تبدیل رشته‌ی میلادی ISO (مثل "2026-04-04") به DateObject شمسی برای نمایش در DatePicker
+function toPersianDateObject(isoDate: string): DateObject | null {
+  if (!isoDate) return null;
+  return new DateObject({
+    date: isoDate,
+    format: "YYYY-MM-DD",
+    calendar: gregorian,
+    locale: gregorian_en,
+  }).convert(persian, persian_fa);
+}
+
+// تبدیل DateObject شمسی انتخاب‌شده در DatePicker به رشته‌ی میلادی ISO برای فیلتر کردن
+function toGregorianISO(date: DateObject | null): string {
+  if (!date) return "";
+  return date.convert(gregorian, gregorian_en).format("YYYY-MM-DD");
 }
 
 const fieldClass =
@@ -49,7 +73,7 @@ export default function FilterModal({
   return (
     <Modal onClose={onClose} maxWidthClass="max-w-md">
       <div className="flex items-center justify-between p-5 border-b border-[#EDEBE2]">
-        <h2 className="font-bold text-[#262420]">فیلتر ها</h2>
+        <h2 className="text-lg font-bold text-[#262420]">فیلتر ها</h2>
         <button
           type="button"
           onClick={onClose}
@@ -68,23 +92,49 @@ export default function FilterModal({
               <span className="text-xs text-[#8C8A80] block mb-1">
                 از تاریخ
               </span>
-              <input
-                type="date"
-                value={dateFrom}
-                onChange={(event) => onDateFromChange(event.target.value)}
-                className={fieldClass}
-              />
+              <div className="relative w-full">
+                <CalendarDays
+                  size={16}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-[#A9762F] pointer-events-none z-10"
+                />
+                <DatePicker
+                  calendar={persian}
+                  locale={persian_fa}
+                  format="YYYY/MM/DD"
+                  value={toPersianDateObject(dateFrom)}
+                  onChange={(date) =>
+                    onDateFromChange(toGregorianISO(date as DateObject | null))
+                  }
+                  calendarPosition="bottom-right"
+                  containerClassName="w-full"
+                  inputClass={`${fieldClass} pl-9 w-full`}
+                  style={{ width: "100%" }}
+                />
+              </div>
             </div>
             <div>
               <span className="text-xs text-[#8C8A80] block mb-1">
                 تا تاریخ
               </span>
-              <input
-                type="date"
-                value={dateTo}
-                onChange={(event) => onDateToChange(event.target.value)}
-                className={fieldClass}
-              />
+              <div className="relative w-full">
+                <CalendarDays
+                  size={16}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-[#A9762F] pointer-events-none z-10"
+                />
+                <DatePicker
+                  calendar={persian}
+                  locale={persian_fa}
+                  format="YYYY/MM/DD"
+                  value={toPersianDateObject(dateTo)}
+                  onChange={(date) =>
+                    onDateToChange(toGregorianISO(date as DateObject | null))
+                  }
+                  calendarPosition="bottom-right"
+                  containerClassName="w-full"
+                  inputClass={`${fieldClass} pl-9 w-full`}
+                  style={{ width: "100%" }}
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -103,11 +153,10 @@ export default function FilterModal({
                 key={option.value}
                 type="button"
                 onClick={() => onToggleUrgency(option.value)}
-                className={`flex-1 px-3 py-2 rounded-lg text-sm border transition-colors ${
-                  selectedUrgencies.includes(option.value)
+                className={`flex-1 px-3 py-2 rounded-lg text-sm border transition-colors ${selectedUrgencies.includes(option.value)
                     ? "bg-[#A9762F] text-white border-[#A9762F]"
                     : "bg-white text-[#4B4A44] border-[#E4E1D8]"
-                }`}
+                  }`}
               >
                 {option.label}
               </button>
@@ -115,7 +164,6 @@ export default function FilterModal({
           </div>
         </div>
 
-        {/* دسته‌بندی — چندانتخابی، به‌شکل Chip */}
         {/* دسته‌بندی — چندانتخابی، به‌شکل Chip */}
         <div className={sectionClass}>
           <label className={labelClass}>دسته‌بندی</label>
@@ -127,11 +175,10 @@ export default function FilterModal({
                   key={category.id}
                   type="button"
                   onClick={() => onToggleCategory(category.id)}
-                  className={`px-3 py-1.5 rounded-full text-sm border transition-colors ${
-                    isSelected
+                  className={`px-3 py-1.5 rounded-full text-sm border transition-colors ${isSelected
                       ? "bg-[#A9762F] text-white border-[#A9762F]"
                       : "bg-white text-[#4B4A44] border-[#E4E1D8]"
-                  }`}
+                    }`}
                 >
                   {category.name}
                 </button>
@@ -156,11 +203,10 @@ export default function FilterModal({
                   key={option.value}
                   type="button"
                   onClick={() => onToggleStatus(option.value)}
-                  className={`px-3 py-1.5 rounded-full text-sm border transition-colors ${
-                    isSelected
+                  className={`px-3 py-1.5 rounded-full text-sm border transition-colors ${isSelected
                       ? "bg-[#A9762F] text-white border-[#A9762F]"
                       : "bg-white text-[#4B4A44] border-[#E4E1D8]"
-                  }`}
+                    }`}
                 >
                   {option.label}
                 </button>
@@ -181,7 +227,7 @@ export default function FilterModal({
         <button
           type="button"
           onClick={onClose}
-          className="px-6 py-2.5 bg-[#095ef1] text-white rounded-lg text-sm font-medium hover:bg-[#946A2A] transition-colors"
+          className="px-6 py-2.5 bg-[#A9762F] text-white rounded-lg text-sm font-medium hover:bg-[#946A2A] transition-colors"
         >
           اعمال فیلتر
         </button>

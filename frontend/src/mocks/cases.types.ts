@@ -4,11 +4,11 @@
 export interface DocumentFile {
   id: string;
   name: string;
+  title: string;
   type: "pdf" | "image" | "word" | "excel" | "other";
   url: string;
   size: number; // بایت
   uploadedAt: string;
-  folderId: string | null; // null یعنی توی ریشه
 }
 
 export interface DocumentFolder {
@@ -20,7 +20,6 @@ export interface DocumentFolder {
 
 export interface CaseDocuments {
   caseId: string;
-  folders: DocumentFolder[];
   files: DocumentFile[];
 }
 
@@ -62,10 +61,10 @@ export interface CaseListItem {
   priority: CasePriority;
   subject?: string;
   // اطلاعات قضایی — همه اختیاری
-  courtCaseNumber?: string | null;
-  courtName?: string | null;
-  branch?: string | null;
   opponentName?: string | null;
+    courtName?: string | null;
+  branch?: string | null;
+  courtCaseNumber?: string | null;
 
   // زمان‌بندی — تاریخ‌ها همیشه رشته ISO از سرور می‌آن (مثل "2026-04-04")
   formedAt: string;
@@ -87,9 +86,6 @@ export interface CreateCaseRequest {
   status?: CaseStatus; // پیش‌فرض: ACTIVE
   priority?: CasePriority; // پیش‌فرض: NORMAL
 
-  courtCaseNumber?: string;
-  courtName?: string;
-  branch?: string;
   opponentName?: string;
 
   formedAt: string; // اجباری، پیش‌فرض تاریخ امروز
@@ -109,9 +105,6 @@ export interface UpdateCaseRequest {
   status?: CaseStatus;
   priority?: CasePriority;
 
-  courtCaseNumber?: string;
-  courtName?: string;
-  branch?: string;
   opponentName?: string;
 
   formedAt?: string;

@@ -12,9 +12,6 @@ interface FormValues {
   clientId: string;
   categoryId: string;
   priority: CasePriority;
-  courtCaseNumber: string;
-  courtName: string;
-  branch: string;
   opponentName: string;
   formedAt: string;
   nextSessionAt: string;
@@ -29,9 +26,6 @@ const initialValues: FormValues = {
   clientId: "",
   categoryId: "",
   priority: "NORMAL",
-  courtCaseNumber: "",
-  courtName: "",
-  branch: "",
   opponentName: "",
   formedAt: today,
   nextSessionAt: "",
@@ -229,44 +223,6 @@ export default function NewCasePage() {
         {/* اطلاعات قضایی، تو یه بخش جدا با خط جداکننده */}
         <div className="border-t border-[#EDEBE2] pt-5 space-y-5">
           <p className="text-xs font-medium text-[#8C8A80]">اطلاعات قضایی</p>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className={labelClass}>شماره پرونده دادگاه</label>
-              <input
-                type="text"
-                value={values.courtCaseNumber}
-                onChange={(event) =>
-                  handleChange("courtCaseNumber", event.target.value)
-                }
-                className={`${fieldClass} font-mono`}
-              />
-            </div>
-
-            <div>
-              <label className={labelClass}>شعبه</label>
-              <input
-                type="text"
-                value={values.branch}
-                onChange={(event) =>
-                  handleChange("branch", event.target.value)
-                }
-                className={fieldClass}
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className={labelClass}>نام دادگاه</label>
-            <input
-              type="text"
-              value={values.courtName}
-              onChange={(event) =>
-                handleChange("courtName", event.target.value)
-              }
-              className={fieldClass}
-            />
-          </div>
 
           <div>
             <label className={labelClass}>طرف مقابل</label>

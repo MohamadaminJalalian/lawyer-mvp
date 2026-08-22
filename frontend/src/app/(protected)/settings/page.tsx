@@ -23,9 +23,12 @@ export default function SettingsPage() {
     isLawyer || Boolean(currentSecretary?.permissions.canDeleteFiles);
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className=" mx-auto">
       <div className="mb-6">
-        <Breadcrumb trail={["داشبورد"]} title="تنظیمات" />
+        <h1 className="text-xl font-bold text-[var(--text-primary)]">تنظیمات</h1>
+        <p className="mt-1 text-sm text-[var(--text-secondary)]">
+         تنظیمات سامانه
+        </p>
       </div>
 
       <div className="flex flex-col gap-5">
