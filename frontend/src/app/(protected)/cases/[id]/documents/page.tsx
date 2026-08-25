@@ -1,8 +1,18 @@
 "use client";
 
+import {
+  addMockFile,
+  getCaseDocuments,
+  setFileProcessing,
+  setFileExtractedText,
+} from "@/mocks/documents.mock";
+
+import { extractTextFromImage } from "@/lib/ocr";
+
 import { useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
+
 import {
   ArrowRight,
   CalendarDays,
@@ -15,8 +25,8 @@ import {
   Upload,
   X,
 } from "lucide-react";
+
 import { mockCases } from "@/mocks/cases.mock";
-import { addMockFile, getCaseDocuments } from "@/mocks/documents.mock";
 import type { DocumentFile } from "@/mocks/cases.types";
 
 function fileIconFor(type: DocumentFile["type"]) {
@@ -52,12 +62,26 @@ function formatPersianDate(iso: string) {
 export default function CaseDocumentsPage() {
   const { id: caseId } = useParams<{ id: string }>();
   const caseItem = mockCases.find((c) => c.id === caseId);
-  const [{ files }, setDocs] = useState(() => getCaseDocuments(caseId));
-  const [title, setTitle] = useState("");
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [previewFile, setPreviewFile] = useState<DocumentFile | null>(null);
-  const [isSaving, setIsSaving] = useState(false);
-  const [error, setError] = useState("");
+const [{ files }, setDocs] = useState(() => getCaseDocuments(caseId));
+
+const [title, setTitle] = useState("");
+const [selectedFile, setSelectedFile] = useState<File | null>(null);
+const [previewFile, setPreviewFile] = useState<DocumentFile | null>(null);
+const [isSaving, setIsSaving] = useState(false);
+const [error, setError] = useState("");
+const [searchQuery, setSearchQuery] = useState("");
+
+const query = searchQuery.trim().toLowerCase();
+
+const filteredFiles = files.filter((file) => {
+  if (!query) return true;
+
+  return (
+    file.title.toLowerCase().includes(query) ||
+    file.name.toLowerCase().includes(query) ||
+    (file.extractedText ?? "").toLowerCase().includes(query)
+  );
+});
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   if (!caseItem) {
@@ -106,12 +130,13 @@ export default function CaseDocumentsPage() {
       selectedFile.name.toLowerCase().endsWith(".xlsx");
 
     const url = URL.createObjectURL(selectedFile);
-    addMockFile(caseId, {
+    const newDoc = addMockFile(caseId, {
       title: title.trim(),
       name: selectedFile.name,
       type: isImage ? "image" : isPdf ? "pdf" : isWord ? "word" : isExcel ? "excel" : "other",
       url,
       size: selectedFile.size,
+      isProcessing: isImage,
     });
 
     setTitle("");
@@ -119,6 +144,22 @@ export default function CaseDocumentsPage() {
     if (fileInputRef.current) fileInputRef.current.value = "";
     refresh();
     setIsSaving(false);
+
+    // اگه عکس بود، در پس‌زمینه متنش رو بخون (بدون معطل کردن کاربر)
+    if (isImage) {
+      setFileProcessing(caseId, newDoc.id, true);
+      refresh();
+
+      extractTextFromImage(selectedFile)
+        .then((text) => {
+          setFileExtractedText(caseId, newDoc.id, text);
+          refresh();
+        })
+        .catch(() => {
+          setFileProcessing(caseId, newDoc.id, false);
+          refresh();
+        });
+    }
   }
 
   return (
@@ -203,15 +244,24 @@ export default function CaseDocumentsPage() {
             </div>
 
             <div className="mt-7">
-              <div className="flex items-center justify-between mb-3">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
                 <div>
                   <h2 className="font-bold text-[#262420]">اسناد ثبت‌شده</h2>
                   <p className="text-xs text-[#8C8A80] mt-1">برای مشاهده سند روی عنوان آن کلیک کنید.</p>
                 </div>
-                <span className="text-xs text-[#8C8A80] bg-[#F5F2EC] rounded-full px-3 py-1">{files.length} سند</span>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="جستجو در عنوان یا محتوای تصویر..."
+                    className="h-9 rounded-lg border border-[#E2DDD2] bg-white px-3 text-sm text-[#262420] placeholder:text-[#A6A198] outline-none focus:border-[#B17A2B] w-full sm:w-64"
+                  />
+                  <span className="text-xs text-[#8C8A80] bg-[#F5F2EC] rounded-full px-3 py-1 whitespace-nowrap">{filteredFiles.length} سند</span>
+                </div>
               </div>
 
-              {files.length === 0 ? (
+              {filteredFiles.length === 0 ? (
                 <div className="rounded-2xl border border-dashed border-[#DCD6CA] py-12 text-center">
                   <FileText size={30} className="mx-auto text-[#C1BAAE]" />
                   <p className="text-sm text-[#8C8A80] mt-3">هنوز سندی برای این پرونده ثبت نشده است.</p>
@@ -224,7 +274,7 @@ export default function CaseDocumentsPage() {
                     <span className="text-center">عملیات</span>
                   </div>
 
-                  {files.map((file) => {
+                  {filteredFiles.map((file) => {
                     const Icon = fileIconFor(file.type);
                     return (
                       <div key={file.id} className="grid grid-cols-1 sm:grid-cols-[1fr_150px_130px] gap-3 sm:gap-4 items-center px-5 py-4 border-b last:border-b-0 border-[#EEEAE2] hover:bg-[#FCFBF8] transition-colors">

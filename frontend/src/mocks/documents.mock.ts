@@ -51,3 +51,28 @@ export function addMockFile(
   mockDocumentFiles[caseId].unshift(doc);
   return doc;
 }
+
+export function setFileProcessing(
+  caseId: string,
+  fileId: string,
+  isProcessing: boolean
+) {
+  const files = mockDocumentFiles[caseId];
+  if (!files) return;
+  const file = files.find((f) => f.id === fileId);
+  if (file) file.isProcessing = isProcessing;
+}
+
+export function setFileExtractedText(
+  caseId: string,
+  fileId: string,
+  text: string
+) {
+  const files = mockDocumentFiles[caseId];
+  if (!files) return;
+  const file = files.find((f) => f.id === fileId);
+  if (file) {
+    file.extractedText = text;
+    file.isProcessing = false;
+  }
+}

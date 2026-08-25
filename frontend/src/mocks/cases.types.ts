@@ -9,6 +9,8 @@ export interface DocumentFile {
   url: string;
   size: number; // بایت
   uploadedAt: string;
+  extractedText?: string; // متنی که از روی تصویر خونده شده، برای سرچ
+  isProcessing?: boolean; // true یعنی هنوز در حال خوندن متنه
 }
 
 export interface DocumentFolder {
