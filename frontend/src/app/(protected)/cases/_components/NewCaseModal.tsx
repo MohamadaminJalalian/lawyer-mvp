@@ -6,7 +6,7 @@ import persian from "react-date-object/calendars/persian";
 import persian_fa from "react-date-object/locales/persian_fa";
 import { useState } from "react";
 import { X, Star, CalendarDays, Plus } from "lucide-react";
-import Modal from "./Modal";
+import Modal from "@/components/ui/Modal";
 import { mockClients, mockCategories } from "../../../../mocks/cases.mock";
 import type { CaseListItem } from "../../../../mocks/cases.types";
 

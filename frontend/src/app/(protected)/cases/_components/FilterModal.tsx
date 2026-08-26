@@ -9,7 +9,7 @@ import persian from "react-date-object/calendars/persian";
 import persian_fa from "react-date-object/locales/persian_fa";
 import gregorian from "react-date-object/calendars/gregorian";
 import gregorian_en from "react-date-object/locales/gregorian_en";
-import Modal from "./Modal";
+import Modal from "@/components/ui/Modal";
 import { mockCategories } from "../../../../mocks/cases.mock";
 import type { CaseStatus } from "../../../../mocks/cases.types";
 export type UrgencyOption = "URGENT" | "NOT_URGENT";

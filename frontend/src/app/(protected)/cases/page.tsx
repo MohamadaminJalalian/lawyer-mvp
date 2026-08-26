@@ -5,7 +5,7 @@ import { getCaseDocuments } from "@/mocks/documents.mock";
 // import { Search } from "lucide-react";
 import Link from "next/link";
 import { Files } from "lucide-react"; // کنار Star, Eye, Pencil, CheckCircle2
-import { formatPersianDate } from "../../../lib/utils/date";
+import { formatPersianDate } from "@/lib/date-utils";
 import { useEffect, useState } from "react";
 import {
   FileText,
@@ -30,7 +30,7 @@ import {
 import NewCaseModal from "./_components/NewCaseModal";
 import EditCaseModal from "./_components/EditCaseModal";
 import FilterModal, { type UrgencyOption } from "./_components/FilterModal";
-import Modal from "./_components/Modal";
+import Modal from "@/components/ui/Modal";
 import { mockCasesResponse, mockCategories } from "../../../mocks/cases.mock";
 import type { CaseListItem, CaseStatus } from "../../../mocks/cases.types";
 

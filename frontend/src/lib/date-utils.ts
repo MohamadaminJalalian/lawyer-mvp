@@ -1,4 +1,16 @@
+import dayjs from "dayjs";
+import jalaliday from "jalaliday";
+
+dayjs.extend(jalaliday);
+
 const persianDigits = ["۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹"];
+
+export function formatPersianDate(
+  date: string | null | undefined,
+): string {
+  if (!date) return "—";
+  return dayjs(date).calendar("jalali").format("YYYY/MM/DD");
+}
 
 export function toPersianDigits(input: string): string {
   return input.replace(/[0-9]/g, (d) => persianDigits[Number(d)]);
@@ -95,7 +107,7 @@ export function getJalaliMonthStart(date: Date): Date {
 export function getJalaliMonthDays(monthStart: Date): Date[] {
   const days: Date[] = [];
   const startMonthName = getJalaliMonthName(monthStart);
-  let d = new Date(monthStart);
+  const d = new Date(monthStart);
   while (getJalaliMonthName(d) === startMonthName) {
     days.push(new Date(d));
     d.setDate(d.getDate() + 1);

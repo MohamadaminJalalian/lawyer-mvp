@@ -89,7 +89,7 @@ export function validateClientForm(values: ClientFormValues): ClientFormErrors {
     return errors;
 }
 
-export function hasErrors(errors: ClientFormErrors): boolean {
+export function hasErrors<T extends object>(errors: T): boolean {
     return Object.values(errors).some(Boolean);
 }
 
