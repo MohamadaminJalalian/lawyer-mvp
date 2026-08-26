@@ -28,6 +28,8 @@ export function fetchCurrentUser(): Promise<AuthUser> {
 export function forgotPasswordRequest(
   payload: ForgotPasswordPayload,
 ): Promise<{ message: string }> {
+  // payload.username is used to look up the account; the backend sends the OTP
+  // to the phone number already on file for that account.
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({ message: "کد تایید با موفقیت ارسال شد." });

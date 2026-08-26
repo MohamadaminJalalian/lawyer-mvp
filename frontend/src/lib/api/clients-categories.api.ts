@@ -3,11 +3,11 @@
 // ==========================================================
 
 import { apiClient } from "../api-client";
-import type { ClientSummary, CategorySummary } from "../../mocks/cases.types";
+import type { ClientSummary, CategorySummary, PaginatedResponse } from "../../mocks/cases.types";
 
-export function searchClients(query: string): Promise<ClientSummary[]> {
-  const queryString = query ? `?q=${encodeURIComponent(query)}` : "";
-  return apiClient<ClientSummary[]>(`/clients${queryString}`);
+export function searchClients(query: string): Promise<PaginatedResponse<ClientSummary>> {
+  const queryString = query ? `?search=${encodeURIComponent(query)}` : "";
+  return apiClient<PaginatedResponse<ClientSummary>>(`/clients${queryString}`);
 }
 
 export function getClientById(id: string): Promise<ClientSummary> {

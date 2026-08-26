@@ -8,7 +8,16 @@ import persian from "react-date-object/calendars/persian";
 import persian_fa from "react-date-object/locales/persian_fa";
 import type { NoticeListItem } from "./NoticesTable";
 
-// دیتای موقتِ موکل‌ها و دسته‌بندی‌ها — بعداً از API واقعی (searchClients / getCategories) میاد
+// TODO: Wire up real API (searchClients / getCategories) instead of mock data.
+// Steps needed:
+//   1. Import { searchClients, getCategories } from "@/lib/api/clients-categories.api"
+//      and import { ClientSummary, CategorySummary } from "@/mocks/cases.types"
+//   2. Add useEffect to call getCategories() on mount → set state as CategorySummary[]
+//   3. Add a debounced search input for clients → call searchClients(query)
+//      which returns PaginatedResponse<ClientSummary>; extract .items for the dropdown
+//   4. Change client selection from string (name) to string (id), and category
+//      selection from string (name) to string (id) — display fullName/name in the UI
+//   5. Add loading/error states for both fetches; handle pagination if needed
 const mockClients = ["محمد احمدی", "علی رضایی", "زهرا کریمی"];
 const mockCategories = ["ملکی", "کیفری", "خانواده", "تجاری"];
 

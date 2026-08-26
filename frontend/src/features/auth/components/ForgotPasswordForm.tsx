@@ -8,11 +8,11 @@ import { forgotPasswordRequest } from "../api/auth.api";
 type FormStatus = "idle" | "submitting" | "error";
 
 interface FieldErrors {
-  phone?: string;
+  username?: string;
 }
 
 export function ForgotPasswordForm() {
-  const [phone, setPhone] = useState("");
+  const [username, setUsername] = useState("");
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [formStatus, setFormStatus] = useState<FormStatus>("idle");
   const [formMessage, setFormMessage] = useState<string | null>(null);
@@ -20,10 +20,11 @@ export function ForgotPasswordForm() {
 
   function validate(): boolean {
     const errors: FieldErrors = {};
-    if (!phone) {
-      errors.phone = "شماره تلفن را وارد کنید.";
-    } else if (!/^09\d{9}$/.test(phone)) {
-      errors.phone = "شماره تلفن باید با ۰۹ شروع شود و ۱۱ رقم باشد.";
+    const trimmedUsername = username.trim();
+    if (!trimmedUsername) {
+      errors.username = "نام کاربری را وارد کنید.";
+    } else if (trimmedUsername.length < 3) {
+      errors.username = "نام کاربری باید حداقل ۳ کاراکتر باشد.";
     }
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
@@ -36,8 +37,8 @@ export function ForgotPasswordForm() {
 
     setFormStatus("submitting");
     try {
-      await forgotPasswordRequest({ phone });
-      router.push(`/auth/verify-otp?phone=${encodeURIComponent(phone)}`);
+      await forgotPasswordRequest({ username: username.trim() });
+      router.push(`/auth/verify-otp?username=${encodeURIComponent(username.trim())}`);
     } catch {
       setFormStatus("error");
       setFormMessage("ارسال کد با خطا مواجه شد. لطفاً دوباره تلاش کنید.");
@@ -52,27 +53,26 @@ export function ForgotPasswordForm() {
     <form onSubmit={handleSubmit} noValidate dir="rtl" className="space-y-5">
       <div>
         <label
-          htmlFor="phone"
+          htmlFor="username"
           className="mb-1.5 block text-sm font-medium text-card-foreground"
         >
-          شماره تلفن
+          نام کاربری
         </label>
         <input
-          id="phone"
-          name="phone"
-          type="tel"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
+          id="username"
+          name="username"
+          type="text"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
           disabled={isSubmitting}
-          autoComplete="tel"
-          aria-invalid={Boolean(fieldErrors.phone)}
-          placeholder="۰۹xxxxxxxxx"
+          autoComplete="username"
+          aria-invalid={Boolean(fieldErrors.username)}
+          placeholder="نام کاربری خود را وارد کنید"
           className="block w-full rounded-lg border border-border bg-background px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted-foreground transition-colors hover:border-muted-foreground/30 focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-50"
-          maxLength={11}
         />
-        {fieldErrors.phone && (
+        {fieldErrors.username && (
           <p role="alert" className="mt-1.5 text-xs text-destructive">
-            {fieldErrors.phone}
+            {fieldErrors.username}
           </p>
         )}
       </div>

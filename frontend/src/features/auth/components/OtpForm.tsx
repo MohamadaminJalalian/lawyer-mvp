@@ -9,7 +9,7 @@ type FormStatus = "idle" | "submitting" | "error";
 
 export function OtpForm() {
   const searchParams = useSearchParams();
-  const phone = searchParams.get("phone") ?? "";
+  const username = searchParams.get("username") ?? "";
   const router = useRouter();
 
   const [digits, setDigits] = useState<string[]>(["", "", "", "", "", ""]);
@@ -88,7 +88,7 @@ export function OtpForm() {
 
     setFormStatus("submitting");
     try {
-      await verifyOtpRequest({ phone, code });
+      await verifyOtpRequest({ username, code });
       router.push(`/auth/reset-password?token=${encodeURIComponent("mock-reset-token")}`);
     } catch (err) {
       setFormStatus("error");
@@ -103,13 +103,13 @@ export function OtpForm() {
   }
 
   const isSubmitting = formStatus === "submitting";
-  const formattedPhone = phone.replace(/(\d{4})$/, "xxxx$1");
 
   return (
     <form onSubmit={handleSubmit} noValidate dir="rtl" className="space-y-5">
       <p className="text-sm text-muted-foreground text-center">
-        کد ارسال شده به شماره <span className="font-medium text-foreground">{formattedPhone}</span> را
-        وارد کنید
+        کد تایید به شماره تلفن ثبت‌شده در حساب کاربری شما ارسال شده است. لطفاً آن را وارد کنید.
+        {/* TODO (future enhancement): If the backend eventually returns a masked phone
+            number in the forgotPasswordRequest response, it could be displayed here. */}
       </p>
 
       <div className="flex justify-center gap-2" dir="ltr">

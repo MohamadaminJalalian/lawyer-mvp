@@ -19,11 +19,11 @@ export interface LoginResponse {
 }
 
 export interface ForgotPasswordPayload {
-  phone: string;
+  username: string;
 }
 
 export interface VerifyOtpPayload {
-  phone: string;
+  username: string;
   code: string;
 }
 
