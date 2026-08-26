@@ -20,7 +20,7 @@ export function AccessDenied() {
         </p>
         <button
           type="button"
-          onClick={() => router.push("/dashboard")}
+          onClick={() => router.push("/")}
           className="mt-6 rounded-lg bg-primary px-5 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:bg-primary-hover active:scale-[0.98]"
         >
           بازگشت به داشبورد

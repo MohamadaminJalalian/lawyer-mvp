@@ -4,7 +4,7 @@ import { useState } from "react";
 import { createPortal } from "react-dom";
 import { Eye, Search, Filter } from "lucide-react";
 import DateRangePicker from "./DateRangePicker";
-import NoticeDetailsModal from "./NoticeDetailsModal";
+import NoticeDetailsModal from "../notices/NoticeDetailsModal";
 import type { DateObject } from "react-multi-date-picker";
 
 export default function ImportantNotices() {
@@ -32,6 +32,8 @@ export default function ImportantNotices() {
       description:
         "جلسه‌ی دادگاه پرونده‌ی خلع ید، حضور موکل الزامی است.",
       date: "1405/03/20",
+      isImportant: false,
+      documentsCount: 0,
     },
     {
       id: 2,
@@ -40,6 +42,8 @@ export default function ImportantNotices() {
       category: "کیفری",
       description: "لایحه‌ی دفاعیه باید تا قبل از جلسه‌ی بعدی ارسال شود.",
       date: "1405/03/22",
+      isImportant: false,
+      documentsCount: 0,
     },
     {
       id: 3,
@@ -48,6 +52,8 @@ export default function ImportantNotices() {
       category: "خانواده",
       description: "قرارداد وکالت این موکل نیاز به تمدید دارد.",
       date: "1405/03/25",
+      isImportant: false,
+      documentsCount: 0,
     },
   ];
 
@@ -374,6 +380,7 @@ export default function ImportantNotices() {
     </section>
 
     <NoticeDetailsModal
+      open={selectedNotice !== null}
       notice={selectedNotice}
       onClose={() => setSelectedNotice(null)}
     />

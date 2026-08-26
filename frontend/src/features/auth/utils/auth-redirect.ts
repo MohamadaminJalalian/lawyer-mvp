@@ -1,4 +1,5 @@
-const DEFAULT_REDIRECT = "/dashboard";
+// داشبورد روی ریشه‌ی گروه (protected) قرار داره، نه مسیر /dashboard
+const DEFAULT_REDIRECT = "/";
 
 export function buildLoginUrl(currentPath: string): string {
   if (!currentPath || currentPath === "/auth/login") return "/auth/login";

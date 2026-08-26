@@ -2,7 +2,7 @@
 // توابع API ماژول «پرونده‌ها»
 // ==========================================================
 
-import { apiFetch } from "./api-client";
+import { apiClient } from "../api-client";
 import type {
   CaseListItem,
   CreateCaseRequest,
@@ -39,15 +39,15 @@ export function getCases(
     status: params.status,
     categoryId: params.categoryId,
   });
-  return apiFetch<PaginatedResponse<CaseListItem>>(`/cases${queryString}`);
+  return apiClient<PaginatedResponse<CaseListItem>>(`/cases${queryString}`);
 }
 
 export function getCaseById(id: string): Promise<CaseListItem> {
-  return apiFetch<CaseListItem>(`/cases/${id}`);
+  return apiClient<CaseListItem>(`/cases/${id}`);
 }
 
 export function createCase(data: CreateCaseRequest): Promise<CaseListItem> {
-  return apiFetch<CaseListItem>(`/cases`, {
+  return apiClient<CaseListItem>(`/cases`, {
     method: "POST",
     body: JSON.stringify(data),
   });
@@ -57,14 +57,14 @@ export function updateCase(
   id: string,
   data: UpdateCaseRequest
 ): Promise<CaseListItem> {
-  return apiFetch<CaseListItem>(`/cases/${id}`, {
+  return apiClient<CaseListItem>(`/cases/${id}`, {
     method: "PATCH",
     body: JSON.stringify(data),
   });
 }
 
 export function archiveCase(id: string): Promise<CaseListItem> {
-  return apiFetch<CaseListItem>(`/cases/${id}/archive`, {
+  return apiClient<CaseListItem>(`/cases/${id}/archive`, {
     method: "POST",
   });
 }

@@ -44,7 +44,7 @@ const statusStyles: Record<CaseStatus, string> = {
   CLOSED: "bg-[#F1EFE6] text-[#6B6A63]",
 };
 
-const PAGE_SIZE = 2;
+const PAGE_SIZE = 10;
 
 // فیلدهایی که اجازه مرتب‌سازی روشون رو داریم
 type SortField = "internalNumber" | "title" | "client" | "category" | "status";
