@@ -14,6 +14,9 @@ import {
   type JalaliDate,
 } from "@/lib/jalali";
 import { fetchHolidaysByYear, type HolidayEntry } from "@/data/judicial-holidays";
+import { getAllEntries, priorityColors, type CalendarEntry } from "@/data/calendar-entries";
+import { highestPriorityForDate } from "@/lib/reminders";
+import DayEntriesModal from "./DayEntriesModal";
 
 export default function JudicialCalendar() {
   const [open, setOpen] = useState(false);
@@ -28,6 +31,17 @@ export default function JudicialCalendar() {
   const [holidays, setHolidays] = useState<HolidayEntry[]>([]);
   const [loadingHolidays, setLoadingHolidays] = useState(false);
   const [holidaysFailed, setHolidaysFailed] = useState(false);
+
+  const [entries, setEntries] = useState<CalendarEntry[]>([]);
+  const [selectedDay, setSelectedDay] = useState<JalaliDate | null>(null);
+
+  async function refreshEntries() {
+    setEntries(await getAllEntries());
+  }
+
+  useEffect(() => {
+    refreshEntries();
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -129,8 +143,8 @@ export default function JudicialCalendar() {
             style={{
               top: buttonRect.bottom + 8,
               left: Math.min(
-                buttonRect.right - 300,
-                (typeof window !== "undefined" ? window.innerWidth : 1200) - 316,
+                Math.max(buttonRect.right - 300, 8),
+                (typeof window !== "undefined" ? window.innerWidth : 1200) - 308,
               ),
             }}
           >
@@ -178,24 +192,32 @@ export default function JudicialCalendar() {
                 const isHoliday = isFriday || Boolean(holidayTitle);
                 const isToday =
                   cell.jy === t.jy && cell.jm === t.jm && cell.jd === t.jd;
+                const entryPriority = highestPriorityForDate(entries, cell.jy, cell.jm, cell.jd);
 
                 return (
-                  <div
+                  <button
                     key={idx}
+                    type="button"
                     title={holidayTitle}
-                    className={`relative flex h-8 items-center justify-center rounded-lg text-xs ${
+                    onClick={() => setSelectedDay(cell)}
+                    className={`relative flex h-8 items-center justify-center rounded-lg text-xs transition-colors ${
                       isToday
                         ? "bg-primary font-bold text-white"
                         : isHoliday
-                          ? "text-destructive"
-                          : "text-foreground"
+                          ? "text-destructive hover:bg-muted"
+                          : "text-foreground hover:bg-muted"
                     }`}
+                    style={
+                      entryPriority && !isToday
+                        ? { boxShadow: `inset 0 0 0 1.5px ${priorityColors[entryPriority]}` }
+                        : undefined
+                    }
                   >
                     {toPersianDigits(cell.jd)}
                     {holidayTitle && !isToday && (
                       <span className="absolute bottom-0.5 h-1 w-1 rounded-full bg-destructive" />
                     )}
-                  </div>
+                  </button>
                 );
               })}
             </div>
@@ -203,11 +225,21 @@ export default function JudicialCalendar() {
             <p className="mt-3 border-t border-border pt-2 text-[11px] leading-5 text-muted-foreground">
               {holidaysFailed
                 ? "اتصال به منبع تعطیلات برقرار نشد؛ فقط تعطیلات ثابت ملی نشون داده می‌شه."
-                : "نقطه‌ی قرمز = تعطیل رسمی (به‌صورت زنده از منبع باز دریافت می‌شه)."}
+                : "نقطه‌ی قرمز = تعطیل رسمی. کادر رنگی = کار ثبت‌شده. برای ثبت کار روی هر روز کلیک کنید."}
             </p>
           </div>,
           document.body,
         )}
+
+      {selectedDay && (
+        <DayEntriesModal
+          jy={selectedDay.jy}
+          jm={selectedDay.jm}
+          jd={selectedDay.jd}
+          onClose={() => setSelectedDay(null)}
+          onChanged={refreshEntries}
+        />
+      )}
     </>
   );
 }

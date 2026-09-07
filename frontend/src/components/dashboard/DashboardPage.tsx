@@ -2,6 +2,8 @@
 import ImportantCases from "./ImportantCases";
 import ImportantNotices from "./ImportantNotices";
 import JusticeBanner from "./JusticeBanner";
+import JudicialCalendar from "./JudicialCalendar";
+import ReminderBanner from "./ReminderBanner";
 
 
 export default function DashboardPage() {
@@ -20,9 +22,21 @@ export default function DashboardPage() {
         >
 
 
-          {/* طرح تزئینی ترازوی عدالت */}
+          {/* هشدارهای سررسید */}
 
-          <JusticeBanner />
+          <div className="mb-4">
+            <ReminderBanner />
+          </div>
+
+
+          {/* طرح تزئینی ترازوی عدالت + تقویم قضایی */}
+
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+            <div className="flex-1">
+              <JusticeBanner />
+            </div>
+            <JudicialCalendar />
+          </div>
 
 
 
